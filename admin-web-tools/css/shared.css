@@ -1,0 +1,123 @@
+* {
+	font-family: sans-serif;
+	box-sizing: border-box; 
+	-moz-box-sizing: border-box; 
+	-webkit-box-sizing: border-box; 
+}
+body {
+	background-color: #FFF;
+	color: #16ABC3;
+}
+label {
+	display: inline-block;
+    min-width: 128px;
+	text-align: left;
+}
+input, 
+select {
+	display: inline-block;
+    min-width: 192px;
+}
+input[type="checkbox"] {
+	min-width: 42px;
+	margin: 3px 0;
+}
+input[type="button"],
+input[type="submit"] {
+	min-width: 96px;
+}
+td {
+	min-width: 128px;
+	text-align: left;
+}
+h3 {
+	margin: 16px 0 0 0;
+}
+#main_win {
+	border: 1px solid #9ad0df;
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+	max-width: 800px;
+	text-align: center;
+	margin: auto;
+	overflow: hidden;
+}
+#header {
+	width: 100%;
+}
+#footer {
+	width: 100%;
+}
+#pages {
+	width: 100%;
+	height: 100%;
+}
+.page {
+	display: none;
+	width: 100%;
+	height: 100%;
+}
+.page_content {
+	min-height: 300px;
+	display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+	padding-bottom: 24px;
+}
+#show_result {
+	border: 1px solid #9ad0df;
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+	margin: 10px;
+	padding: 10px;
+	overflow: auto;
+}
+
+.menu_button {
+	background: #16ABC3;
+	color: #fff;
+    border: 0;
+    border-radius: 0px;
+    padding: 4px 12px;
+    margin: 2px;
+    cursor: pointer;
+}
+.menu_button:hover {
+	background: #888;
+	color: #fff;
+}
+.menu_button.active {
+	box-shadow: 0 0 0 2px rgba(22, 171, 195, 0.5);
+}
+.interface_button {
+	background: #ceff1a;
+    color: #000;
+    border: 0;
+    border-radius: 3px;
+    padding: 4px 12px;
+    margin: 2px;
+    cursor: pointer;
+}
+.interface_button:hover {
+	background: #000;
+	color: #ceff1a;
+}
+
+#pwd-security-indicator {
+    position: absolute;
+    top: 4px;
+	right: 4px;
+    width: 12px;
+    height: 12px;
+    border-radius: 6px;
+    background: #f00;
+}
+#pwd-security-indicator.secure {
+	background: #0f0;
+}
+#pwd-security-indicator.inactive {
+	background: #fff;
+}

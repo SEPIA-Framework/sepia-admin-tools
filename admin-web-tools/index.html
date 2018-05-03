@@ -1,0 +1,253 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	<!-- web app settings -->
+	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=1">
+	<!--SCRIPTS / STYLES -->
+	<script type="text/javascript" src="js/jquery-3.1.1.min.js" charset="UTF-8"></script>
+	<script type="text/javascript" src="js/sjcl.js"  charset="UTF-8"></script>
+	<script type="text/javascript" src="js/shared.js" charset="UTF-8"></script>
+	<script type="text/javascript" src="js/authentication.js" charset="UTF-8"></script>
+	<script type="text/javascript" src="js/users.js" charset="UTF-8"></script>
+	<script type="text/javascript" src="js/assistant.js" charset="UTF-8"></script>
+	<script type="text/javascript" src="js/socket-client.js" charset="UTF-8"></script>
+	<script type="text/javascript" src="js/answer-manager.js" charset="UTF-8"></script>
+	<link rel="stylesheet" href="css/shared.css">
+	
+	<title>SEPIA Dev-Tools</title>
+
+	<style>
+	</style>
+<script>
+	//test parameters
+	var testLocation = JSON.stringify({	latitude: "52.52",	longitude: "13.37", city: "Berlin" });
+	
+	//load on document ready
+	$( document ).ready(function() {
+		//call login
+		login(function(data){
+			//on success...
+		});
+		//restore session variables
+		var id = sessionStorage.getItem('id');
+		if (id){
+			$('#id').val(id);
+		}
+		var pwd = sessionStorage.getItem('pwd');
+		if (pwd){
+			$('#pwd').val(pwd);
+			updatePasswordSecurityWarning();
+		}
+		var customServer = sessionStorage.getItem('customServer');
+		if (customServer){
+			$('#server').val(customServer);
+		}
+		var server = sessionStorage.getItem('server');
+		if (server){
+			server_select.value = server;
+		}
+		//show first page
+		openPage('authentication');
+	});	
+</script>
+</head>
+<body>
+
+<div id="main_win">
+	<br>
+	<h2>SEPIA-Framework Developer Tools</h2>
+	<br>
+	<div id="header">
+		<div id="pages_menu">
+			<button id="authentication-menu-btn" onclick="openPage('authentication')"  class="menu_button" >Authentication</button>
+			<button id="users-menu-btn" onclick="openPage('users')"  class="menu_button" >User-Management</button>
+			<button id="assistant-menu-btn" onclick="openPage('assistant')"  class="menu_button" >Assistant</button>
+			<button id="socket-messenger-menu-btn" onclick="openPage('socket-messenger')"  class="menu_button" >Socket Messenger</button>
+			<button id="answer-manager-menu-btn" onclick="openPage('answer-manager')"  class="menu_button" >Answers</button>
+			<button id="performances-menu-btn" onclick="openPage('performances')"  class="menu_button" >Performance</button>
+		</div>
+	</div>
+	<div id="pages">
+		
+		<!-- AUTH. and SETTINGS -->
+		<div id="authentication" class="page">
+			<h3>Server and Authentication</h3>
+			<div class="page_content">
+				<br>
+				<p><b>Credentials and Server</b></p>
+				<div><label>UserID: </label><input id="id" placeholder="ID or email"></div>
+				<div style="position: relative;">
+					<label>Password: </label><input id="pwd" type="password" onchange="updatePasswordSecurityWarning()">
+					<span id="pwd-security-indicator" class="inactive" title="Red: using actual password (unsafe), Green: using login-token (safe)"></span>
+				</div>
+				<br>
+				<div><label>Custom server: </label><input id="server" placeholder="Your custom server address ..."></div>
+				<div><label>Select server: </label><select id="server_select" name="server_sel">
+					<option value="http://localhost:20721/">LOCAL-HOST-20721</option>
+					<option value="http://localhost:20722/">LOCAL-HOST-20722</option>
+					<option value="http://localhost:20723/">LOCAL-HOST-20723</option>
+				</select></div>
+				<br><div>
+					<button onclick="showLoginToken()" class="interface_button">GET TOKEN</button>
+					<button onclick="logoutThis()" class="interface_button">LOGOUT</button>
+					<button onclick="logoutAll()" class="interface_button">LOGOUT ALL</button>
+					<br>
+					<button onclick="serverStatus()" class="interface_button">SERVER STATUS</button>
+					<button onclick="serverValidation()" class="interface_button">SERVER VALIDATION</button>
+				</div>
+				<br>
+			</div>
+		</div>
+		
+		<!-- USER MANAGEMENT -->
+		<div id="users" class="page">
+			<h3>User Management</h3>
+			<div class="page_content">
+				<br>
+				<p><b>Create new user</b></p>
+				<div><label>Email: </label><input id="new-user-email"></div>
+				<div><label>Password: </label><input id="new-user-pwd" type="password"></div>
+				<br><div>
+					<button onclick="createUser()" class="interface_button">CREATE</button>
+					<button onclick="whitelistEmail()" class="interface_button">PUT ON WHITELIST</button>
+				</div>
+				<br>
+				<p><b>Edit user</b></p>
+				<div><label>UserID: </label><input id="edit-user-id" placeholder="User to edit"></div>
+				<p>Overwrite Roles:</p>
+				<div><input id="new-user-roles" type="text" placeholder="e.g.: user, developer, tester"></div>
+				<br><div>
+					<button onclick="getUserRoles()" class="interface_button">GET ROLES</button>
+					<button onclick="setUserRoles()" class="interface_button">SET ROLES</button>
+				</div>
+				<br>
+			</div>
+		</div>
+		
+		<!-- ASSISTANT -->
+		<div id="assistant" class="page">
+			<h3>Assistant Tests</h3>
+			<div class="page_content">
+				<br>
+				<p><b>Test sentence</b></p>
+				<div>
+					<select id="assist-language-select" name="assist-lang" style="min-width: 100px;"> 
+						<script>document.write(buildLanguageSelectorOptions())</script>
+					</select>
+					<input id="test-sentence">
+				</div>
+				<br><div>
+					<button onclick="interpret()" class="interface_button">INTERPRET</button>
+					<button onclick="answer()" class="interface_button">ANSWER</button>
+					<button onclick="reportSentence()" class="interface_button">REPORT</button>
+				</div>
+				<br>
+				<p><b>Remote action</b></p>
+				<div>
+					<select id="remote-action-type-sel" name="remote-action-types" style="min-width: 100px;"> 
+						<script>document.write(buildRemoteActionTypeSelectorOptions())</script>
+					</select>
+					<!--<label>Action: </label>--><input id="remote-action" placeholder="Action">
+				</div>
+				<br><div>
+					<button onclick="sendRemoteAction()" class="interface_button">SEND</button>
+				</div>
+			</div>
+		</div>
+		
+		<!-- ANSWER MANAGER -->
+		<div id="answer-manager" class="page">
+			<h3>Manage Answers</h3>
+			<div class="page_content">
+				<br>
+				<form onsubmit="return saveAnswer()" action="">
+					<table>
+						<tr><td>Language</td><td>
+							<select name="answer-language" required>
+								<option value=""></option>
+								<script>document.write(buildLanguageSelectorOptions())</script>
+							</select>
+						</td></tr>
+						<tr><td>Type:</td><td><input type="text" name="answer-type" required></td></tr>
+						<tr><td>Text:</td><td><input type="text" name="answer-text" required></td></tr>
+						<tr><td>Repetition:</td><td><input type="text" name="answer-repetition" value="0" required></td></tr>
+						<tr><td>Mood:</td><td><input type="text" name="answer-mood" value="5" required></td></tr>
+						<tr><td>Characters:</td><td>
+							<input type="checkbox" name="answer-polite"><label>Polite</label><br>
+							<input type="checkbox" name="answer-neutral" checked><label>Neutral</label><br>
+							<input type="checkbox" name="answer-cool"><label>Cool</label><br>
+							<input type="checkbox" name="answer-rude"><label>Rude</label><br>
+						</td></tr>
+						<tr><td>Public?</td><td><input type="checkbox" name="answer-public" checked></td></tr>
+						<tr><td>Local?</td><td><input type="checkbox" name="answer-local"></td></tr>
+						<tr><td>Explicit?</td><td><input type="checkbox" name="answer-explicit"></td></tr>
+						<tr><td>Tags</td><td><input type="text" name="answer-tags" placeholder="tag1, tag2, ..."></td></tr>
+						<tr><td>System default?</td><td><input type="checkbox" name="answer-systemdefault"></td></tr>
+						<tr><td>ID:</td><td><input type="text" name="answer-id" value="" placeholder="will be loaded automatically" disabled></td></tr>
+						<tr><td><br></td></tr>
+						<tr><td colspan="2" style="text-align:center;">
+							<input type="submit" value="SAVE" class="interface_button">
+							<input type="button" value="LOAD BY TYPE" onclick="loadAnswer()" class="interface_button">
+							<!-- <br><button onclick="modifyAnswer()" class="interface_button">MODIFY</button>
+							<br><button onclick="deleteAnswer()" class="interface_button">DELETE</button> -->
+						</td></tr>
+					</table>
+				</form>
+				<br>
+			</div>
+		</div>
+		
+		<!-- WEB-SOCKET SERVER FUNCTIONS -->
+		<div id="socket-messenger" class="page">
+			<h3>WebSocket Messenger</h3>
+			<div class="page_content">
+				<br>
+				<p><b>Create channel</b></p>
+				<form onsubmit="return createMessengerChannel()" action="">
+					<label>Channel ID: </label><input id="msg-channel-id" type="text" required><br>
+					<label>Members: </label><input id="msg-channel-members" type="text" required><br>
+					<label>Public? </label><input type="checkbox" id="msg-channel-public" style="min-width: 192px;"><br>
+					<label>Add assistant? </label><input type="checkbox" id="msg-channel-assist" style="min-width: 192px;" checked><br>
+					<br>
+					<input type="submit" value="CREATE" class="interface_button">
+				</form>
+				<br>
+			</div>
+		</div>
+		
+		<!-- PERFORMANCE TESTING -->
+		<div id="performances" class="page">
+			<h3>Performance Tests</h3>
+			<div class="page_content">
+				<br>
+				<div>
+					<label>Call method: </label><select id="synch_select" name="synch_sel" style="width: 150px; min-width: 50px;"> 
+						<option value="sync">synchronous</option>
+						<option value="async">asynchronous</option>
+					</select>
+				</div>
+				<div><label>Repeat N: </label><input id="test_N" style="width: 50px; min-width: 50px;" value=4></div>
+				<div><label>Asy. delay (ms): </label><input id="delay_N" style="width: 50px; min-width: 50px;" value=0></div>
+				<br><div>
+					<button onclick="testAuthPerformance()" class="interface_button">TEST AUTH. PERFORMANCE</button><br>
+					<button onclick="testAnswerPerformance()" class="interface_button">TEST ANSWER PERFORMANCE</button>
+				</div>
+				<br>
+			</div>
+		</div>
+		
+	</div>
+	<!-- RESULT VIEW -->
+	<div id="show_result">
+		Welcome to SEPIA-FW developer tools.<br>
+		Choose your tool please.
+	</div>
+	<div id="footer">
+	</div>
+</div>
+<div id="msg_box" style="display: none;">Loading ...</div>
+
+</body>
+
+</html>
