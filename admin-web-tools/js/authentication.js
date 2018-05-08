@@ -1,6 +1,6 @@
 //test account and get login-token
 function getLoginToken(successCallback, errorCallback){
-	genericPostRequest("authentication", 
+	genericPostRequest("assist", "authentication", 
 		{
 			//"KEY" : getKey(),
 			//"client" : client_info,
@@ -10,7 +10,7 @@ function getLoginToken(successCallback, errorCallback){
 	);
 }
 function checkLoginToken(successCallback, errorCallback){
-	genericPostRequest("authentication", 
+	genericPostRequest("assist", "authentication", 
 		{
 			"action" : "check"
 		}, 
@@ -30,7 +30,7 @@ function showLoginToken() {
 
 //logout
 function logoutThis(successCallback, errorCallback){
-	genericPostRequest("authentication", {"action" : "logout"}, 
+	genericPostRequest("assist", "authentication", {"action" : "logout"}, 
 		function(data){
 			showMessage(JSON.stringify(data, null, 2));
 			//TODO: remove session storage and value of password field
@@ -44,7 +44,7 @@ function logoutThis(successCallback, errorCallback){
 	);
 }
 function logoutAll(successCallback, errorCallback){
-	genericPostRequest("authentication", {"action" : "logoutAllClients"}, 
+	genericPostRequest("assist", "authentication", {"action" : "logoutAllClients"}, 
 		function(data){
 			showMessage(JSON.stringify(data, null, 2));
 			//TODO: remove session storage and value of password field
@@ -61,7 +61,7 @@ function logoutAll(successCallback, errorCallback){
 //check server status
 function serverStatus(){
 	//POST
-	genericFormPostRequest("hello", {}, function(data){
+	genericFormPostRequest("", "hello", {}, function(data){
 		showMessage(data.reply);
 	}, function(data){
 		showMessage(JSON.stringify(data, null, 2));

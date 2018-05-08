@@ -42,9 +42,9 @@ function interpret(text, successCallback, errorCallback){
 		"user_location" : testLocation
 	}
 	if (successCallback){
-		genericFormPostRequest("interpret", body, successCallback, errorCallback);
+		genericFormPostRequest("assist", "interpret", body, successCallback, errorCallback);
 	}else{
-		genericFormPostRequest("interpret", body, function(data){
+		genericFormPostRequest("assist", "interpret", body, function(data){
 			showMessage(JSON.stringify(data, null, 2));
 		}, function(data){
 			showMessage(JSON.stringify(data, null, 2));
@@ -65,9 +65,9 @@ function answer(text, successCallback, errorCallback){
 		"user_location" : testLocation
 	}
 	if (successCallback){
-		genericFormPostRequest("answer", body, successCallback, errorCallback);
+		genericFormPostRequest("assist", "answer", body, successCallback, errorCallback);
 	}else{
-		genericFormPostRequest("answer", body, function(data){
+		genericFormPostRequest("assist", "answer", body, function(data){
 			showMessage(JSON.stringify(data, null, 2));
 		}, function(data){
 			showMessage(JSON.stringify(data, null, 2));

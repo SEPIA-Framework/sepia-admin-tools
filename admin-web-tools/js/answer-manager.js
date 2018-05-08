@@ -26,7 +26,7 @@ function saveAnswer(){
 	$('input[name=answer-id]').val("");
 	
 	//call
-	genericFormPostRequest("addAnswer", data, function(res){
+	genericFormPostRequest("teach", "addAnswer", data, function(res){
 		showMessage(JSON.stringify(res, null, 2));
 	}, function(res){
 		showMessage(JSON.stringify(res, null, 2));
@@ -57,7 +57,7 @@ function loadAnswer(){
 	
 	//call
 	if (data.language && data.type){
-		genericFormPostRequest("getAnswersByType", data, function(res){
+		genericFormPostRequest("teach", "getAnswersByType", data, function(res){
 			if (res.entries && res.entries.length > 0){
 				answersEntriesCache = res.entries;
 				showMessage(buildEntries(res));
@@ -92,7 +92,7 @@ function deleteAnswer(){
 		var data = {
 			id: id
 		}
-		genericFormPostRequest("deleteAnswerById", data, function(res){
+		genericFormPostRequest("teach", "deleteAnswerById", data, function(res){
 			showMessage(JSON.stringify(res, null, 2));
 		}, function(res){
 			showMessage(JSON.stringify(res, null, 2));

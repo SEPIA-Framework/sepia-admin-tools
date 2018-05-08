@@ -111,16 +111,29 @@ function updatePasswordSecurityWarning(_pwd){
 		$('#pwd-security-indicator').addClass('secure');
 	}
 }
-function getServer(){
+function getServer(apiName){
+	var url = "";
 	var custom = $('#server').val();
 	if (custom){
 		sessionStorage.setItem('customServer', custom);
-		return custom;
+		url = custom;
 	}else{
 		sessionStorage.setItem('customServer', "");
 		sessionStorage.setItem('server', server_select.value);
-		return server_select.options[server_select.selectedIndex].value;
+		url = server_select.options[server_select.selectedIndex].value;
 	}
+	if (endsWith(url, "/sepia/")){
+		if (apiName){
+			url += (apiName + "/");
+		}else{
+			console.error("API URL is incomplete: " + url);
+			alert("API URL is incomplete: " + url + "\n" + "Please choose a different server for this operation.");
+		}
+	}
+	return url;
+}
+function endsWith(str, suffix) {
+    return str.indexOf(suffix, str.length - suffix.length) !== -1;
 }
 
 function buildLanguageSelectorOptions(){
@@ -167,7 +180,7 @@ function callFunAsync(fun, N, j, finishedCallback){
 //REST calls
 
 /* 	SAMPLE POST:
-	genericPostRequest("createChannel", 
+	genericPostRequest("chat", "createChannel", 
 		{
 			"channelId" : channelId,
 			"members" : members,
@@ -214,8 +227,8 @@ function genericGetRequest(link, successCallback, errorCallback){
 }
 
 //generic POST request to be used by other test methods
-function genericPostRequest(apiPath, parameters, successCallback, errorCallback){
-	var apiUrl = getServer() + apiPath;
+function genericPostRequest(apiName, apiPath, parameters, successCallback, errorCallback){
+	var apiUrl = getServer(apiName) + apiPath;
 	parameters.KEY = getKey();
 	//parameters.GUUID = userid;	//<-- DONT USE THAT IF ITS NOT ABSOLUTELY NECESSARY (its bad practice and a much heavier load for the server!)
 	//parameters.PWD = pwd;
@@ -244,8 +257,8 @@ function genericPostRequest(apiPath, parameters, successCallback, errorCallback)
 	});
 }
 //generic POST request to be used by other test methods
-function genericFormPostRequest(apiPath, parameters, successCallback, errorCallback){
-	var apiUrl = getServer() + apiPath;
+function genericFormPostRequest(apiName, apiPath, parameters, successCallback, errorCallback){
+	var apiUrl = getServer(apiName) + apiPath;
 	parameters.KEY = getKey();
 	parameters.client = client_info;
 	console.log('POST request to: ' + apiUrl);
