@@ -208,7 +208,7 @@ function genericGetRequest(link, successCallback, errorCallback){
 		url: link,
 		timeout: 10000,
 		type: "get",
-		dataType: "jsonp",
+		//dataType: "jsonp",
 		success: function(data) {
 			//console.log(data);
 			var jsonData = convertData(data);
