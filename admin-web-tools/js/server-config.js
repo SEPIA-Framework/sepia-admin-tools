@@ -48,7 +48,7 @@ function reloadDatabaseIndex(){
 function getServicesUpload(){
 	var link = getServer("assist") + "upload-service";
 	genericGetRequest(link, function(data){
-		showMessage(data);
+		showMessage(data, true);
 		//change post action to correct server
 		$('#upload-service-box').find('form').attr('action', link);
 	}, function(data){

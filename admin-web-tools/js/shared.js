@@ -59,6 +59,11 @@ function getSHA256(data){
 	return sjcl.codec.hex.fromBits(sjcl.hash.sha256.hash(data + "salty1"));
 }
 
+//escape html specific characters to show code in results view
+function escapeHtml(codeString){
+    return codeString.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
 //CONTROLS AND SETTINGS
 
 function openPage(pageId){
@@ -71,7 +76,8 @@ function exit(){
 	//TODO: delete all tokens etc.
 }
 
-function showMessage(msg){
+function showMessage(msg, skipCodeEscape){
+	if (!skipCodeEscape) msg = escapeHtml(msg);
 	document.getElementById('show_result').innerHTML = 
 		"<div style='display:inline-block; white-space: pre; text-align: left;'>"
 			+ msg +

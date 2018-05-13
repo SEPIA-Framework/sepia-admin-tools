@@ -62,7 +62,7 @@ function logoutAll(successCallback, errorCallback){
 function serverStatus(){
 	//POST
 	genericFormPostRequest("", "hello", {}, function(data){
-		showMessage(data.reply);
+		showMessage(data.reply, true);
 	}, function(data){
 		showMessage(JSON.stringify(data, null, 2));
 	});

@@ -60,7 +60,7 @@ function loadAnswer(){
 		genericFormPostRequest("teach", "getAnswersByType", data, function(res){
 			if (res.entries && res.entries.length > 0){
 				answersEntriesCache = res.entries;
-				showMessage(buildEntries(res));
+				showMessage(buildEntries(res), true);
 			}else{
 				showMessage(JSON.stringify(res, null, 2));
 			}
@@ -134,7 +134,7 @@ function loadAnswerDetails(){
 			var mood = source.mood;
 			var text = source.text;
 			var chars = source.characters;
-			$('#answers-results-details').html(JSON.stringify(entry, null, 2));
+			$('#answers-results-details').html(escapeHtml(JSON.stringify(entry, null, 2)));
 		}
 	});
 }
