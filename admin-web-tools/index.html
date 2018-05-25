@@ -48,6 +48,10 @@
 		if (server){
 			server_select.value = server;
 		}
+		var customClient = sessionStorage.getItem('customClient');
+		if (customClient){
+			$('#custom-client').val(customClient);
+		}
 		//show first page
 		openPage('authentication');
 	});	
@@ -83,6 +87,7 @@
 					<label>Password: </label><input id="pwd" type="password" onchange="updatePasswordSecurityWarning()">
 					<span id="pwd-security-indicator" class="inactive" title="Red: using actual password (unsafe), Green: using login-token (safe)"></span>
 				</div>
+				<div><label>Client ID: </label><input id="custom-client" placeholder="default: web_app_tools"></div>
 				<br>
 				<div><label>Custom server: </label><input id="server" placeholder="e.g. http://[IP]:[PORT]/(sepia/)"></div>
 				<div><label>Select server: </label><select id="server_select" name="server_sel">

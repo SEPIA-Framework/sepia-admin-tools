@@ -1,5 +1,5 @@
 //some config stuff
-var client_info = "web_app";
+var client_info = "web_app_tools";
 var user_name = "Boss";
 var userid = "";
 var key = "";
@@ -84,6 +84,15 @@ function showMessage(msg, skipCodeEscape){
 		"</div>";
 }
 
+function getClient(){
+	var customClient = $('#custom-client').val();
+	if (customClient){
+		sessionStorage.setItem('customClient', customClient);
+		return customClient;
+	}else{
+		return client_info;
+	}
+}
 function getKey(){
 	var id = $('#id').val();
 	var pwd = $('#pwd').val();
@@ -238,7 +247,7 @@ function genericPostRequest(apiName, apiPath, parameters, successCallback, error
 	parameters.KEY = getKey();
 	//parameters.GUUID = userid;	//<-- DONT USE THAT IF ITS NOT ABSOLUTELY NECESSARY (its bad practice and a much heavier load for the server!)
 	//parameters.PWD = pwd;
-	parameters.client = client_info;
+	parameters.client = getClient();
 	console.log('POST request to: ' + apiUrl);
 	//console.log(parameters);
 	showMessage("Loading ...");
@@ -266,7 +275,7 @@ function genericPostRequest(apiName, apiPath, parameters, successCallback, error
 function genericFormPostRequest(apiName, apiPath, parameters, successCallback, errorCallback){
 	var apiUrl = getServer(apiName) + apiPath;
 	parameters.KEY = getKey();
-	parameters.client = client_info;
+	parameters.client = getClient();
 	console.log('POST request to: ' + apiUrl);
 	//console.log(parameters);
 	showMessage("Loading ...");
