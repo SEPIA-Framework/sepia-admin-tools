@@ -1,5 +1,5 @@
-<!DOCTYPE HTML>
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
 	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
 	<!-- web app settings -->
@@ -13,6 +13,7 @@
 	<script type="text/javascript" src="js/assistant.js" charset="UTF-8"></script>
 	<script type="text/javascript" src="js/socket-client.js" charset="UTF-8"></script>
 	<script type="text/javascript" src="js/answer-manager.js" charset="UTF-8"></script>
+	<script type="text/javascript" src="js/server-config.js" charset="UTF-8"></script>
 	<link rel="stylesheet" href="css/shared.css">
 	
 	<title>SEPIA Dev-Tools</title>
@@ -47,6 +48,10 @@
 		if (server){
 			server_select.value = server;
 		}
+		var customClient = sessionStorage.getItem('customClient');
+		if (customClient){
+			$('#custom-client').val(customClient);
+		}
 		//show first page
 		openPage('authentication');
 	});	
@@ -65,6 +70,7 @@
 			<button id="assistant-menu-btn" onclick="openPage('assistant')"  class="menu_button" >Assistant</button>
 			<button id="socket-messenger-menu-btn" onclick="openPage('socket-messenger')"  class="menu_button" >Socket Messenger</button>
 			<button id="answer-manager-menu-btn" onclick="openPage('answer-manager')"  class="menu_button" >Answers</button>
+			<button id="server-config-btn" onclick="openPage('server-config')"  class="menu_button" >Server Settings</button>
 			<button id="performances-menu-btn" onclick="openPage('performances')"  class="menu_button" >Performance</button>
 		</div>
 	</div>
@@ -81,15 +87,17 @@
 					<label>Password: </label><input id="pwd" type="password" onchange="updatePasswordSecurityWarning()">
 					<span id="pwd-security-indicator" class="inactive" title="Red: using actual password (unsafe), Green: using login-token (safe)"></span>
 				</div>
+				<div><label>Client ID: </label><input id="custom-client" placeholder="default: web_app_tools"></div>
 				<br>
-				<div><label>Custom server: </label><input id="server" placeholder="Your custom server address ..."></div>
+				<div><label>Custom server: </label><input id="server" placeholder="e.g. http://[IP]:[PORT]/(sepia/)"></div>
 				<div><label>Select server: </label><select id="server_select" name="server_sel">
+					<option value="http://localhost:20726/sepia/">LOCAL-HOST-SEPIA</option>
 					<option value="http://localhost:20721/">LOCAL-HOST-20721</option>
 					<option value="http://localhost:20722/">LOCAL-HOST-20722</option>
 					<option value="http://localhost:20723/">LOCAL-HOST-20723</option>
 				</select></div>
 				<br><div>
-					<button onclick="showLoginToken()" class="interface_button">GET TOKEN</button>
+					<button onclick="showLoginToken()" class="interface_button">LOGIN</button>
 					<button onclick="logoutThis()" class="interface_button">LOGOUT</button>
 					<button onclick="logoutAll()" class="interface_button">LOGOUT ALL</button>
 					<br>
@@ -212,6 +220,34 @@
 					<br>
 					<input type="submit" value="CREATE" class="interface_button">
 				</form>
+				<br>
+			</div>
+		</div>
+		
+		<!-- SERVER SETTINGS -->
+		<div id="server-config" class="page">
+			<h3>Server Settings</h3>
+			<div class="page_content">
+				<br>
+				<p><b>Functions</b></p>
+				<div>
+					<button onclick="getServerConfig()" class="interface_button">GET SETTINGS</button>
+					<button onclick="getServicesUpload()" class="interface_button">SERVICES UPLOAD</button>
+					<!--<button onclick="cleanEmailBcc()" class="interface_button">REMOVE EMAIL BCC</button>-->
+				</div>
+				<br>
+				<p><b>Toggles</b></p>
+				<div>
+					<button onclick="toggleServerAnswers()" class="interface_button">ANSWERS DB</button>
+					<button onclick="toggleSentencesDb()" class="interface_button">SENTENCES DB</button>
+					<button onclick="toggleSdk()" class="interface_button">SDK</button>
+				</div>
+				<br>
+				<p><b>Database</b></p>
+				<div><label>Reload cmd: </label><input id="settings-db-reload" placeholder="[db]-[index], e.g.: es-answers"></div>
+				<br><div>
+					<button onclick="reloadDatabaseIndex()" class="interface_button">RELOAD</button>
+				</div>
 				<br>
 			</div>
 		</div>

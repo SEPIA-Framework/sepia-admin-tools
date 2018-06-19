@@ -12,7 +12,7 @@ function createMessengerChannel(){
 		addAssistant: $('#msg-channel-assist').is(':checked')
 	}
 	//call
-	genericPostRequest("createChannel", data,
+	genericPostRequest("chat", "createChannel", data,
 		function (data){
 			showMessage(JSON.stringify(data, null, 2));
 		},

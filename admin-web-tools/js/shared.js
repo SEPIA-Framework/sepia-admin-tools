@@ -1,5 +1,5 @@
 //some config stuff
-var client_info = "web_app";
+var client_info = "web_app_tools";
 var user_name = "Boss";
 var userid = "";
 var key = "";
@@ -59,6 +59,11 @@ function getSHA256(data){
 	return sjcl.codec.hex.fromBits(sjcl.hash.sha256.hash(data + "salty1"));
 }
 
+//escape html specific characters to show code in results view
+function escapeHtml(codeString){
+    return codeString.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
 //CONTROLS AND SETTINGS
 
 function openPage(pageId){
@@ -71,13 +76,23 @@ function exit(){
 	//TODO: delete all tokens etc.
 }
 
-function showMessage(msg){
+function showMessage(msg, skipCodeEscape){
+	if (!skipCodeEscape) msg = escapeHtml(msg);
 	document.getElementById('show_result').innerHTML = 
 		"<div style='display:inline-block; white-space: pre; text-align: left;'>"
 			+ msg +
 		"</div>";
 }
 
+function getClient(){
+	var customClient = $('#custom-client').val();
+	if (customClient){
+		sessionStorage.setItem('customClient', customClient);
+		return customClient;
+	}else{
+		return client_info;
+	}
+}
 function getKey(){
 	var id = $('#id').val();
 	var pwd = $('#pwd').val();
@@ -111,16 +126,29 @@ function updatePasswordSecurityWarning(_pwd){
 		$('#pwd-security-indicator').addClass('secure');
 	}
 }
-function getServer(){
+function getServer(apiName){
+	var url = "";
 	var custom = $('#server').val();
 	if (custom){
 		sessionStorage.setItem('customServer', custom);
-		return custom;
+		url = custom;
 	}else{
 		sessionStorage.setItem('customServer', "");
 		sessionStorage.setItem('server', server_select.value);
-		return server_select.options[server_select.selectedIndex].value;
+		url = server_select.options[server_select.selectedIndex].value;
 	}
+	if (endsWith(url, "/sepia/")){
+		if (apiName){
+			url += (apiName + "/");
+		}else{
+			console.error("API URL is incomplete: " + url);
+			alert("API URL is incomplete: " + url + "\n" + "Please choose a different server for this operation.");
+		}
+	}
+	return url;
+}
+function endsWith(str, suffix) {
+    return str.indexOf(suffix, str.length - suffix.length) !== -1;
 }
 
 function buildLanguageSelectorOptions(){
@@ -167,7 +195,7 @@ function callFunAsync(fun, N, j, finishedCallback){
 //REST calls
 
 /* 	SAMPLE POST:
-	genericPostRequest("createChannel", 
+	genericPostRequest("chat", "createChannel", 
 		{
 			"channelId" : channelId,
 			"members" : members,
@@ -195,7 +223,7 @@ function genericGetRequest(link, successCallback, errorCallback){
 		url: link,
 		timeout: 10000,
 		type: "get",
-		dataType: "jsonp",
+		//dataType: "jsonp",
 		success: function(data) {
 			//console.log(data);
 			var jsonData = convertData(data);
@@ -214,12 +242,12 @@ function genericGetRequest(link, successCallback, errorCallback){
 }
 
 //generic POST request to be used by other test methods
-function genericPostRequest(apiPath, parameters, successCallback, errorCallback){
-	var apiUrl = getServer() + apiPath;
+function genericPostRequest(apiName, apiPath, parameters, successCallback, errorCallback){
+	var apiUrl = getServer(apiName) + apiPath;
 	parameters.KEY = getKey();
 	//parameters.GUUID = userid;	//<-- DONT USE THAT IF ITS NOT ABSOLUTELY NECESSARY (its bad practice and a much heavier load for the server!)
 	//parameters.PWD = pwd;
-	parameters.client = client_info;
+	parameters.client = getClient();
 	console.log('POST request to: ' + apiUrl);
 	//console.log(parameters);
 	showMessage("Loading ...");
@@ -244,10 +272,10 @@ function genericPostRequest(apiPath, parameters, successCallback, errorCallback)
 	});
 }
 //generic POST request to be used by other test methods
-function genericFormPostRequest(apiPath, parameters, successCallback, errorCallback){
-	var apiUrl = getServer() + apiPath;
+function genericFormPostRequest(apiName, apiPath, parameters, successCallback, errorCallback){
+	var apiUrl = getServer(apiName) + apiPath;
 	parameters.KEY = getKey();
-	parameters.client = client_info;
+	parameters.client = getClient();
 	console.log('POST request to: ' + apiUrl);
 	//console.log(parameters);
 	showMessage("Loading ...");

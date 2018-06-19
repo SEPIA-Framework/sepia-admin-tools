@@ -101,5 +101,5 @@ function setUserRoles(){
 //------------
 
 function userServicesPostRequest(data, successCallback, errorCallback){
-	genericPostRequest("user-management", data, successCallback, errorCallback);
+	genericPostRequest("assist", "user-management", data, successCallback, errorCallback);
 }
