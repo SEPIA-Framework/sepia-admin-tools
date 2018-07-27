@@ -1,0 +1,23 @@
+#smarthome-devices-list {
+    width: 100%;
+	padding: 0 16px;
+	display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.smarthome-item {
+	border-radius: 0px;
+	background: #eee;
+    color: #000;
+	width: 100%;
+    margin: 2px 0px;
+}
+.smarthome-item-title {
+	background: #16ABC3;
+    color: #fff;
+	padding: 8px;
+}
+.smarthome-item-body {
+	padding: 8px;
+}

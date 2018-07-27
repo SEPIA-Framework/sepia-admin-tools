@@ -14,7 +14,9 @@
 	<script type="text/javascript" src="js/socket-client.js" charset="UTF-8"></script>
 	<script type="text/javascript" src="js/answer-manager.js" charset="UTF-8"></script>
 	<script type="text/javascript" src="js/server-config.js" charset="UTF-8"></script>
+	<script type="text/javascript" src="js/smart-home-settings.js" charset="UTF-8"></script>
 	<link rel="stylesheet" href="css/shared.css">
+	<link rel="stylesheet" href="css/smart-home.css">
 	
 	<title>SEPIA Tools</title>
 
@@ -52,6 +54,14 @@
 		if (customClient){
 			$('#custom-client').val(customClient);
 		}
+		smartHomeSystem = sessionStorage.getItem('smartHomeSystem');
+		if (smartHomeSystem){
+			$('#smarthome_system_select').val(smartHomeSystem);
+		}
+		smartHomeServer = sessionStorage.getItem('smartHomeServer');
+		if (smartHomeServer){
+			$('#smarthome-server').val(smartHomeServer);
+		}
 		//show first page
 		openPage('authentication');
 	});	
@@ -60,17 +70,16 @@
 <body>
 
 <div id="main_win">
-	<br>
 	<h2>SEPIA-Framework Developer Tools</h2>
-	<br>
 	<div id="header">
 		<div id="pages_menu">
 			<button id="authentication-menu-btn" onclick="openPage('authentication')"  class="menu_button" >Authentication</button>
 			<button id="users-menu-btn" onclick="openPage('users')"  class="menu_button" >User-Management</button>
 			<button id="assistant-menu-btn" onclick="openPage('assistant')"  class="menu_button" >Assistant</button>
-			<button id="socket-messenger-menu-btn" onclick="openPage('socket-messenger')"  class="menu_button" >Socket Messenger</button>
+			<button id="socket-messenger-menu-btn" onclick="openPage('socket-messenger')"  class="menu_button" >Socket Messenger</button><hr>
 			<button id="answer-manager-menu-btn" onclick="openPage('answer-manager')"  class="menu_button" >Answers</button>
-			<button id="server-config-btn" onclick="openPage('server-config')"  class="menu_button" >Server Settings</button>
+			<button id="server-config-menu-btn" onclick="openPage('server-config')"  class="menu_button" >Server Settings</button>
+			<button id="smart-home-settings-menu-btn" onclick="openPage('smart-home-settings')"  class="menu_button" >Smart Home</button>
 			<button id="performances-menu-btn" onclick="openPage('performances')"  class="menu_button" >Performance</button>
 		</div>
 	</div>
@@ -80,15 +89,14 @@
 		<div id="authentication" class="page">
 			<h3>Server and Authentication</h3>
 			<div class="page_content">
-				<br>
 				<p><b>Credentials and Server</b></p>
 				<div><label>UserID: </label><input id="id" placeholder="ID or email"></div>
 				<div style="position: relative;">
 					<label>Password: </label><input id="pwd" type="password" onchange="updatePasswordSecurityWarning()">
-					<span id="pwd-security-indicator" class="inactive" title="Red: using actual password (unsafe), Green: using login-token (safe)"></span>
+					<span id="pwd-security-indicator" class="input-inline-indicator inactive" title="Red: using actual password (unsafe), Green: using login-token (safe)"></span>
 				</div>
 				<div><label>Client ID: </label><input id="custom-client" placeholder="default: web_app_tools"></div>
-				<br>
+				<hr>
 				<div><label>Custom server: </label><input id="server" placeholder="e.g. http://[IP]:[PORT]/(sepia/)"></div>
 				<div><label>Select server: </label><select id="server_select" name="server_sel">
 					<option value="http://localhost:20726/sepia/">LOCAL-HOST-SEPIA</option>
@@ -96,15 +104,16 @@
 					<option value="http://localhost:20722/">LOCAL-HOST-20722</option>
 					<option value="http://localhost:20723/">LOCAL-HOST-20723</option>
 				</select></div>
-				<br><div>
+				<hr>
+				<div class="interface_button_box">
 					<button onclick="showLoginToken()" class="interface_button">LOGIN</button>
 					<button onclick="logoutThis()" class="interface_button">LOGOUT</button>
 					<button onclick="logoutAll()" class="interface_button">LOGOUT ALL</button>
-					<br>
+					<hr>
 					<button onclick="serverValidation()" class="interface_button">SERVER INFO</button>
 					<button onclick="serverStatus()" class="interface_button">SERVER STATISTICS</button>
 				</div>
-				<br>
+				<hr>
 			</div>
 		</div>
 		
@@ -112,24 +121,25 @@
 		<div id="users" class="page">
 			<h3>User Management</h3>
 			<div class="page_content">
-				<br>
 				<p><b>Create new user</b></p>
 				<div><label>Email: </label><input id="new-user-email"></div>
 				<div><label>Password: </label><input id="new-user-pwd" type="password"></div>
-				<br><div>
+				<hr>
+				<div class="interface_button_box">
 					<button onclick="createUser()" class="interface_button">CREATE</button>
 					<button onclick="whitelistEmail()" class="interface_button">PUT ON WHITELIST</button>
 				</div>
-				<br>
+				<hr>
 				<p><b>Edit user</b></p>
 				<div><label>UserID: </label><input id="edit-user-id" placeholder="User to edit"></div>
 				<p>Overwrite Roles:</p>
 				<div><input id="new-user-roles" type="text" placeholder="e.g.: user, developer, tester"></div>
-				<br><div>
+				<hr>
+				<div class="interface_button_box">
 					<button onclick="getUserRoles()" class="interface_button">GET ROLES</button>
 					<button onclick="setUserRoles()" class="interface_button">SET ROLES</button>
 				</div>
-				<br>
+				<hr>
 			</div>
 		</div>
 		
@@ -137,7 +147,6 @@
 		<div id="assistant" class="page">
 			<h3>Assistant Tests</h3>
 			<div class="page_content">
-				<br>
 				<p><b>Test sentence</b></p>
 				<div>
 					<select id="assist-language-select" name="assist-lang" style="min-width: 100px;"> 
@@ -145,12 +154,13 @@
 					</select>
 					<input id="test-sentence">
 				</div>
-				<br><div>
+				<hr>
+				<div class="interface_button_box">
 					<button onclick="interpret()" class="interface_button">INTERPRET</button>
 					<button onclick="answer()" class="interface_button">ANSWER</button>
 					<button onclick="reportSentence()" class="interface_button">REPORT</button>
 				</div>
-				<br>
+				<hr>
 				<p><b>Remote action</b></p>
 				<div>
 					<select id="remote-action-type-sel" name="remote-action-types" style="min-width: 100px;"> 
@@ -158,7 +168,8 @@
 					</select>
 					<!--<label>Action: </label>--><input id="remote-action" placeholder="Action">
 				</div>
-				<br><div>
+				<hr>
+				<div class="interface_button_box">
 					<button onclick="sendRemoteAction()" class="interface_button">SEND</button>
 				</div>
 			</div>
@@ -168,7 +179,6 @@
 		<div id="answer-manager" class="page">
 			<h3>Manage Answers</h3>
 			<div class="page_content">
-				<br>
 				<form onsubmit="return saveAnswer()" action="">
 					<table>
 						<tr><td>Language</td><td>
@@ -195,14 +205,14 @@
 						<tr><td>ID:</td><td><input type="text" name="answer-id" value="" placeholder="will be loaded automatically" disabled></td></tr>
 						<tr><td><br></td></tr>
 						<tr><td colspan="2" style="text-align:center;">
-							<input type="submit" value="SAVE" class="interface_button">
-							<input type="button" value="LOAD BY TYPE" onclick="loadAnswer()" class="interface_button">
+							<input type="submit" value="SAVE" class="interface_button"><!--
+							--><input type="button" value="LOAD BY TYPE" onclick="loadAnswer()" class="interface_button">
 							<!-- <br><button onclick="modifyAnswer()" class="interface_button">MODIFY</button>
 							<br><button onclick="deleteAnswer()" class="interface_button">DELETE</button> -->
 						</td></tr>
 					</table>
 				</form>
-				<br>
+				<hr>
 			</div>
 		</div>
 		
@@ -210,17 +220,16 @@
 		<div id="socket-messenger" class="page">
 			<h3>WebSocket Messenger</h3>
 			<div class="page_content">
-				<br>
 				<p><b>Create channel</b></p>
 				<form onsubmit="return createMessengerChannel()" action="">
 					<label>Channel ID: </label><input id="msg-channel-id" type="text" required><br>
 					<label>Members: </label><input id="msg-channel-members" type="text" required><br>
 					<label>Public? </label><input type="checkbox" id="msg-channel-public" style="min-width: 192px;"><br>
 					<label>Add assistant? </label><input type="checkbox" id="msg-channel-assist" style="min-width: 192px;" checked><br>
-					<br>
+					<hr>
 					<input type="submit" value="CREATE" class="interface_button">
 				</form>
-				<br>
+				<hr>
 			</div>
 		</div>
 		
@@ -228,27 +237,52 @@
 		<div id="server-config" class="page">
 			<h3>Server Settings</h3>
 			<div class="page_content">
-				<br>
 				<p><b>Functions</b></p>
-				<div>
+				<div class="interface_button_box">
 					<button onclick="getServerConfig()" class="interface_button">GET SETTINGS</button>
 					<button onclick="getServicesUpload()" class="interface_button">SERVICES UPLOAD</button>
 					<!--<button onclick="cleanEmailBcc()" class="interface_button">REMOVE EMAIL BCC</button>-->
 				</div>
-				<br>
+				<hr>
 				<p><b>Toggles</b></p>
-				<div>
+				<div class="interface_button_box">
 					<button onclick="toggleServerAnswers()" class="interface_button">ANSWERS DB</button>
 					<button onclick="toggleSentencesDb()" class="interface_button">SENTENCES DB</button>
 					<button onclick="toggleSdk()" class="interface_button">SDK</button>
 				</div>
-				<br>
+				<hr>
 				<p><b>Database</b></p>
 				<div><label>Reload cmd: </label><input id="settings-db-reload" placeholder="[db]-[index], e.g.: es-answers"></div>
-				<br><div>
+				<hr>
+				<div class="interface_button_box">
 					<button onclick="reloadDatabaseIndex()" class="interface_button">RELOAD</button>
 				</div>
-				<br>
+				<hr>
+			</div>
+		</div>
+		
+		<!-- SMART HOME SETTINGS -->
+		<div id="smart-home-settings" class="page">
+			<h3>Smart Home Settings</h3>
+			<div class="page_content">
+				<p><b>Access</b></p>
+				<div><label>Select system: </label><select id="smarthome_system_select" name="smarthome_system_sel">
+					<option value="openhab">openHAB</option>
+				</select></div>
+				<div style="position: relative;">
+					<label>Server: </label><input id="smarthome-server" type="text" onchange="checkSmartHomeServer()" placeholder="e.g.: http://localhost:8080">
+					<span id="smarthome-server-indicator" class="input-inline-indicator inactive" title="Red: server not found, Green: connection established"></span>
+				</div>
+				<hr>
+				<div class="interface_button_box">
+					<button onclick="getSmartHomeDevices()" class="interface_button">GET DEVICES</button>
+				</div>
+				<hr>
+				<p><b>Devices</b></p>
+				<div id="smarthome-devices-list">
+					Press "GET DEVICES" to load all items.
+				</div>
+				<hr>
 			</div>
 		</div>
 		
@@ -256,7 +290,6 @@
 		<div id="performances" class="page">
 			<h3>Performance Tests</h3>
 			<div class="page_content">
-				<br>
 				<div>
 					<label>Call method: </label><select id="synch_select" name="synch_sel" style="width: 150px; min-width: 50px;"> 
 						<option value="sync">synchronous</option>
@@ -265,18 +298,19 @@
 				</div>
 				<div><label>Repeat N: </label><input id="test_N" style="width: 50px; min-width: 50px;" value=4></div>
 				<div><label>Asy. delay (ms): </label><input id="delay_N" style="width: 50px; min-width: 50px;" value=0></div>
-				<br><div>
+				<hr>
+				<div class="interface_button_box">
 					<button onclick="testAuthPerformance()" class="interface_button">TEST AUTH. PERFORMANCE</button><br>
 					<button onclick="testAnswerPerformance()" class="interface_button">TEST ANSWER PERFORMANCE</button>
 				</div>
-				<br>
+				<hr>
 			</div>
 		</div>
 		
 	</div>
 	<!-- RESULT VIEW -->
 	<div id="show_result">
-		Welcome to SEPIA-FW developer tools <b>version 1.0.0</b>.<br>
+		Welcome to SEPIA-FW developer tools <b>version 1.0.1</b>.<br>
 		Choose your section please.
 	</div>
 	<div id="footer">
