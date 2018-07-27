@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=Edge">
+	
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<link href="Images/ILA/apple-touch-icon-120x120.png" rel="apple-touch-icon" sizes="120x120" />
+	<link href="Images/ILA/apple-touch-icon-180x180.png" rel="apple-touch-icon" sizes="180x180" />
+	<link href="Images/ILA/icon-hires.png" rel="icon" sizes="192x192" />
+	<link href="Images/ILA/icon-normal.png" rel="icon" sizes="128x128" />
+
+	<script type="text/javascript" src="Scripts/jquery-1.11.3.min.js" charset="UTF-8"></script>
+	<script type="text/javascript" src="Scripts/SelectBox.js"  charset="UTF-8"></script>
+	<script type="text/javascript" src="Scripts/jquery.mousewheel.js"  charset="UTF-8"></script>
+	<script type="text/javascript" src="Scripts/jScrollPane.js"  charset="UTF-8"></script>
+	<script type="text/javascript" src="Scripts/gigaaa_social_buttons.js"  charset="UTF-8"></script>
+	<script type="text/javascript" src="Scripts/auth_control.js"  charset="UTF-8"></script>
+	<script type="text/javascript" src="Scripts/local_cmd_control.js"  charset="UTF-8"></script>
+	<script type="text/javascript" src="Scripts/tools.js"  charset="UTF-8"></script>
+	<link rel="stylesheet" href="Css/basic.css">
+	<link rel="stylesheet" href="Css/social_buttons.css">
+	<link rel="stylesheet" href="Css/login.css">
+	<link rel="stylesheet" href="Css/auth.css">
+	<title>Feedback Tool</title>
+</head>
+<body>
+	<!-- main window -->
+	<!--<a href="./">Start</a>-->
+	<button onclick="location.href='index.html';" id="backButton" class="gigaaa_interface_button">BACK</button>
+	<script>printRiskLevel();</script>
+	
+	<div id="main_win" style="width: 100%; height: 100%;">
+		<div class="main-sec">
+			<script>printServerSelector();</script>
+			<div class="heading-prt">
+				<h1 class="h">Feedback Evaluation</h1>
+				<select id="option" class="dropdown">
+					<option value="">Select value</option>
+					<option value="ar">Arabic</option>
+					<option value="zh">Chinese</option>
+					<option value="nl">Dutch</option>
+					<option value="en">English</option>
+					<option value="fr">French</option>
+					<option value="de">German</option>
+					<option value="el">Greek</option>
+					<option value="it">Italian</option>
+					<option value="ja">Japanese</option>
+					<option value="ko">Korean</option>
+					<option value="pl">Polish</option>
+					<option value="pt">Portuguese</option>
+					<option value="ru">Russian</option>
+					<option value="es">Spanish</option>
+					<option value="sv">Swedish</option>
+					<option value="tr">Turkish</option>
+				</select> 
+			</div>
+			<div class="select-sec">
+				<div name="drop" id="dropdown">
+					<option value="" id= "show_result" >Select</option>
+				</div>
+			</div>
+		</div>
+		<div class="secnd-sec">
+			<div id="text-container" class ="text">	
+			</div>
+		</div>
+	</div>
+	
+	<!-- keep this to handle gigaaa login -->
+	<div id="gigaaa_login_popup">
+		<iframe src="" id="gigaaa_login_iframe" sandbox="allow-same-origin allow-scripts allow-forms allow-top-navigation"></iframe>
+	</div>
+	<div id="msg_box" style="display: none;">Loading ...</div>
+	
+</body>
+
+<script>
+	//gigaaa API URLs
+	var assist_api_url = base_url;
+	var teach_api_url = teach_url;
+	
+	//gigaaa environment variables - required to handle login and API calls
+	var client_info = 'web_app_dev';
+	var environment = "web_app";
+	var is_html_app = false;
+	
+	//gigaaa parameters - required to do API calls
+	var user_name = '';
+	var language = '';
+	var userid = '';
+	var key = '';
+	var usertime_local = '';
+	var fromResult = 0;
+	
+	//modifier for login
+	var gigaaaShowServerToggle = true;
+	
+	//load on document ready
+	$( document ).ready(function() {
+		//configure gigaaa login
+		var do_clean_url_after_login = true;	//to remove login parameters from URL
+		var sub_layer_id = "#main_win";			//to add an effects layer below pop-up window
+		//call login
+		var login = gigaaaLoginHandler(client_info, sub_layer_id, do_clean_url_after_login);
+		//transfer parameters
+		user_name = login.user_name;
+		language = login.language;
+		userid = login.userid;
+		key = login.key;
+		usertime_local = login.usertime_local;
+		//possible overwrite
+		client_info = login.client_info;
+		environment = login.environment;
+		is_html_app = login.is_html_app;
+		
+		if (!login.success){
+			return;
+		}
+		
+		//ADD YOUR onReady/onLoad STUFF HERE!!! ...
+
+	});
+	$('#option').on('change', search);
+
+	function search() {
+		var value = $("#option").val();
+		var timestamp = '';
+		var info = '';
+		var answer = '';
+		var location = '';
+		var client = '';
+		$("#loading").show();
+		var api_url = getApiUrl() + "feedback?&KEY=" + encodeURIComponent(key) + "&client=" + encodeURIComponent(client_info)
+					+ "&action=retrieve" + "&info=report" + "&language=" + encodeURIComponent(value) + "&from="+ fromResult + "&size=10";
+
+		$.ajax({
+			dataType: "json",
+			timeout: 20000,
+			url: api_url,
+			success: function(data){
+				testData(data);
+				//show_result.innerHTML = JSON.stringify(data);
+				var obj = data.result;
+				$("#loading").hide();
+				if (!obj || obj.length <= 0){
+					var noMatches = "<a class='prevPage' href='#'>&lt;&lt;&nbsp;Prev</a> &nbsp; <a class='nextPage' href='#'>Next&nbsp;&gt;&gt;</a>";
+					noMatches += "<br>Sorry, but the result was empty.";
+					$('#dropdown').html(noMatches);
+					attachPrevNextEvents();
+					return;
+				}
+				$('#dropdown').show(html);
+				$('#text-container').show(textArea);
+
+				var html = "";
+				var textArea = "";
+				$.each(obj, function(key,value){
+					html += '<a class="resultLink" href="#" data-id="' + key + '">' + escapeHtml(value.text) + '</a><br>';
+					textArea += '<div id="' + key + '" style="display:none;height: 400px;background-color: #EEE;  width:100%; margin-top:10px; text-align:center;">';
+					textArea += '<br/><br/> answer: ' + escapeHtml(value.answer);
+					textArea += '<br/><br/> cmd: ' + escapeHtml(value.cmd);
+					textArea += '<br/><br/> language: ' + escapeHtml(value.language);
+					if (value.timestamp) {
+						var date = new Date(value.timestamp);
+						textArea += '<br/><br/> timestamp : ' + date.toISOString() + " (" + value.timestamp + ")";
+					} else {
+						textArea += '<br/><br/> timestamp : -';
+					}
+					textArea += '<br/><br/> user: ' + escapeHtml(value.user);
+					textArea += '<br/><br/> location: '+ escapeHtml(value.location);
+					textArea += '<br/><br/> client: ' + escapeHtml(value.client);
+					textArea += '<br/><br/> info: ' + escapeHtml(value.info);
+					textArea += '</div>';
+				});
+				html += "<a class='prevPage' href='#'>&lt;&lt;&nbsp;Prev</a> &nbsp; <a class='nextPage' href='#'>Next&nbsp;&gt;&gt;</a>";
+				$('#dropdown').html(html);
+				attachPrevNextEvents();
+				$('#text-container').html(textArea);
+				$(".resultLink").on('click',function(elem){
+					var id = $(this).attr("data-id");
+					$('#text-container').find('div').hide();
+					$('#text-container').find('#'+id).show();
+					return false;
+				});
+			},
+			error: function(data) {
+				alert('Sorry, but I could not load the data due to a communication error :-(');
+			}
+		});
+	}
+	
+	function attachPrevNextEvents() {
+		$('.prevPage').on('click', function(e) {
+			fromResult -= 10;
+			if (fromResult < 0) {
+				fromResult = 0;
+			}
+			search();
+		});
+		$('.nextPage').on('click', function(e) {
+			fromResult += 10;
+			search();
+		});
+	}
+	
+	function testData(data) {
+        if (data.result && data.result === "fail") {
+			alert('Sorry, but I could not load the data: ' + data.error);
+		}
+    }
+   $(window).load(function(){
+		$("#loading").hide();
+	});
+	
+	$(document).ajaxStart(function () {   
+	$("#loading").show();
+	
+  }).ajaxStop(function () { 		//hide ajax indicator 		
+   $("#loading").hide();
+  });    
+</script>
+
+<style>
+.text {
+    width: 100%;
+    margin: 0 auto;
+    text-align: center;
+}	
+	
+@media (min-width:320px) and (max-width:990px) {
+	.main-sec {
+		width: 100% !important;
+		margin: 0 auto;
+		background: #4470ae;
+		height: auto;
+		margin-top:15px;
+	}
+	.secnd-sec {
+		width: 100% !important;
+		margin: 0 auto;
+		background: #4470ae;
+		height: 400px;
+		margin-top:15px;
+		overflow-x: auto;
+	}
+}
+
+.secnd-sec {
+    width: 50%;
+    margin: 0 auto;
+    background: #EEE;
+    height: 400px;
+    margin-top:15px;
+}
+	
+.main-sec {
+    width: 50%;
+    margin: 0 auto;
+    background: #4470ae;
+    height: auto;
+    margin-top:15px;
+}	
+	
+.heading-prt {
+    width: 100%;
+    float: left;
+   text-align: center;
+}
+.heading-prt h1 {
+    color: #fff;
+}
+
+.select-sec select {
+    width: 100%;
+    background: #fff;
+    border: 1px solid #ddd;
+    padding: 5px;
+}
+.select-sec {
+    padding: 20px;
+    text-align: center;
+}
+.dropdown {
+	float: left;
+    margin: 12px 0px 10px 20px;
+}
+
+.h {
+	display: inline
+}
+
+</style>
+</html>
+
+
+

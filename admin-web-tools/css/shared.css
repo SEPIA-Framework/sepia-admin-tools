@@ -87,7 +87,7 @@ h3 {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-	padding: 24px 0;
+	padding: 24px 8px;
 }
 .page_content hr {
 	width: 100%;
@@ -165,4 +165,33 @@ h3 {
 }
 .input-inline-indicator.inactive {
 	background: #fff;
+}
+
+@media only screen and (max-width: 360px) {
+    body {
+        margin: 0;
+    }
+	#main_win {
+		border: 0;
+	}
+	td {
+		min-width: 50px;
+	}
+	.interface_button {
+		min-width: 192px;
+	}
+	input[type="button"],
+	input[type="submit"] {
+		min-width: 192px;
+	}
+	label {
+		min-width: 192px;
+	}
+	td label {
+		min-width: 128px;
+	}
+	.input-inline-indicator {
+		top: 24px;
+		right: 24px;
+	}
 }
