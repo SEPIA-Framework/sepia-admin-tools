@@ -192,7 +192,7 @@ function callFunAsync(fun, N, j, finishedCallback){
 	}
 }
 
-//REST calls
+//REST calls (SEPIA API)
 
 /* 	SAMPLE POST:
 	genericPostRequest("chat", "createChannel", 
@@ -215,7 +215,7 @@ function callFunAsync(fun, N, j, finishedCallback){
 	);
 */
 
-//generic GET request
+//generic GET request (SEPIA API)
 function genericGetRequest(link, successCallback, errorCallback){
 	//console.log("GET: " + link);
 	showMessage("Loading ...");
@@ -241,7 +241,7 @@ function genericGetRequest(link, successCallback, errorCallback){
 	});
 }
 
-//generic POST request to be used by other test methods
+//generic POST request to be used by other test methods (SEPIA API)
 function genericPostRequest(apiName, apiPath, parameters, successCallback, errorCallback){
 	var apiUrl = getServer(apiName) + apiPath;
 	parameters.KEY = getKey();
@@ -342,4 +342,36 @@ function convertData(data){
 		}
 	}
 	return jsonData;
+}
+
+//REST calls (general HTTP)
+
+function httpRequest(url, successCallback, errorCallback, method, data, headers){
+	showMessage("Loading ...");
+	var config = {
+		url: url,
+		timeout: 10000,
+		type: "GET",
+		success: function(data) {
+			showMessage("Result: success");
+			//console.log(data);
+			if (successCallback) successCallback(data);
+		},
+		error: function(xhr, status, error) {
+			showMessage("Result: error");
+			console.log(xhr);
+			if (errorCallback) errorCallback(xhr, status, error);
+		}
+	};
+	if (method){
+		config.type = method;
+	}
+	if (data){
+		config.data = data;
+	}
+	if (headers){
+		config.headers = headers;
+	}
+	console.log(config.type + ' request to: ' + url);
+	$.ajax(config);
 }
