@@ -167,7 +167,7 @@ h3 {
 	background: #fff;
 }
 
-@media only screen and (max-width: 360px) {
+@media only screen and (max-width: 380px) {
     body {
         margin: 0;
     }

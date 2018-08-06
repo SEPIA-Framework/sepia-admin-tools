@@ -43,6 +43,7 @@
 	<script type="text/javascript" src="js/answer-manager.js" charset="UTF-8"></script>
 	<script type="text/javascript" src="js/server-config.js" charset="UTF-8"></script>
 	<script type="text/javascript" src="js/smart-home-settings.js" charset="UTF-8"></script>
+	<script type="text/javascript" src="js/stt-server-interface.js" charset="UTF-8"></script>
 	<link rel="stylesheet" href="css/shared.css">
 	<link rel="stylesheet" href="css/smart-home.css">
 
@@ -88,6 +89,10 @@
 		if (smartHomeServer){
 			$('#smarthome-server').val(smartHomeServer);
 		}
+		sttServer = sessionStorage.getItem('sttServer');
+		if (sttServer){
+			$('#stt-server').val(sttServer);
+		}
 		//show first page
 		openPage('authentication');
 	});	
@@ -106,6 +111,7 @@
 			<button id="answer-manager-menu-btn" onclick="openPage('answer-manager')"  class="menu_button" >Answers</button>
 			<button id="server-config-menu-btn" onclick="openPage('server-config')"  class="menu_button" >Server Settings</button>
 			<button id="smart-home-settings-menu-btn" onclick="openPage('smart-home-settings')"  class="menu_button" >Smart Home</button>
+			<button id="stt-server-interface-menu-btn" onclick="openPage('stt-server-interface')"  class="menu_button" >STT Server</button>
 			<button id="performances-menu-btn" onclick="openPage('performances')"  class="menu_button" >Performance</button>
 		</div>
 	</div>
@@ -307,6 +313,37 @@
 				<p><b>Devices</b></p>
 				<div id="smarthome-devices-list">
 					Press "GET DEVICES" to load all items.
+				</div>
+				<hr>
+			</div>
+		</div>
+		
+		<!-- SPEECH RECOGNITION SETTINGS -->
+		<div id="stt-server-interface" class="page">
+			<h3>SEPIA STT-Server Interface</h3>
+			<div class="page_content">
+				<p><b>Connect</b></p>
+				<div style="position: relative;">
+					<label>Server: </label><input id="stt-server" type="url" onchange="checkSttServer()" placeholder="e.g.: http://localhost:3080/stt" onkeypress="checkSttServerKeyPress()">
+					<span id="stt-server-indicator" class="input-inline-indicator inactive" title="Red: server not found, Green: connection established"></span>
+				</div>
+				<div style="position: relative;">
+					<label>Access token: </label><input id="stt-access-token" type="text">
+				</div>
+				<hr>
+				<p><b>Actions</b></p>
+				<div><label>Model: </label><input id="stt-model" type="text" placeholder="/app/kaldi/models/kaldi-generic-de-tdnn_sp" value="/app/share/kaldi_models/kaldi-generic-de-tdnn_sp_sepia_v03"></div>
+				<hr>
+				<div class="interface_button_box">
+					<button onclick="setSttModel()" class="interface_button">SET MODEL PATH</button>
+					<button onclick="getSttModel()" class="interface_button">GET MODEL PATH</button>
+				</div>
+				<hr>
+				<div><label>Version tag: </label><input id="stt-model-version" type="text" placeholder="04"></div>
+				<hr>
+				<div class="interface_button_box">
+					<button onclick="sttAdaptLm('en')" class="interface_button">Adapt English LM</button>
+					<button onclick="sttAdaptLm('de')" class="interface_button">Adapt German LM</button>
 				</div>
 				<hr>
 			</div>
