@@ -78,5 +78,5 @@ function sttAdaptLm(langTag){
 		//SUCCESS
 	}, function(err){
 		//ERROR
-	}, "POST", dataBody);
+	}, "POST", dataBody, "", 600000);
 }
