@@ -72,6 +72,11 @@
 		var customServer = sessionStorage.getItem('customServer');
 		if (customServer){
 			$('#server').val(customServer);
+		}else{
+			var serverViaUrl = getURLParameter('server');
+			if (serverViaUrl){
+				$('#server').val(serverViaUrl);
+			}
 		}
 		var server = sessionStorage.getItem('server');
 		if (server){
@@ -88,10 +93,20 @@
 		smartHomeServer = sessionStorage.getItem('smartHomeServer');
 		if (smartHomeServer){
 			$('#smarthome-server').val(smartHomeServer);
+		}else{
+			var serverViaUrl = getURLParameter('smarthome-server');
+			if (serverViaUrl){
+				$('#smarthome-server').val(serverViaUrl);
+			}
 		}
 		sttServer = sessionStorage.getItem('sttServer');
 		if (sttServer){
 			$('#stt-server').val(sttServer);
+		}else{
+			var serverViaUrl = getURLParameter('stt-server');
+			if (serverViaUrl){
+				$('#stt-server').val(serverViaUrl);
+			}
 		}
 		//show first page
 		openPage('authentication');
