@@ -4,6 +4,34 @@
 	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
 	<!-- web app settings -->
 	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=1">
+		
+	<title>S.E.P.I.A. Tools</title>
+	<meta name="application-name" content="S.E.P.I.A. Tools"/>
+	<meta name="apple-mobile-web-app-title" content="S.E.P.I.A. Tools">
+	<meta name="description" content="S.E.P.I.A. Tools help you set-up, configure and manage your assistant and servers.">
+	<meta name="theme-color" content="#000">
+	<link rel="icon" sizes="192x192" href="img/icon-w.png">
+	<link rel="apple-touch-icon" href="img/icon-w.png">
+	
+	<!-- open graph settings -->
+	<meta property="og:title" content="S.E.P.I.A. Tools"/>
+	<meta property="og:determiner" content="the" />
+	<meta property="og:url" content="https://sepia-framework.github.io/tools/"/>
+	<meta property="og:description" content="S.E.P.I.A. Tools help you set-up, configure and manage your assistant and servers.">
+	<meta property="og:image" content="https://sepia-framework.github.io/img/logo-w.png"/>
+	<meta property="og:image:width" content="960"/>
+	<meta property="og:image:height" content="960"/>
+	<meta property="og:image:type" content="image/png"/>
+	<meta property="og:image:alt" content="SEPIA Logo"/>
+	<meta property="og:image" content="https://sepia-framework.github.io/tools/img/icon-w.png"/>
+	<meta property="og:image:width" content="192"/>
+	<meta property="og:image:height" content="192"/>
+	<meta property="og:image:type" content="image/png"/>
+	<meta property="og:image:alt" content="SEPIA Icon"/>
+	<meta property="og:type" content="website"/>
+	<meta property="og:locale" content="en_GB"/>
+	<meta property="og:locale:alternate" content="en_US"/>
+	
 	<!--SCRIPTS / STYLES -->
 	<script type="text/javascript" src="js/jquery-3.1.1.min.js" charset="UTF-8"></script>
 	<script type="text/javascript" src="js/sjcl.js"  charset="UTF-8"></script>
@@ -15,10 +43,9 @@
 	<script type="text/javascript" src="js/answer-manager.js" charset="UTF-8"></script>
 	<script type="text/javascript" src="js/server-config.js" charset="UTF-8"></script>
 	<script type="text/javascript" src="js/smart-home-settings.js" charset="UTF-8"></script>
+	<script type="text/javascript" src="js/stt-server-interface.js" charset="UTF-8"></script>
 	<link rel="stylesheet" href="css/shared.css">
 	<link rel="stylesheet" href="css/smart-home.css">
-	
-	<title>SEPIA Tools</title>
 
 	<style>
 	</style>
@@ -45,6 +72,11 @@
 		var customServer = sessionStorage.getItem('customServer');
 		if (customServer){
 			$('#server').val(customServer);
+		}else{
+			var serverViaUrl = getURLParameter('server');
+			if (serverViaUrl){
+				$('#server').val(serverViaUrl);
+			}
 		}
 		var server = sessionStorage.getItem('server');
 		if (server){
@@ -61,6 +93,20 @@
 		smartHomeServer = sessionStorage.getItem('smartHomeServer');
 		if (smartHomeServer){
 			$('#smarthome-server').val(smartHomeServer);
+		}else{
+			var serverViaUrl = getURLParameter('smarthome-server');
+			if (serverViaUrl){
+				$('#smarthome-server').val(serverViaUrl);
+			}
+		}
+		sttServer = sessionStorage.getItem('sttServer');
+		if (sttServer){
+			$('#stt-server').val(sttServer);
+		}else{
+			var serverViaUrl = getURLParameter('stt-server');
+			if (serverViaUrl){
+				$('#stt-server').val(serverViaUrl);
+			}
 		}
 		//show first page
 		openPage('authentication');
@@ -80,6 +126,7 @@
 			<button id="answer-manager-menu-btn" onclick="openPage('answer-manager')"  class="menu_button" >Answers</button>
 			<button id="server-config-menu-btn" onclick="openPage('server-config')"  class="menu_button" >Server Settings</button>
 			<button id="smart-home-settings-menu-btn" onclick="openPage('smart-home-settings')"  class="menu_button" >Smart Home</button>
+			<button id="stt-server-interface-menu-btn" onclick="openPage('stt-server-interface')"  class="menu_button" >STT Server</button>
 			<button id="performances-menu-btn" onclick="openPage('performances')"  class="menu_button" >Performance</button>
 		</div>
 	</div>
@@ -286,6 +333,37 @@
 			</div>
 		</div>
 		
+		<!-- SPEECH RECOGNITION SETTINGS -->
+		<div id="stt-server-interface" class="page">
+			<h3>SEPIA STT-Server Interface</h3>
+			<div class="page_content">
+				<p><b>Connect</b></p>
+				<div style="position: relative;">
+					<label>Server: </label><input id="stt-server" type="url" onchange="checkSttServer()" placeholder="e.g.: http://localhost:3080/stt" onkeypress="checkSttServerKeyPress()">
+					<span id="stt-server-indicator" class="input-inline-indicator inactive" title="Red: server not found, Green: connection established"></span>
+				</div>
+				<div style="position: relative;">
+					<label>Access token: </label><input id="stt-access-token" type="text">
+				</div>
+				<hr>
+				<p><b>Actions</b></p>
+				<div><label>Model: </label><input id="stt-model" type="text" placeholder="/opt/kaldi/model/kaldi-generic-de-tdnn_sp" value="/apps/share/kaldi_models/kaldi-generic-de-tdnn_sp_sepia_v03"></div>
+				<hr>
+				<div class="interface_button_box">
+					<button onclick="setSttModel()" class="interface_button">SET MODEL PATH</button>
+					<button onclick="getSttModel()" class="interface_button">GET MODEL PATH</button>
+				</div>
+				<hr>
+				<div><label>Version tag: </label><input id="stt-model-version" type="text" placeholder="04"></div>
+				<hr>
+				<div class="interface_button_box">
+					<button onclick="sttAdaptLm('en')" class="interface_button">Adapt English LM</button>
+					<button onclick="sttAdaptLm('de')" class="interface_button">Adapt German LM</button>
+				</div>
+				<hr>
+			</div>
+		</div>
+		
 		<!-- PERFORMANCE TESTING -->
 		<div id="performances" class="page">
 			<h3>Performance Tests</h3>
@@ -300,8 +378,8 @@
 				<div><label>Asy. delay (ms): </label><input id="delay_N" style="width: 50px; min-width: 50px;" value=0></div>
 				<hr>
 				<div class="interface_button_box">
-					<button onclick="testAuthPerformance()" class="interface_button">TEST AUTH. PERFORMANCE</button><br>
-					<button onclick="testAnswerPerformance()" class="interface_button">TEST ANSWER PERFORMANCE</button>
+					<button onclick="testAuthPerformance()" class="interface_button">TEST AUTH.</button><br>
+					<button onclick="testAnswerPerformance()" class="interface_button">TEST ANSWER</button>
 				</div>
 				<hr>
 			</div>
@@ -310,7 +388,7 @@
 	</div>
 	<!-- RESULT VIEW -->
 	<div id="show_result">
-		Welcome to SEPIA-FW developer tools <b>version 1.0.1</b>.<br>
+		Welcome to SEPIA-FW developer tools <b>version 1.1.0</b>.<br>
 		Choose your section please.
 	</div>
 	<div id="footer">

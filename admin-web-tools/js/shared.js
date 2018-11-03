@@ -346,11 +346,12 @@ function convertData(data){
 
 //REST calls (general HTTP)
 
-function httpRequest(url, successCallback, errorCallback, method, data, headers){
+function httpRequest(url, successCallback, errorCallback, method, data, headers, maxwait){
 	showMessage("Loading ...");
+	if (!maxwait) maxwait = 10000;
 	var config = {
 		url: url,
-		timeout: 10000,
+		timeout: maxwait,
 		type: "GET",
 		success: function(data) {
 			showMessage("Result: success");
