@@ -71,11 +71,18 @@
 		}
 		var customServer = sessionStorage.getItem('customServer');
 		if (customServer){
+			//stored server
 			$('#server').val(customServer);
 		}else{
 			var serverViaUrl = getURLParameter('server');
 			if (serverViaUrl){
+				//URL parameter server
 				$('#server').val(serverViaUrl);
+			}else{
+				if (location.host.indexOf(":") > 0){
+					//local server [IP]:[PORT]
+					$('#server').val(location.origin + "/");
+				}
 			}
 		}
 		var server = sessionStorage.getItem('server');
