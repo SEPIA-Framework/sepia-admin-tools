@@ -8,16 +8,22 @@
 
 .smarthome-item {
 	border-radius: 0px;
-	background: #eee;
-    color: #000;
+	background: #17acc3;
+    color: #fff;
 	width: 100%;
     margin: 2px 0px;
 }
 .smarthome-item-title {
-	background: #16ABC3;
-    color: #fff;
+	background: #beff1a;
+    color: #121212;
 	padding: 8px;
 }
 .smarthome-item-body {
 	padding: 8px;
+}
+
+.smarthome-item-body select {
+	background: #212121;
+    color: #eee;
+    border-bottom: 1px solid #eee;
 }

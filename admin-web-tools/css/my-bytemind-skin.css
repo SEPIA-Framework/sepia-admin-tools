@@ -1,0 +1,55 @@
+/* -- main -- */
+
+#bytemind-webapp-header {
+	background: #9e9e9e;
+	color: #fff;
+}
+#bytemind-header-accent {
+	background: #5683c4;
+	background: linear-gradient(to right, #fff 7%, #ccc 33%, #555 66%, #2F3035 93%);
+}
+
+#bytemind-webapp-top-bar {
+	background: #ceff1a;
+	color: #2F3035;
+}
+
+#bytemind-webapp-main {
+	background: #2F3035;
+	color: #fff;
+}
+
+#bytemind-webapp-footer {
+	background: #ceff1a;
+	color: #2F3035;
+}
+
+/* -- popup -- */
+
+#bytemind-popup-message {
+	background-color: #2F3035;
+	color: #fff;
+}
+#bytemind-popup-message button {
+	background: #ceff1a;
+	color: #2F3035;
+}
+.bytemind-notouch-device #bytemind-popup-message button:hover {
+	background-color: #fff;
+	color: #2F3035;
+}
+
+/* -- login -- */
+
+#bytemind-login-box {
+	background-color: #2f3035;
+	color: #fff;
+}
+#bytemind-login-box button {
+	background-color: #ceff1a;
+	color: #2F3035;
+}
+.bytemind-notouch-device #bytemind-login-box button:hover {
+	background-color: #fff;
+	color: #2F3035;
+}

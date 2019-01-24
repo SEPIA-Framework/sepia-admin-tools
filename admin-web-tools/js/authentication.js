@@ -33,12 +33,20 @@ function logoutThis(successCallback, errorCallback){
 	genericPostRequest("assist", "authentication", {"action" : "logout"}, 
 		function(data){
 			showMessage(JSON.stringify(data, null, 2));
-			//TODO: remove session storage and value of password field
+			//remove session storage and value of password field
 			$('#pwd').val("");
 			sessionStorage.setItem('pwd', "");
+			//remove ByteMind login data
+			if (window.ByteMind) ByteMind.data.del('account');
+
 			if (successCallback) successCallback(data);
 		}, function(data){
 			showMessage(JSON.stringify(data, null, 2));
+			//remove session and ByteMind login data anyway
+			$('#pwd').val("");
+			sessionStorage.setItem('pwd', "");
+			if (window.ByteMind) ByteMind.data.del('account');
+
 			if (errorCallback) errorCallback(data);
 		}
 	);

@@ -1,0 +1,46 @@
+#page-code-ui {
+	flex: 1 1 auto;
+	background: #121212;
+	color: #eee;
+	width: 100%;
+	padding: 16px;
+	display: flex;
+	justify-content: center;
+}
+
+#page-code-ui .group {
+	display: inline-block;
+}
+#page-code-ui .block {
+	margin-bottom: 8px;
+}
+
+#code-ui-auth {
+	display:flex;
+	flex-wrap: wrap;
+}
+#code-ui-auth input {
+	margin: 5px 8px;
+}
+
+#code-ui-upload-service-box  {
+	margin: 0px;
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+}
+#code-ui-code-box-container {
+	border: 1px solid #999;
+	flex: 1 1 auto;
+	overflow: hidden;
+}
+#code-ui-code-box {
+	width: 80%;
+	height: 100%;
+	/*min-height: 100px;
+	overflow: auto;
+	margin: 8px;
+	padding: 8px;
+	text-align: left;
+	white-space: nowrap;*/
+}
