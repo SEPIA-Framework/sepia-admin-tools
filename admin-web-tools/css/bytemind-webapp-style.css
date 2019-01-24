@@ -10,11 +10,22 @@
 	flex-direction: column;
 }
 #bytemind-webapp-window a {
-	color: inherit;
-	text-decoration: none;
+	color: #beff1a;
+	/* text-decoration: none; */
+}
+#bytemind-webapp-window a:visited {
+	color: #beff1a;
+	/* text-decoration: none; */
 }
 #bytemind-webapp-window a:hover {
 	/*text-decoration: underline;*/
+}
+#my-bytemind-side-menu a,
+#my-bytemind-side-menu a:visited,
+#my-bytemind-side-menu a:visited {
+	color: #fff;
+	text-decoration: none;
+	border-bottom-color: #beff1a;
 }
 
 #bytemind-webapp-header {

@@ -69,21 +69,37 @@
 				<input id="code-ui-key" type='password' form='code-ui-upload-form' name='KEY' placeholder="Key">
 				<input id="code-ui-client" type='text' form='code-ui-upload-form' name='client' placeholder="Client ID">
 			</div>
-			<form id='code-ui-upload-form' action='/upload-service' method='post' enctype='multipart/form-data' target='_blank' onsubmit="codeUiBuildSubmitURL()">
-				<div class="block">
-					<button class='interface_button' type='submit'>UPLOAD SERVICE</button>
-					<input type='file' name='upload_file' accept='.java,.sservice,.yaml'>
+			<div id="code-ui-controls" class="block">
+				<div class="group"><label>Extension Type: </label><select id="code-ui-extension-type" onchange="codeUiExtensionTypeChange()">
+					<option value="" selected disabled>Choose please</option>
+					<option value="smart-service">Smart-Service</option>
+					<option value="mesh-plugin">Mesh-Plugin</option>
+				</select></div>
+				<div class="group"><label>Extension: </label><select id="code-ui-extension-name" onchange="codeUiUpdateExtension()">
+					<option value="" selected disabled>Load please</option>
+					<!-- dynamically generated -->
+				</select></div>
+				<div class="group">
+					<button class='interface_button' onclick="loadSmartServicesListFromServer()">Load repository</button>
+					<label id="code-ui-file-label" class="fileContainer" onchange="codeUiOpenSourceFile(event)">
+						Load file<input id="code-ui-file-input" type='file' accept='.java,.sservice,.yaml'>
+					</label>
 				</div>
-			</form>
-			<div><p>Source code editor:</p></div>
-			<div class="block">
-				<span class="group"><label>Class name: <input type='text' form='code-ui-upload-form' name='upload_code_class_name' spellcheck="false"></label></span>
+				<div class="group">
+					<button id="code-ui-upload-btn" class='interface_button' form='code-ui-upload-form' type='submit' style="display:none;">UPLOAD</button>
+					<!--<input type='file' form='code-ui-upload-form' name='upload_file' accept='.java,.sservice,.yaml'>-->
+				</div>
 			</div>
+			<form id='code-ui-upload-form' action='/upload-service' method='post' enctype='multipart/form-data' target='_blank' onsubmit="codeUiBuildSubmitURL()"></form>
+			<h3>Source Code Editor</h3>
+			<div class="group"><label>Class name (simple):
+					<input id="code-ui-source-class-name" type='text' form='code-ui-upload-form' name='upload_code_class_name' spellcheck="false">
+			</label></div>
 			<div id="code-ui-code-box-container">
 				<textarea id='code-ui-code-box' form='code-ui-upload-form' name='upload_code'></textarea>
 			</div>
 		</div>
-		<textarea id="code-ui-source-code" style="display:none;">package net.b07z.sepia.sdk.services.uid1007;</textarea>
+		<textarea id="code-ui-source-code" style="display:none;">package my.awesome.extensions.source;</textarea>
 	</div>
 	<div id="footer"><a href="https://github.com/SEPIA-Framework/sepia-sdk-java" target=_blank>SEPIA-SDK at GitHub</a></div>
 </div>

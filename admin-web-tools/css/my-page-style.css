@@ -303,3 +303,10 @@ input[type="button"] {
 #stt-server-indicator {
 	right: 4px;
 }
+
+/*------ HELP ------*/
+
+#help div.group {
+	justify-content: center;
+	text-align: center;
+}

@@ -115,12 +115,12 @@ function buildPages(sideMenuEle){
 		description : "Test the SEPIA server performance."
 	}, sideMenuEle);
 
-	//Imprint
-	ByteMind.page.registerSectionWithNavButton("Credits", {
-		sectionName : "credits",
-		viewId : "credits",
+	//Help & Credits
+	ByteMind.page.registerSectionWithNavButton("Help & Credits", {
+		sectionName : "help",
+		viewId : "help",
 		title : HOME_TITLE,
-		headerTitle : "Credits",
+		headerTitle : "Help & Credits",
 		description : HOME_DESC,
 	}, sideMenuEle);
 	

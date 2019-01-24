@@ -1,10 +1,12 @@
-var javaEditor;
+var codeEditor;
+var extensionType;
+var extensionDataArray = {};
 
 //Setup CodeMirror
 function codeUiOnReady(){
 	//Initialize editor
 	var codeContainer = document.getElementById('code-ui-code-box-container');
-	javaEditor = CodeMirror.fromTextArea(document.getElementById("code-ui-code-box"), {
+	codeEditor = CodeMirror.fromTextArea(document.getElementById("code-ui-code-box"), {
 		lineNumbers: true,
 		matchBrackets: true,
 		mode: "text/x-java",
@@ -12,12 +14,12 @@ function codeUiOnReady(){
 		dragDrop: true,
 		allowDropFileTypes: ["text/x-java"]
 	});
-	javaEditor.setSize(codeContainer.offsetWidth, codeContainer.offsetHeight);
-	javaEditor.setValue(document.getElementById('code-ui-source-code').value || document.getElementById('source-code').value);
+	codeEditor.setSize(codeContainer.offsetWidth, codeContainer.offsetHeight);
+	codeEditor.setValue(document.getElementById('code-ui-source-code').value || document.getElementById('source-code').value);
 	
 	//Auto-resize editor
 	window.addEventListener('resize', function(){
-		javaEditor.setSize(codeContainer.offsetWidth, codeContainer.offsetHeight);
+		codeEditor.setSize(codeContainer.offsetWidth, codeContainer.offsetHeight);
 	});
 
 	//Fill id/pwd/server form
@@ -27,10 +29,29 @@ function codeUiOnReady(){
 //Get submit URL
 function codeUiBuildSubmitURL(){
 	codeUiUpdateFormData();
-	var server = document.getElementById("server").value;
+	var server;
+	var serverType = "";
+	var endpoint = "";
+	if (extensionType == "smart-service"){
+		serverType = 'assist';
+		endpoint = 'upload-service';
+	}else{
+		serverType = 'mesh-node';
+		endpoint = 'upload-plugin';
+	}
+	if ('getServer' in window){
+		if (extensionType){
+			server = getServer(serverType);
+		}else{
+			server = "/"; 	//this can not happen in normal flow
+			uploadform.action = "";
+		}
+	}else{
+		server = document.getElementById("server").value;
+	}
 	var uploadform = document.getElementById('code-ui-upload-form');
-	uploadform.action = server + 'upload-service' ;
-	javaEditor.save();
+	uploadform.action = (server + endpoint);
+	codeEditor.save();
 }
 
 //Fill id/pwd/server form (from shared.js)
@@ -46,5 +67,60 @@ function codeUiUpdateFormData(){
 	}else{
 		$("#code-ui-key").prop("disabled", true);
 		$("#code-ui-key").hide();
+	}
+}
+
+function loadSmartServicesListFromServer(){
+	var link = "https://raw.githubusercontent.com/SEPIA-Framework/sepia-extensions/dev/smart-services/smart-services.json";
+	genericGetRequest(link, function(data){
+		showMessage(JSON.stringify(data, null, 2));
+	}, function(data){
+		showMessage(JSON.stringify(data, null, 2));
+	});
+}
+
+function codeUiExtensionTypeChange(){
+	extensionType = $('#code-ui-extension-type').val();
+	$('#code-ui-upload-btn').fadeIn(300);
+	console.log("Extension typ is: " + extensionType);
+}
+
+function codeUiUpdateExtension(){
+	//ClassName
+	var name = $('#code-ui-extension-name').val();
+	//Code
+	if (extensionDataArray && Object.keys(extensionDataArray).length > 0){
+		codeEditor.setValue(extensionDataArray[name].code || "");
+	}
+	$('#code-ui-source-class-name').val(name);
+	console.log("Extension loaded: " + name);
+}
+
+function codeUiBuildExtensionNameOptions(dataArray){
+	var html = '';
+	$.each(dataArray, function(i, opt){
+		html += ('<option value="' + opt.name + '">' + opt.name + '</option>');
+	});
+	$('#code-ui-extension-name').html(html);
+}
+
+function codeUiOpenSourceFile(event){
+	if (event && event.target){
+		var input = event.target;
+		var reader = new FileReader();
+		var fileName = document.getElementById('code-ui-file-input').files[0].name;
+		reader.onload = function(){
+			extensionDataArray = {};
+			var name = fileName.replace(/\..*?$/, "").trim();
+			extensionDataArray[name] = {
+				"name" : name,
+				"code" : reader.result,
+				"url" : ""
+			};
+			codeUiBuildExtensionNameOptions(extensionDataArray);
+			codeUiUpdateExtension();
+			console.log(reader.result.substring(0, 200));
+		};
+		reader.readAsText(input.files[0]);
 	}
 }
