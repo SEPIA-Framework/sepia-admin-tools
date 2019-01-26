@@ -67,18 +67,32 @@ function logoutAll(successCallback, errorCallback){
 }
 
 //check server status
-function serverStatus(){
-	//POST
-	genericFormPostRequest("", "hello", {}, function(data){
-		showMessage(data.reply, true);
-	}, function(data){
-		showMessage(JSON.stringify(data, null, 2));
-	});
+function serverStatus(apiName){
+	if (apiName && apiName.indexOf('mesh') >= 0){
+		//POST
+		httpRequest(getServer(apiName) + "server-stats", function(data){
+			//showMessage(JSON.stringify(data, null, 2));
+			showMessage("Success.<br><br>" + data.stats, true);
+		}, function(data){
+			showMessage(JSON.stringify(data, null, 2));
+		}, "POST", JSON.stringify({
+			"pin" : $('#mesh-node-pin').val()
+		}), {
+			"content-type": "application/json"
+		}, 8000);
+	}else{
+		//FORM POST - TODO: this inconsistency should be resolved at some point
+		genericFormPostRequest(apiName, "hello", {}, function(data){
+			showMessage(data.reply, true);
+		}, function(data){
+			showMessage(JSON.stringify(data, null, 2));
+		});
+	}
 }
 
 //validate server
-function serverValidation(){
-	var link = getServer() + "validate?challenge=" + encodeURIComponent('myTest');
+function serverValidation(apiName){
+	var link = getServer(apiName) + "validate?challenge=" + encodeURIComponent('myTest');
 	genericGetRequest(link, function(data){
 		showMessage(JSON.stringify(data, null, 2));
 		//TODO: compare to expected signature

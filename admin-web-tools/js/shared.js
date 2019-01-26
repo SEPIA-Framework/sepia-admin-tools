@@ -23,6 +23,7 @@ function login(successCallback){
 		//environment = login.environment;
 		//is_html_app = login.is_html_app;
 
+		//note: not used but I'll just leave it active
 		$('#login-info-box-id').html(user_name + " (" + userid + ")");
 		$('#login-info-box-host').html(login.url);
 		$('#login-info-box-client').html(client_info);
@@ -83,11 +84,17 @@ function exit(){
 
 function showMessage(msg, skipCodeEscape){
 	if (!skipCodeEscape) msg = escapeHtml(msg);
-	document.getElementById('show_result').innerHTML = 
-		"<div style='display:inline-block; white-space: pre; text-align: left;'>"
-			+ msg +
-		"</div>";
-	$('#result-container').show();
+	var showEle = document.getElementById('show_result');
+	if (showEle){
+		showEle.innerHTML = 
+			"<div style='display:inline-block; white-space: pre; text-align: left;'>"
+				+ msg +
+			"</div>";
+		$('#result-container').show();
+	}
+}
+function closeMessage(){
+	$('#result-container').hide();
 }
 
 function getClient(){
@@ -132,17 +139,73 @@ function updatePasswordSecurityWarning(_pwd){
 		$('#pwd-security-indicator').addClass('secure');
 	}
 }
-function getServer(apiName){
-	var url = "";
+
+function onChangeMainServer(){
 	var custom = $('#server').val();
 	if (custom){
 		sessionStorage.setItem('customServer', custom);
-		url = custom;
 	}else{
 		sessionStorage.setItem('customServer', "");
+		/* select button is inactive
 		sessionStorage.setItem('server', server_select.value);
 		url = server_select.options[server_select.selectedIndex].value;
+		*/
 	}
+	updateHostServer(custom);
+}
+function onChangeAssistServer(){
+	var server = $('#assist-server').val();
+	if (server){
+		sessionStorage.setItem('assistServer', server);
+	}else{
+		sessionStorage.setItem('assistServer', "");
+	}
+}
+function onChangeTeachServer(){
+	var server = $('#teach-server').val();
+	if (server){
+		sessionStorage.setItem('teachServer', server);
+	}else{
+		sessionStorage.setItem('teachServer', "");
+	}
+}
+function onChangeChatServer(){
+	var server = $('#chat-server').val();
+	if (server){
+		sessionStorage.setItem('chatServer', server);
+	}else{
+		sessionStorage.setItem('chatServer', "");
+	}
+}
+function onChangeMeshNodeServer(){
+	var server = $('#mesh-node-server').val();
+	if (server){
+		sessionStorage.setItem('meshNodeServer', server);
+	}else{
+		sessionStorage.setItem('meshNodeServer', "");
+	}
+}
+function searchLocalServers(){
+	alert('UNDER CONSTRUCTION');
+}
+function getServer(apiName){
+	var url = "";
+	if (apiName){
+		if (apiName == "assist"){
+			url = $('#assist-server').val() || $('#assist-server').attr('placeholder');
+		}else if (apiName == "teach"){
+			url = $('#teach-server').val() || $('#teach-server').attr('placeholder');
+		}else if (apiName == "chat"){
+			url = $('#chat-server').val() || $('#chat-server').attr('placeholder');
+		}else if (apiName == "mesh-node"){
+			url = $('#mesh-node-server').val() || $('#mesh-node-server').attr('placeholder');		
+		}else{
+			url = $('#server').val() || $('#server').attr('placeholder');
+		}
+	}else{
+		url = $('#server').val() || $('#server').attr('placeholder');
+	}
+	//core server apis
 	if (!endsWith(url, "/")){
 		url += "/";
 	}
@@ -157,6 +220,7 @@ function getServer(apiName){
 	}
 	return url;
 }
+
 function endsWith(str, suffix) {
     return str.indexOf(suffix, str.length - suffix.length) !== -1;
 }
@@ -279,6 +343,7 @@ function genericGetRequest(link, successCallback, errorCallback){
 		//dataType: "jsonp",
 		success: function(data) {
 			//console.log(data);
+			closeMessage();
 			var jsonData = convertData(data);
 			if (jsonData.result && jsonData.result === "fail"){
 				if (errorCallback) errorCallback(jsonData);
@@ -288,6 +353,7 @@ function genericGetRequest(link, successCallback, errorCallback){
 		},
 		error: function(data) {
 			console.log(data);
+			showMessage("ERROR in HTTP GET request.");
 			var jsonData = convertData(data);
 			if (errorCallback) errorCallback(jsonData);
 		}
@@ -316,10 +382,12 @@ function genericPostRequest(apiName, apiPath, parameters, successCallback, error
 		},
 		success: function(data) {
 			//console.log(data);
+			closeMessage();
 			postSuccess(data, successCallback, errorCallback);
 		},
 		error: function(data) {
 			console.log(data);
+			showMessage("ERROR in HTTP POST request.");
 			postError(data, errorCallback);
 		}
 	});
@@ -342,10 +410,12 @@ function genericFormPostRequest(apiName, apiPath, parameters, successCallback, e
 		},
 		success: function(data) {
 			//console.log(data);
+			closeMessage();
 			postSuccess(data, successCallback, errorCallback);
 		},
 		error: function(data) {
 			console.log(data);
+			showMessage("ERROR in HTTP FORM POST request.");
 			postError(data, errorCallback);
 		}
 	});

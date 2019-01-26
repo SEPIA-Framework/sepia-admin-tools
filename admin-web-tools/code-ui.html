@@ -44,6 +44,7 @@
 	<script type="text/javascript" src="lib/sjcl.js"  charset="UTF-8"></script>
 	<script type="text/javascript" src="js/shared.js" charset="UTF-8"></script>
 	<script type="text/javascript" src="js/authentication.js" charset="UTF-8"></script>
+	<link rel="stylesheet" href="lib/googleMaterialIcons.css">
 	<!-- PAGE CODE -->
 	<link rel="stylesheet" href="css/code-ui-standalone.css">
 	<link rel="stylesheet" href="css/code-ui.css">
@@ -64,23 +65,27 @@
 		<div id='code-ui-upload-service-box'>
 			<div id="code-ui-auth" class="block" style="display:none;">
 				<input id='code-ui-server' type='text' spellcheck="false" value="http://localhost:20721/" placeholder="http://localhost:20721/">
-				<input id="code-ui-id" type='text' form='code-ui-upload-form' name='GUUID' spellcheck="false" placeholder="User-ID">
+				<input id="code-ui-id" type='text' form='code-ui-upload-form' name='GUUID' spellcheck="false" placeholder="User-ID" required>
 				<input id="code-ui-pwd" type='password' form='code-ui-upload-form' name='PWD' placeholder="Password">
 				<input id="code-ui-key" type='password' form='code-ui-upload-form' name='KEY' placeholder="Key">
-				<input id="code-ui-client" type='text' form='code-ui-upload-form' name='client' placeholder="Client ID">
+				<input id="code-ui-client" type='text' form='code-ui-upload-form' name='client' placeholder="Client ID" required>
 			</div>
-			<div id="code-ui-controls" class="block">
-				<div class="group"><label>Extension Type: </label><select id="code-ui-extension-type" onchange="codeUiExtensionTypeChange()">
-					<option value="" selected disabled>Choose please</option>
-					<option value="smart-service">Smart-Service</option>
-					<option value="mesh-plugin">Mesh-Plugin</option>
-				</select></div>
-				<div class="group"><label>Extension: </label><select id="code-ui-extension-name" onchange="codeUiUpdateExtension()">
-					<option value="" selected disabled>Load please</option>
-					<!-- dynamically generated -->
-				</select></div>
+			<div id="code-ui-controls" class="block hide-on-full-screen">
 				<div class="group">
-					<button class='interface_button' onclick="loadSmartServicesListFromServer()">Load repository</button>
+					<label>Extension Type:</label><select id="code-ui-extension-type" onchange="codeUiExtensionTypeChange()">
+						<option value="" selected disabled>Select</option>
+						<option value="smart-service">Smart-Service</option>
+						<option value="mesh-plugin">Mesh-Plugin</option>
+					</select>
+				</div>
+				<div class="group">
+					<label>Extensions:</label><select id="code-ui-extension-name" onchange="codeUiUpdateExtension()">
+						<option value="" selected disabled>Load please</option>
+						<!-- dynamically generated -->
+					</select>
+				</div>
+				<div class="group">
+					<button id="code-ui-load-repo-btn" class='interface_button' onclick="codeUiLoadExtensionConfigFromServer()" style="display:none;">Online repository</button>
 					<label id="code-ui-file-label" class="fileContainer" onchange="codeUiOpenSourceFile(event)">
 						Load file<input id="code-ui-file-input" type='file' accept='.java,.sservice,.yaml'>
 					</label>
@@ -90,10 +95,10 @@
 					<!--<input type='file' form='code-ui-upload-form' name='upload_file' accept='.java,.sservice,.yaml'>-->
 				</div>
 			</div>
-			<form id='code-ui-upload-form' action='/upload-service' method='post' enctype='multipart/form-data' target='_blank' onsubmit="codeUiBuildSubmitURL()"></form>
-			<h3>Source Code Editor</h3>
-			<div class="group"><label>Class name (simple):
-					<input id="code-ui-source-class-name" type='text' form='code-ui-upload-form' name='upload_code_class_name' spellcheck="false">
+			<form id='code-ui-upload-form' action='/upload-service' method='post' enctype='multipart/form-data' target='_blank' onsubmit="return codeUiBuildSubmitURL()"></form>
+			<h3 class="hide-on-full-screen">Source Code Editor</h3>
+			<div class="group"><label>Name (public class ...):
+					<input id="code-ui-source-class-name" type='text' form='code-ui-upload-form' name='upload_code_class_name' spellcheck="false" onchange="codeUiUpdatedClassName()" required>
 			</label></div>
 			<div id="code-ui-code-box-container">
 				<textarea id='code-ui-code-box' form='code-ui-upload-form' name='upload_code'></textarea>
@@ -131,128 +136,5 @@
 		codeUiOnReady();
 	});
 </script>
-<textarea id="source-code" style="display:none;">package net.b07z.sepia.sdk.services.uid1007;
-
-import java.util.TreeSet;
-
-import org.json.simple.JSONObject;
-
-import net.b07z.sepia.server.assist.data.Card;
-import net.b07z.sepia.server.assist.data.Card.ElementType;
-import net.b07z.sepia.server.assist.interpreters.NluResult;
-import net.b07z.sepia.server.assist.services.ServiceBuilder;
-import net.b07z.sepia.server.assist.services.ServiceInfo;
-import net.b07z.sepia.server.assist.services.ServiceInterface;
-import net.b07z.sepia.server.assist.services.ServiceResult;
-import net.b07z.sepia.server.assist.services.ServiceInfo.Content;
-import net.b07z.sepia.server.assist.services.ServiceInfo.Type;
-import net.b07z.sepia.server.core.assistant.ACTIONS;
-import net.b07z.sepia.server.core.data.Language;
-import net.b07z.sepia.server.core.tools.JSON;
-import net.b07z.sepia.server.core.tools.Sdk;
-
-/**
- * "Hello World" custom service that just returns a "Hello" answer, 
- * a demo button that links to the SDK and a demo card that links to SEPIA website.
- * 
- * @author Florian Quirin
- *
- */
-public class HelloWorld implements ServiceInterface{
-	
-	//Command name
-	private static final String CMD_NAME = "hello_world";				//Name tag of your service (will be combined with userId to be unique)
-	//Answers used:
-	private static final String successAnswer = "chat_hello_0a"; 		//successful answer
-	private static final String okAnswer = "default_not_possible_0a";	//service ran properly but can't generate desired result (e.g. a search term was not found)
-	private static final String failAnswer = "error_0a";				//fallback if service or some part of it crashed
-	
-	//Define some sentences for testing:
-	
-	@Override
-	public TreeSet<String> getSampleSentences(String lang){
-		TreeSet<String> samples = new TreeSet<>();
-		//GERMAN
-		if (lang.equals(Language.DE.toValue())){
-			samples.add("Hallo Welt!");
-			
-		//OTHER
-		}else{
-			samples.add("Hello world!");
-		}
-		return samples;
-	}
-	
-	//Basic service setup:
-
-	@Override
-	public ServiceInfo getInfo(String language) {
-		//Type of service (for descriptions, choose what you think fits best)
-		ServiceInfo info = new ServiceInfo(Type.plain, Content.data, false);
-		
-		//Should be available publicly or only for the developer? Set this when you are done with testing and want to release
-		//info.makePublic();
-		
-		//Command
-		info.setIntendedCommand(Sdk.getMyCommandName(this, CMD_NAME));
-		
-		//Direct-match trigger sentences in different languages:
-		String DE = Language.DE.toValue();
-		info.addCustomTriggerSentence("Hallo Welt!", DE)
-			.addCustomTriggerSentence("Hello world!", DE)
-			.addCustomTriggerSentence("Teste meinen hallo Welt service.", DE);
-		String EN = Language.EN.toValue();
-		info.addCustomTriggerSentence("Hello world!", EN)
-			.addCustomTriggerSentence("Test my hello world service.", EN);
-		
-		//Parameters:
-		//This service has no parameters
-		
-		//Answers (these are the default answers, you can trigger a custom answer at any point in the module with api.setCustomAnswer(..)):
-		info.addSuccessAnswer(successAnswer)
-			.addFailAnswer(failAnswer)
-			.addOkayAnswer(okAnswer);
-		
-		return info;
-	}
-	
-	@Override
-	public ServiceResult getResult(NluResult nluResult) {
-		//initialize result
-		ServiceBuilder api = new ServiceBuilder(nluResult, getInfo(nluResult.language));
-		
-		//get required parameters
-		//NONE
-		//get optional parameters
-		//NONE
-		
-		//This service basically cannot fail ... ;-)
-		
-		//Just for demo purposes we add a button-action with a link to the SDK
-		api.addAction(ACTIONS.BUTTON_IN_APP_BROWSER);
-		api.putActionInfo("url", "https://github.com/SEPIA-Framework/sepia-sdk-java");
-		api.putActionInfo("title", "SDK info");
-		
-		//... and we also add a demo card
-		Card card = new Card(Card.TYPE_SINGLE);
-		JSONObject linkCard = card.addElement(
-				ElementType.link, 
-				JSON.make("title", "S.E.P.I.A." + ":", "desc", "Hello World!"),
-				null, null, "", 
-				"https://sepia-framework.github.io/", 
-				"https://sepia-framework.github.io/img/icon.png", 
-				null, null
-		);
-		JSON.put(linkCard, "imageBackground", "#000");	//more options like CSS background
-		api.addCard(card.getJSON());
-		
-		//all good
-		api.setStatusSuccess();
-		
-		//build the API_Result
-		ServiceResult result = api.buildResult();
-		return result;
-	}
-}</textarea>
 </body>
 </html>

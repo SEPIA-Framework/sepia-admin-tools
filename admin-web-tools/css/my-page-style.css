@@ -124,7 +124,8 @@ input[type="button"] {
 
 .bytemind-view h1, 
 .bytemind-view h2, 
-.bytemind-view h3 {
+.bytemind-view h3,
+.bytemind-view h4 {
 	font-weight: normal;
 	text-align: center;
 }
@@ -132,6 +133,7 @@ input[type="button"] {
 .bytemind-view section.group {
 	margin: 0 0 32px 0;
 	/*min-width: 36%;*/
+	max-width: 100%;
 }
 .bytemind-view div.group {
 	display: flex;
@@ -160,13 +162,13 @@ input[type="button"] {
 	border: 0;
 	background: #121212;
 	color: #eee;
-	border-bottom: 1px solid #999;
+	border-bottom: 1px solid #aaa;
     padding: 4px 6px;
     margin: 8px 0px;
 }
 /* .bytemind-view input:not([type="submit"]):not([type="checkbox"]):not([type="button"]), */
 
-.bytemind-view .input-inline-indicator {
+#bytemind-webapp-main .input-inline-indicator {
     display: inline-block;
     position: absolute;
     top: 4px;
@@ -177,10 +179,10 @@ input[type="button"] {
     margin: 0 4px;
 	background: #f00;
 }
-.bytemind-view .input-inline-indicator.secure {
+#bytemind-webapp-main .input-inline-indicator.secure {
 	background: #0f0;
 }
-.bytemind-view .input-inline-indicator.inactive {
+#bytemind-webapp-main .input-inline-indicator.inactive {
 	background: #fff;
 }
 
@@ -188,7 +190,7 @@ input[type="button"] {
 	position: absolute;
     right: 0px;
     bottom: 0px;
-    z-index: 6;
+    z-index: 10;
     height: 320px;
 	width: 640px;
 	max-width: 100%;
@@ -237,6 +239,28 @@ input[type="button"] {
     margin: 4px;
     text-align: right;
 }
+#login-info-box-buttons {
+	display: flex;
+	flex-wrap: wrap;
+	flex-direction: column;
+}
+#login-info-box button {
+	background-color: #333;
+    color: #beff1a;
+}
+#login-info-box input {
+	background: transparent;
+	color: #eee;
+	border: 0;
+	border-bottom: 1px solid #aaa;
+    padding: 4px 6px;
+    margin: 8px 0px;
+}
+#login-info-box label {
+	display: inline-block;
+    min-width: 90px;
+	text-align: left;
+}
 
 /*------ HOME ------*/
 
@@ -253,6 +277,48 @@ input[type="button"] {
 }
 #home-logo {
 	height: 50%;
+}
+
+/*------ SERVER CONNECTIONS ------*/
+
+#server-cards {
+	flex: 0 0 auto;
+	width: 100%;
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+}
+#server-cards h4 {
+	margin: 8px 0;
+}
+.server-card {
+	flex: 0 0 auto;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	align-items: center;
+	background: #181818;
+	margin: 8px;
+	padding: 16px;
+	max-width: 290px;
+}
+.server-card input {
+	background: transparent !important;
+    text-align: center;
+	min-width: 240px !important;
+	margin: 8px !important;
+}
+.server-card-buttons {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+    width: 100%;
+    justify-content: space-evenly;
+}
+.server-card-buttons button {
+	flex: 1 0 auto;
+	background: #333;
+    color: #beff1a;
 }
 
 /*------ USER MANAGEMENT -------*/
@@ -302,6 +368,10 @@ input[type="button"] {
 
 #stt-server-indicator {
 	right: 4px;
+}
+#stt-model {
+	width: 320px;
+    max-width: 100%;
 }
 
 /*------ HELP ------*/

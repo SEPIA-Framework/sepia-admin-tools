@@ -235,10 +235,10 @@ function beforeLoginRestore(){
 		updateHostServer(customHost);
 	}
 
-	var server = sessionStorage.getItem('server');
+	/* var server = sessionStorage.getItem('server');
 	if (server){
 		server_select.value = server;
-	}
+	} */
 	var customClient = sessionStorage.getItem('customClient');
 	if (customClient){
 		$('#custom-client').val(customClient);
@@ -248,10 +248,9 @@ function beforeLoginRestore(){
 	window.addEventListener("bm-account-new-api-url", function(e){ 
 		var host = e.detail.url;
 		if (host){
-			console.log(host);
 			ByteMind.data.set('account-api-url', host);
-			$('#server').val(customHost);
-			sessionStorage.setItem('customServer', customHost); 	//do it?
+			$('#server').val(host);
+			sessionStorage.setItem('customServer', host); 	//do it?
 			updateHostServer(host);
 		}
 	});
@@ -293,6 +292,23 @@ function onStart(){
 
 	//--- session variables ---
 
+	var assistServer = sessionStorage.getItem('assistServer');
+	if (assistServer){
+		$('#assist-server').val(assistServer);
+	}
+	var teachServer = sessionStorage.getItem('teachServer');
+	if (teachServer){
+		$('#teach-server').val(teachServer);
+	}
+	var chatServer = sessionStorage.getItem('chatServer');
+	if (chatServer){
+		$('#chat-server').val(chatServer);
+	}
+	var meshNodeServer = sessionStorage.getItem('meshNodeServer');
+	if (meshNodeServer){
+		$('#mesh-node-server').val(meshNodeServer);
+	}
+
 	smartHomeSystem = sessionStorage.getItem('smartHomeSystem');
 	if (smartHomeSystem){
 		$('#smarthome_system_select').val(smartHomeSystem);
@@ -306,6 +322,7 @@ function onStart(){
 			$('#smarthome-server').val(serverViaUrl);
 		}
 	}
+
 	sttServer = sessionStorage.getItem('sttServer');
 	if (sttServer){
 		$('#stt-server').val(sttServer);
@@ -341,11 +358,21 @@ function updateHostServer(customHost){
 		ByteMind.webservice.apiURL = customHost;
 	//Direct links
 	}else{
-		ByteMind.account.apiURL = customHost.replace(/\/sepia.*/, "/sepia").trim();
-		ByteMind.webservice.apiURL = customHost.replace(/\/sepia.*/, "/sepia").trim();
+		ByteMind.account.apiURL = customHost.replace(/\/sepia\/.*/, "/sepia").trim();
+		ByteMind.webservice.apiURL = customHost.replace(/\/sepia\/.*/, "/sepia").trim();
 	}
 	$('#server').val(customHost);
 	$('#bytemind-login-host-name').val(ByteMind.account.apiURL);
+	//Update all connections
+	if (endsWith(ByteMind.account.apiURL, "/sepia")){
+		$('#assist-server').attr('placeholder', ByteMind.account.apiURL + "/assist");
+		$('#teach-server').attr('placeholder', ByteMind.account.apiURL + "/teach");
+		$('#chat-server').attr('placeholder', ByteMind.account.apiURL + "/chat");
+	}else if (endsWith(ByteMind.account.apiURL, ":20721")){
+		$('#assist-server').attr('placeholder', ByteMind.account.apiURL);
+		$('#teach-server').attr('placeholder', ByteMind.account.apiURL.replace(/\d+$/,"20722"));
+		$('#chat-server').attr('placeholder', ByteMind.account.apiURL.replace(/\d+$/,"20723"));
+	}
 }
 
 function resultBoxHide(){
