@@ -40,6 +40,10 @@ function codeUiBuildSubmitURL(){
 	var serverType = "";
 	var endpoint = "";
 	if (extensionType == "smart-service"){
+		if (!$('#code-ui-id').val()){
+			alert("You need to be logged in to upload a service!");
+			return false;
+		}
 		serverType = 'assist';
 		endpoint = 'upload-service';
 	}else{

@@ -56,8 +56,8 @@
 		</div>
 		<!-- host selector -->
 		<div id="bytemind-host-name-box" class="bm-extendable" style="display:none;">
-			<label>Hostname:</label>
-			<input id="bytemind-login-host-name" type="url" placeholder="my.example.org/sepia" aria-label="Hostname">
+			<label>Authentication Server:</label>
+			<input id="bytemind-login-host-name" type="url" placeholder="http://localhost:20721" aria-label="Hostname">
 		</div>
 		<!-- status and links -->
 		<p id="bytemind-login-status"></p>
@@ -144,10 +144,10 @@
 					<h3>Connections</h3>
 					<section id="server-cards" class="group">
 						<div class="server-card">
-							<h4>Main Host</h4>
+							<h4>Authentication Server</h4>
 							<input id="server" type="url" placeholder="http://localhost:20721/" spellcheck="false" onchange="onChangeMainServer()">
 							<div class="server-card-buttons">
-								<button class="interface_button" onclick="onChangeMainServer()">SET NEW HOST</button>
+								<button class="interface_button" onclick="onChangeMainServer()">SET NEW SERVER</button>
 								<button class="interface_button" onclick="searchLocalServers()">SEARCH LOCAL SERVERS</button>
 							</div>
 						</div>

@@ -232,6 +232,8 @@ function beforeLoginRestore(){
 	//choose:	
 	var customHost = customServer || serverViaUrl || storedAccountUrl || locationHost;
 	if (customHost){
+		//fix some potential input errors
+		customHost = handleCommonHosts(customHost);
 		updateHostServer(customHost);
 	}
 
@@ -248,6 +250,7 @@ function beforeLoginRestore(){
 	window.addEventListener("bm-account-new-api-url", function(e){ 
 		var host = e.detail.url;
 		if (host){
+			host = handleCommonHosts(host);
 			ByteMind.data.set('account-api-url', host);
 			$('#server').val(host);
 			sessionStorage.setItem('customServer', host); 	//do it?
@@ -349,6 +352,15 @@ function onStart(){
 
 //------ more globals ------
 
+//fix some potential input errors
+function handleCommonHosts(customHost){
+	if (customHost == "localhost" || endsWith(customHost, ".local") || !!customHost.match(/\.\d{1,3}$/)){
+		customHost += ":20721";
+	}
+	return customHost;
+}
+
+//update host ander servers
 function updateHostServer(customHost){
 	customHost = customHost.replace(/\/$/,"").trim();
 	ByteMind.debug.info("Set custom host: " + customHost);
