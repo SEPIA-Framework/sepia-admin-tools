@@ -2,7 +2,7 @@ var codeEditor;
 var extensionType;
 var servicesDataArray = {}; 		//actually it is an object with arrays not an array ^^
 var meshPluginsDataArray = {};		//	""		""		""
-var onlineRepository = "https://raw.githubusercontent.com/SEPIA-Framework/sepia-extensions/dev";
+var onlineRepository = "https://raw.githubusercontent.com/SEPIA-Framework/sepia-extensions/master";
 
 //Setup CodeMirror
 function codeUiOnReady(){
