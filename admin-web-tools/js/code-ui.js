@@ -83,6 +83,7 @@ function codeUiUpdateFormData(){
 
 //Run when extension type changes
 function codeUiExtensionTypeChange(){
+	codeUiUpdateFormData();
 	extensionType = $('#code-ui-extension-type').val();
 	$('#code-ui-upload-btn').fadeIn(300);
 	$('#code-ui-load-repo-btn').fadeIn(300);
@@ -234,6 +235,7 @@ function codeUiLoadCodeFromServer(name, path, callback){
 
 //Before we add code we should check the package name at least
 function codeUiValidateAndSetSourceCode(code){
+	codeUiUpdateFormData();
 	if (code){
 		//replace package?
 		if (extensionType == "smart-service"){
