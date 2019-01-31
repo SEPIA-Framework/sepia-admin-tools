@@ -1,0 +1,370 @@
+/* NOTES:
+- some elements like the cover layer and popup use z-index to be on top. If your elements use z-index too you might need to adjust the values here
+*/
+
+/* Google material icon sizes: */
+.material-icons.md-txt { font-size: 16px; } 		/* inline text default */
+.material-icons.md-btn { font-size: 21px; } 		/* chat controls button default */
+.material-icons.md-btn2 { font-size: 24px; }		/* menu button default */
+.material-icons.md-mic { font-size: 27px; } 		/* mic button default */
+.material-icons.md-mic-dia { font-size: 20px; } 	/* mic button dialog state */
+.material-icons.md-mnu { font-size: 28px; }
+.material-icons.md-18 { font-size: 18px; }
+.material-icons.md-24 { font-size: 24px; }
+.material-icons.md-36 { font-size: 36px; }
+.material-icons.md-48 { font-size: 48px; }
+.material-icons.md-inherit { font-size: inherit; }
+.material-icons {
+	vertical-align: text-bottom;
+	-webkit-user-select: none;  
+	-moz-user-select: none;    
+	-ms-user-select: none;      
+	user-select: none;
+}
+
+/* --- SHARED ELEMENTS -- */
+
+.bytemind-touch-device {}
+
+.bytemind-notouch-device {}
+
+.bytemind-standalone-app {}
+
+#bytemind-background-cover-layer {
+	display: none;
+	position: fixed;
+	background: rgba(255, 255, 255, 0.95);
+	top: 0px;
+	left: 0px;
+	width: 100%;
+	height: 100%;
+	z-index: 89;
+}
+
+#bytemind-main-views {
+	flex: 1 1 auto;
+	position: relative;
+	overflow: hidden;
+	display: flex;
+	flex-direction: row;
+}
+.bytemind-view {
+	flex: 1 0 auto;
+	position: relative;
+	width: 100%;
+	max-width: 100%;
+	overflow: auto;
+	-webkit-overflow-scrolling: touch;
+	padding: 32px;
+	/*display: flex;
+	flex-direction: column;
+	justify-content: flex-start;
+	align-items: center;*/
+	font-size: 16px;
+}
+.bytemind-view li {
+	margin: 6px 0px;
+}
+
+.bytemind-button {
+	display: flex;
+	align-items: center;
+	justify-content: space-around;
+	cursor: pointer;
+	-webkit-user-select: none;  
+	-moz-user-select: none;    
+	-ms-user-select: none;      
+	user-select: none;
+}
+.bytemind-button i,
+.bytemind-button span {
+	-webkit-user-select: none;  
+	-moz-user-select: none;    
+	-ms-user-select: none;      
+	user-select: none;
+	pointer-events: none;
+}
+
+.bytemind-translucent-10 {
+	opacity: 0.10;
+}
+
+.bytemind-long-press-indicator {
+	position: fixed;
+	top: -100px;
+	left: -100px;
+	width: 24px;
+	height: 24px;
+	margin-left: -12px;
+	margin-top: -12px;
+	border: 0;
+	border-radius: 100px;
+	background: rgba(0, 0, 0, 0.25);
+	z-index: 99;
+	user-select: none;
+	pointer-events: none;
+}
+.bytemind-long-press-indicator.grow {
+	display: block;
+	transition: margin 0.615s linear, width 0.615s linear, height 0.615s linear;
+	width: 100px;
+	height: 100px;
+	margin-left: -50px;
+	margin-top: -50px;
+}
+
+/* --- LOADER --- */
+
+#bytemind-loader {
+	display: none;
+	height: 15px;
+	width: 15px;
+	border-radius: 100%;
+	background: rgba(0, 0, 0, 0.33);
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	animation: bytemind-loader-ani-center 2s linear infinite;
+	z-index: 99;
+}
+#bytemind-loader:before, #bytemind-loader:after {
+	content:'';
+	position:absolute;
+	height:inherit;
+	width:inherit;
+	border-radius:inherit;
+	animation: bytemind-loader-ani 2s linear infinite;
+}
+#bytemind-loader:before{
+	left:-20px;
+	background:rgba(0, 0, 0, 0.22);
+}
+#bytemind-loader:after{
+	left:20px;
+	background:rgba(0, 0, 0, 0.11);
+}
+@keyframes bytemind-loader-ani-center {
+	from{	top:50%;				transform:rotate(0deg);		}
+	25%{	top:calc(50% - 8px);	transform:rotate(-120deg);	}
+	75%{	top:calc(50% + 8px);	transform:rotate(-240deg);	}
+	to{		top:50%;				transform:rotate(-360deg);	}
+}
+@keyframes bytemind-loader-ani {
+	from{	top:0;		transform:rotate(0deg);		}
+	25%{	top:-30px;	transform:rotate(-120deg);	}
+	75%{	top:30px;	transform:rotate(-240deg);	}
+	to{		top:0;		transform:rotate(-360deg);	}
+}
+
+/* --- POP-UP BOX --- */
+
+#bytemind-popup-message {
+	display: none;
+	position: fixed;
+	background: #2f3035;
+	color: #fff;
+	border: 1px solid #fff;
+	border-radius: 0px;
+	min-height: 72px;
+	width:80%;
+	max-width: 300px;
+	padding: 16px;
+	top: 50%;
+	left:50%;
+	transform: translate(-50%, -50%);
+	text-align: center;
+	z-index: 92;
+}
+#bytemind-popup-message-content {
+	margin: 10px 0 10px 0;
+}
+#bytemind-popup-message button {
+	cursor: pointer;
+	border: 0px;
+	min-width: 72px;
+	margin: 10px 0px 9px 0px;
+	padding: 7px 10px;
+	background-color: #44c8be;
+	color: #2f3035;
+	font-size: 15px;
+}
+.bytemind-notouch-device #bytemind-popup-message button:hover {
+	background-color: #fff;
+	color: #222;
+}
+
+/* --- SIDE MENU --- */
+
+.bytemind-side-menu,
+.bytemind-side-menu-right {
+	position: absolute;
+	top: 0;
+	left: -768px;					/* initial offset */
+	background-color: #2F3035;
+	color: #fff;
+	height: 100%;
+	width: auto;
+	min-width: 240px;
+	max-width: 300px;
+	padding: 16px 16px;
+	overflow-x: hidden;
+	z-index: 5;
+}
+.bytemind-side-menu-right {
+	left: auto;
+	right: -768px; 					/* initial offset */
+}
+@media screen and (max-width: 268px) {
+	.bytemind-side-menu {
+		width: 100%;
+	}
+}
+.bytemind-side-menu .bytemind-nav-bar-button, 
+.bytemind-side-menu-right .bytemind-nav-bar-button {
+	display: block;
+	color: #fff;
+	padding: 4px 16px;
+	margin: 8px 16px;
+	-webkit-transition: opacity 0.3s ease-out;
+	transition: opacity 0.3s ease-out;
+}
+.bytemind-side-menu .bytemind-nav-bar-button:hover,
+.bytemind-side-menu-right .bytemind-nav-bar-button:hover {
+	opacity: 0.5;
+	text-decoration: none;
+}
+.bytemind-side-menu .bytemind-nav-bar-button.active, 
+.bytemind-side-menu-right .bytemind-nav-bar-button.active {
+	border-bottom: 2px solid rgba(255, 255, 255, 0.25);
+}
+
+.bytemind-side-menu-close-btn {
+	display: block;
+	text-align: right;
+}
+
+.bytemind-side-menu-interlayer {
+	display: none;
+	position: absolute;
+	top: 0;
+	left: 0;
+	background-color: rgba(33, 33, 33, 0.20);
+	height: 100%;
+	width: 100%;
+	z-index: 4;
+}
+
+.bytemind-swipe-area-left,
+.bytemind-swipe-area-right {
+	position: absolute;
+	top: 0;
+	left: 0;
+	background-color: transparent;
+	height: 100%;
+	width: 24px;
+	z-index: 10;
+}
+.bytemind-swipe-area-right {
+	left: auto;
+	right: 0;
+}
+.bytemind-swipe-active {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+}
+
+/* ---- CAROUSEL ---- */
+
+#bytemind-main-views .carousel-container.transition {
+	transition: left .4s ease-out;
+}
+
+/* -- LOGIN BOX -- */
+
+#bytemind-login-box {
+	position: fixed;
+	background-color: #2f3035;
+	border: 1px solid #fff;
+	width: 290px;
+	top: 10%;
+	left: 50%;
+	margin-left: -145px;
+	padding: 10px 35px 20px 35px;
+	color: #fff;
+	text-align: center;
+	z-index: 90;
+}
+#bytemind-login-box h2 {
+	font-weight: normal;
+}
+#bytemind-login-box input {
+	border: 0px;
+	background-color: #fff;
+	color: #2f3035;
+	width: 100%;
+	padding: 0px 8px 0px 8px;
+	min-height: 33px;
+	margin: 5px 0;
+	font-size: 15px;
+	-moz-appearance: none;
+	-webkit-appearance: none;
+	appearance: none;
+}
+#bytemind-login-box p {
+	color: #ff2550;
+}
+#bytemind-login-box button {
+	cursor: pointer;
+	border: 0px;
+    float: right;
+	width: 100%;
+	min-height: 33px;
+	margin: 10px 0px 10px 0px;
+	padding: 7px 10px;
+	background-color: #44c8be;
+	color: #2f3035;
+	font-size: 15px;
+}
+#bytemind-login-box button:first-of-type { 
+	margin: 10px 0px 0px 0px;
+}
+#bytemind-login-box button:hover {
+	background-color: #fff;
+	color: #222;
+}
+.bytemind-touch-device #bytemind-login-box button:hover {
+	background-color: #44c8be;
+	color: #2f3035;
+}
+#bytemind-login-form {
+	overflow: hidden;
+	padding-bottom: 4px;
+}
+#bytemind-login-links {
+	display: flex;
+	justify-content: space-around;
+	padding-top: 4px;
+	font-size: 15px;
+	font-weight: 300;
+}
+#bytemind-login-links a {
+	color: inherit;
+	text-decoration: none;
+	opacity: 0.25;
+	transition: opacity 0.5s;
+}
+.bytemind-notouch-device #bytemind-login-links a:hover {
+	opacity: 1.0;
+}
+#bytemind-login-extend-box {
+    width: 100%;
+}
+#bytemind-login-extend-btn {
+	background: transparent !important;
+    color: inherit !important;
+	margin: 4px 0 0 0 !important;
+}

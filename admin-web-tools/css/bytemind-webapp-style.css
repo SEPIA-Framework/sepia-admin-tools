@@ -1,0 +1,176 @@
+/* ---- ByteMind WebApp Template by Florian Quirin ---- */
+
+#bytemind-webapp-window {
+	position: relative;
+	height: 100%;
+	width: 100%;
+	margin: 0;
+	overflow: hidden;
+	display: flex;
+	flex-direction: column;
+}
+#bytemind-webapp-window a {
+	color: #beff1a;
+	/* text-decoration: none; */
+}
+#bytemind-webapp-window a:visited {
+	color: #beff1a;
+	/* text-decoration: none; */
+}
+#bytemind-webapp-window a:hover {
+	/*text-decoration: underline;*/
+}
+#my-bytemind-side-menu a,
+#my-bytemind-side-menu a:visited,
+#my-bytemind-side-menu a:visited {
+	color: #fff;
+	text-decoration: none;
+	border-bottom-color: #beff1a;
+}
+
+#bytemind-webapp-header {
+	position: relative;
+	flex: 0 0 auto;
+	min-height: 72px;
+	height: 72px;
+	width: 100%;
+	background: #181818;
+	color: #eee;
+	padding: 0px;
+	font-size: 18px;
+	display: flex;
+	flex-direction: column;
+	-webkit-transition: height 0.3s ease-out, min-height 0.3s ease-out;
+	transition: height 0.3s ease-out, min-height 0.3s ease-out;
+	overflow: hidden;
+}
+#bytemind-webapp-header.hide {
+	min-height: 0px;
+	height: 0px;
+}
+#bytemind-header-content {
+	position: relative;
+	flex: 1 1 auto;
+	background: inherit;
+	color: inherit;
+	width: 100%;
+	height: 66px;
+	padding: 16px;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: space-between;
+}
+#bytemind-header-accent {
+	position: relative;
+	flex: 0 0 auto;
+	/* background: #5683c4; */
+	/* background: linear-gradient(to right, #44c8be 7%, #5683c4 33%, #7a2b87 66%, #1e245a 93%); */
+	background: #CEFF1A;
+	background: linear-gradient(to right, #CEFF1A 0%, #16ABC3 100%);
+	width: 100%;
+	min-height: 6px;
+	max-height: 6px;
+}
+
+#bytemind-webapp-top-bar {
+	position: relative;
+	flex: 0 0 auto;
+	min-height: 50px;
+	height: 50px;
+	width: 100%;
+	background: #121212;
+	color: #eee;
+	padding: 0px 8px;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: space-between;
+	-webkit-transition: height 0.3s ease-out, min-height 0.3s ease-out;
+	transition: height 0.3s ease-out, min-height 0.3s ease-out;
+	overflow: hidden;
+}
+#bytemind-webapp-top-bar.hide {
+	min-height: 0px;
+	height: 0px;
+}
+#bytemind-webapp-top-bar-dynamic {
+	flex: 0 1 auto;
+	padding: 0 16px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: start;
+}
+#bytemind-webapp-top-bar .bytemind-nav-bar-button {
+	padding: 8px 8px;
+	font-size: 15px;
+	-webkit-transition: opacity 0.3s ease-out;
+	transition: opacity 0.3s ease-out;
+}
+.bytemind-notouch-device #bytemind-webapp-top-bar .bytemind-nav-bar-button:hover {
+	opacity: 0.5;
+}
+.bytemind-touch-device #bytemind-webapp-top-bar .bytemind-nav-bar-button:active {
+	opacity: 1.0;
+}
+#bytemind-webapp-top-bar .bytemind-nav-bar-button span {
+	margin-left: 8px;
+}
+@media screen and (max-width: 268px) {
+	#bytemind-webapp-top-bar .bytemind-nav-bar-button span {
+		display: none;
+	}
+}
+
+#bytemind-webapp-footer {
+	position: relative;
+	flex: 0 0 auto;
+	min-height: 40px;
+	height: 40px;
+	width: 100%;
+	background: #181818;
+	color: #eee;
+	padding: 0px 8px;
+	font-size: 14px;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: space-between;
+	-webkit-transition: height 0.3s ease-out, min-height 0.3s ease-out;
+	transition: height 0.3s ease-out, min-height 0.3s ease-out;
+	overflow: hidden;
+}
+#bytemind-webapp-footer.hide {
+	min-height: 0px;
+	height: 0px;
+}
+#bytemind-webapp-footer .bytemind-button {
+	padding: 8px 8px;
+	font-size: 15px;
+	-webkit-transition: opacity 0.3s ease-out;
+	transition: opacity 0.3s ease-out;
+}
+
+#bytemind-webapp-main {
+	position: relative;
+	flex: 1 1 auto;
+	min-height: 72px;
+	position: relative;
+	background: #121212;
+	color: #eee;
+	display: flex;
+	flex-direction: column;
+}
+
+#bytemind-fullscreen-overlay-btn {
+	position: fixed;
+	background: #181818;
+	color: #eee;
+	right: 16px;
+	bottom: 16px;
+	width: 34px;
+    height: 34px;
+    border-radius: 17px;
+	z-index: 79;
+}

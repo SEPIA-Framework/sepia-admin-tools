@@ -1,31 +1,39 @@
+//TODO: we should fix this at some point and make it local not global
+
 //some config stuff
 var client_info = "web_app_tools";
 var user_name = "Boss";
 var userid = "";
 var key = "";
-var usertime_local = "";
 var environment = "web_app";
 var is_html_app = false;
 
 //get credentials for server access
 function login(successCallback){
 	//call login or restore data
-	var login; 		//TODO
+	var login = (window.ByteMind && ByteMind.account)? ByteMind.account.getData() : "";
 	//transfer parameters
 	if (login){
-		user_name = login.user_name;
 		language = login.language;
-		userid = login.userid;
-		key = login.key;
-		usertime_local = login.usertime_local;
+		userid = login.userId;
+		key = login.userToken;
+		user_name = login.userName || "Boss";
 		//possible overwrite
-		client_info = login.client_info;
-		environment = login.environment;
-		is_html_app = login.is_html_app;
+		//client_info = ByteMind.config.clientInfo;
+		//environment = login.environment;
+		//is_html_app = login.is_html_app;
+
+		//note: not used but I'll just leave it active
+		$('#login-info-box-id').html(user_name + " (" + userid + ")");
+		$('#login-info-box-host').html(login.url);
+		$('#login-info-box-client').html(client_info);
 		
-		if (successCallback) successCallback();
+		if (successCallback) successCallback(login);
 	}
 	return '';
+}
+function toggleLoginInfoBox(){
+	$('#login-info-box').toggle();
 }
 function showCookieLS(){
 	console.log('all cookies: ' + document.cookie);
@@ -38,7 +46,11 @@ function showCookieLS(){
 
 //get parameter from URL
 function getURLParameter(name) {
-	return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search)||[,""])[1].replace(/\+/g, '%20'))||null
+	if (window.ByteMind){
+		return ByteMind.page.getURLParameter(name);
+	}else{
+		return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search)||[,""])[1].replace(/\+/g, '%20'))||null
+	}
 }
 //get local date in required format
 function getLocalDateTime(){
@@ -66,22 +78,23 @@ function escapeHtml(codeString){
 
 //CONTROLS AND SETTINGS
 
-function openPage(pageId){
-	$('#pages').find('.page').hide();
-	$('#pages_menu').find('button').removeClass('active');
-	$('#' + pageId).show();
-	$('#' + pageId + '-menu-btn').addClass('active');
-}
 function exit(){
 	//TODO: delete all tokens etc.
 }
 
 function showMessage(msg, skipCodeEscape){
 	if (!skipCodeEscape) msg = escapeHtml(msg);
-	document.getElementById('show_result').innerHTML = 
-		"<div style='display:inline-block; white-space: pre; text-align: left;'>"
-			+ msg +
-		"</div>";
+	var showEle = document.getElementById('show_result');
+	if (showEle){
+		showEle.innerHTML = 
+			"<div style='display:inline-block; white-space: pre; text-align: left;'>"
+				+ msg +
+			"</div>";
+		$('#result-container').show();
+	}
+}
+function closeMessage(){
+	$('#result-container').hide();
 }
 
 function getClient(){
@@ -126,27 +139,88 @@ function updatePasswordSecurityWarning(_pwd){
 		$('#pwd-security-indicator').addClass('secure');
 	}
 }
-function getServer(apiName){
-	var url = "";
+
+function onChangeMainServer(){
 	var custom = $('#server').val();
 	if (custom){
 		sessionStorage.setItem('customServer', custom);
-		url = custom;
 	}else{
 		sessionStorage.setItem('customServer', "");
+		/* select button is inactive
 		sessionStorage.setItem('server', server_select.value);
 		url = server_select.options[server_select.selectedIndex].value;
+		*/
+	}
+	updateHostServer(custom);
+}
+function onChangeAssistServer(){
+	var server = $('#assist-server').val();
+	if (server){
+		sessionStorage.setItem('assistServer', server);
+	}else{
+		sessionStorage.setItem('assistServer', "");
+	}
+}
+function onChangeTeachServer(){
+	var server = $('#teach-server').val();
+	if (server){
+		sessionStorage.setItem('teachServer', server);
+	}else{
+		sessionStorage.setItem('teachServer', "");
+	}
+}
+function onChangeChatServer(){
+	var server = $('#chat-server').val();
+	if (server){
+		sessionStorage.setItem('chatServer', server);
+	}else{
+		sessionStorage.setItem('chatServer', "");
+	}
+}
+function onChangeMeshNodeServer(){
+	var server = $('#mesh-node-server').val();
+	if (server){
+		sessionStorage.setItem('meshNodeServer', server);
+	}else{
+		sessionStorage.setItem('meshNodeServer', "");
+	}
+}
+function searchLocalServers(){
+	alert('UNDER CONSTRUCTION');
+}
+function getServer(apiName){
+	var url = "";
+	if (apiName){
+		if (apiName == "assist"){
+			url = $('#assist-server').val() || $('#assist-server').attr('placeholder');
+		}else if (apiName == "teach"){
+			url = $('#teach-server').val() || $('#teach-server').attr('placeholder');
+		}else if (apiName == "chat"){
+			url = $('#chat-server').val() || $('#chat-server').attr('placeholder');
+		}else if (apiName == "mesh-node"){
+			url = $('#mesh-node-server').val() || $('#mesh-node-server').attr('placeholder');		
+		}else{
+			url = $('#server').val() || $('#server').attr('placeholder');
+		}
+	}else{
+		url = $('#server').val() || $('#server').attr('placeholder');
+	}
+	//core server apis
+	if (!endsWith(url, "/")){
+		url += "/";
 	}
 	if (endsWith(url, "/sepia/")){
 		if (apiName){
 			url += (apiName + "/");
 		}else{
-			console.error("API URL is incomplete: " + url);
-			alert("API URL is incomplete: " + url + "\n" + "Please choose a different server for this operation.");
+			url += "assist/";
+			console.error("API URL is incomplete, best guess: " + url);
+			/*alert("API URL is incomplete: " + url + "\n" + "Please choose a different server for this operation.");*/
 		}
 	}
 	return url;
 }
+
 function endsWith(str, suffix) {
     return str.indexOf(suffix, str.length - suffix.length) !== -1;
 }
@@ -164,6 +238,49 @@ function buildLanguageSelectorOptions(){
 			+ '<option value="ko">Korean</option>	<option value="pl">Polish</option>'
 			+ '<option value="pt">Portuguese</option><option value="ru">Russian</option>';
 	return html;
+}
+
+function makeDraggable(eleId, dragButtonId){
+	var dragButton; 
+	if (dragButtonId){
+		dragButton = document.getElementById(dragButtonId);
+	}
+	var myBlock = document.getElementById(eleId);
+	
+	// create a simple instance on our object
+	var mc;
+	if (dragButton)	mc = new Hammer(dragButton);
+	else 			mc = new Hammer(myBlock);
+
+	// add a "PAN" recognizer to it (all directions)
+	mc.add(new Hammer.Pan({ direction: Hammer.DIRECTION_ALL, threshold: 0 }));
+	mc.on("pan", handleDrag);
+
+	var lastPosX = 0;
+	var lastPosY = 0;
+	var isDragging = false;
+
+	function handleDrag(ev){
+		var elem = myBlock; //ev.target;
+		
+		//DRAG STARTED
+		if (!isDragging){
+			isDragging = true;
+			lastPosX = elem.offsetLeft;
+			lastPosY = elem.offsetTop;
+		}		
+		var posX = ev.deltaX + lastPosX;
+		var posY = ev.deltaY + lastPosY;
+		
+		//move our element to that position
+		elem.style.left = posX + "px";
+		elem.style.top = posY + "px";
+		
+		//DRAG ENDED
+		if (ev.isFinal){
+			isDragging = false;
+		}
+	}
 }
 
 //FUNCTION calls
@@ -226,6 +343,7 @@ function genericGetRequest(link, successCallback, errorCallback){
 		//dataType: "jsonp",
 		success: function(data) {
 			//console.log(data);
+			closeMessage();
 			var jsonData = convertData(data);
 			if (jsonData.result && jsonData.result === "fail"){
 				if (errorCallback) errorCallback(jsonData);
@@ -235,6 +353,7 @@ function genericGetRequest(link, successCallback, errorCallback){
 		},
 		error: function(data) {
 			console.log(data);
+			showMessage("ERROR in HTTP GET request.");
 			var jsonData = convertData(data);
 			if (errorCallback) errorCallback(jsonData);
 		}
@@ -263,10 +382,12 @@ function genericPostRequest(apiName, apiPath, parameters, successCallback, error
 		},
 		success: function(data) {
 			//console.log(data);
+			closeMessage();
 			postSuccess(data, successCallback, errorCallback);
 		},
 		error: function(data) {
 			console.log(data);
+			showMessage("ERROR in HTTP POST request.");
 			postError(data, errorCallback);
 		}
 	});
@@ -289,10 +410,12 @@ function genericFormPostRequest(apiName, apiPath, parameters, successCallback, e
 		},
 		success: function(data) {
 			//console.log(data);
+			closeMessage();
 			postSuccess(data, successCallback, errorCallback);
 		},
 		error: function(data) {
 			console.log(data);
+			showMessage("ERROR in HTTP FORM POST request.");
 			postError(data, errorCallback);
 		}
 	});

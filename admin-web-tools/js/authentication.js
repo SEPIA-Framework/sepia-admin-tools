@@ -33,12 +33,20 @@ function logoutThis(successCallback, errorCallback){
 	genericPostRequest("assist", "authentication", {"action" : "logout"}, 
 		function(data){
 			showMessage(JSON.stringify(data, null, 2));
-			//TODO: remove session storage and value of password field
+			//remove session storage and value of password field
 			$('#pwd').val("");
 			sessionStorage.setItem('pwd', "");
+			//remove ByteMind login data
+			if (window.ByteMind) ByteMind.data.del('account');
+
 			if (successCallback) successCallback(data);
 		}, function(data){
 			showMessage(JSON.stringify(data, null, 2));
+			//remove session and ByteMind login data anyway
+			$('#pwd').val("");
+			sessionStorage.setItem('pwd', "");
+			if (window.ByteMind) ByteMind.data.del('account');
+
 			if (errorCallback) errorCallback(data);
 		}
 	);
@@ -59,18 +67,32 @@ function logoutAll(successCallback, errorCallback){
 }
 
 //check server status
-function serverStatus(){
-	//POST
-	genericFormPostRequest("", "hello", {}, function(data){
-		showMessage(data.reply, true);
-	}, function(data){
-		showMessage(JSON.stringify(data, null, 2));
-	});
+function serverStatus(apiName){
+	if (apiName && apiName.indexOf('mesh') >= 0){
+		//POST
+		httpRequest(getServer(apiName) + "server-stats", function(data){
+			//showMessage(JSON.stringify(data, null, 2));
+			showMessage("Success.<br><br>" + data.stats, true);
+		}, function(data){
+			showMessage(JSON.stringify(data, null, 2));
+		}, "POST", JSON.stringify({
+			"pin" : $('#mesh-node-pin').val()
+		}), {
+			"content-type": "application/json"
+		}, 8000);
+	}else{
+		//FORM POST - TODO: this inconsistency should be resolved at some point
+		genericFormPostRequest(apiName, "hello", {}, function(data){
+			showMessage(data.reply, true);
+		}, function(data){
+			showMessage(JSON.stringify(data, null, 2));
+		});
+	}
 }
 
 //validate server
-function serverValidation(){
-	var link = getServer() + "validate?challenge=" + encodeURIComponent('myTest');
+function serverValidation(apiName){
+	var link = getServer(apiName) + "validate?challenge=" + encodeURIComponent('myTest');
 	genericGetRequest(link, function(data){
 		showMessage(JSON.stringify(data, null, 2));
 		//TODO: compare to expected signature

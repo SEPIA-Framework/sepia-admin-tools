@@ -29,6 +29,9 @@ function getAssistantLanguage(){
 	return $('#assist-language-select').val();
 }
 
+//some missing data
+var testLocation = JSON.stringify({	latitude: "52.52",	longitude: "13.37", city: "Berlin" });
+
 //test interpreter
 function interpret(text, successCallback, errorCallback){
 	if (!text){

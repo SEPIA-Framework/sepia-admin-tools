@@ -1,0 +1,101 @@
+#page-code-ui {
+	flex: 1 1 auto;
+	background: #121212;
+	color: #eee;
+	width: 100%;
+	padding: 16px;
+	display: flex;
+	justify-content: center;
+}
+
+#page-code-ui .block {
+	margin-bottom: 8px;
+}
+
+#code-ui-auth {
+	flex: 0 0 auto;
+	display:flex;
+	flex-wrap: wrap;
+}
+#code-ui-auth input {
+	margin: 5px 8px;
+}
+
+#code-ui-upload-form {
+	flex: 0 0 auto;
+}
+
+#code-ui-upload-service-box  {
+	margin: 0px;
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+}
+#code-ui-code-box-container {
+	border: 1px solid #999;
+	flex: 1 1 auto;
+	overflow: hidden;
+}
+#code-ui-code-box {
+	width: 80%;
+	height: 100%;
+	/*min-height: 100px;
+	overflow: auto;
+	margin: 8px;
+	padding: 8px;
+	text-align: left;
+	white-space: nowrap;*/
+}
+
+#code-ui-controls {
+	flex: 0 0 auto;
+	display: flex;
+	flex-wrap: wrap;
+	overflow: hidden;
+}
+#page-code-ui div.group {
+	margin: 8px;
+	display: flex;
+    align-items: center;
+}
+#code-ui-extension-type,
+#code-ui-extension-name {
+	font-size: 15px;
+	min-width: auto;
+	background: #333;
+	color: #eee;
+	border-bottom: 0;
+}
+#page-code-ui label {
+	min-width: 50px;
+    margin: 0 8px;
+}
+#code-ui-source-class-name {
+	margin: 8px;
+}
+
+#page-code-ui .fileContainer {
+	overflow: hidden;
+	position: relative;
+	font-size: 14px;
+	background-color: #beff1a;
+	color: #181818;
+	margin: 5px 8px;
+    padding: 5px 8px;
+	cursor: pointer;
+	border-radius: 3px;
+	font-size: 13.333px
+}
+#page-code-ui .fileContainer [type=file] {
+	cursor: inherit;
+	display: block;
+	font-size: 1px;
+	filter: alpha(opacity=0);
+	min-height: 100%;
+	min-width: 100%;
+	opacity: 0;
+	position: absolute;
+	right: 0;
+	text-align: right;
+	top: 0;
+}

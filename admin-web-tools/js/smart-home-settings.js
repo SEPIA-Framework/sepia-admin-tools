@@ -26,16 +26,17 @@ function getSmartHomeServer(successCallback, errorCallback){
 	if (host){
 		sessionStorage.setItem('smartHomeServer', host);
 		smartHomeServer = host;
-		successCallback(host);
+		if (successCallback) successCallback(host);
 	}else{
 		sessionStorage.setItem('smartHomeServer', "");
 		smartHomeServer = "";
 		if (errorCallback) errorCallback();
 	}
+	return host;
 }
 
 function checkSmartHomeServer(_host){
-	var host = _host || $('#smarthome-server').val();
+	var host = _host || getSmartHomeServer();
 	if (!host){
 		$('#smarthome-server-indicator').removeClass('secure'); 	//secure = connected (in this case)
 		$('#smarthome-server-indicator').addClass('inactive');
@@ -59,7 +60,7 @@ function checkSmartHomeServer(_host){
 
 function getSmartHomeDevices(successCallback, errorCallback){
 	$('#smarthome-devices-list').html("");
-	var host = $('#smarthome-server').val();
+	var host = getSmartHomeServer();
 	if (!host){
 		showMessage('Error: missing server');
 		return;

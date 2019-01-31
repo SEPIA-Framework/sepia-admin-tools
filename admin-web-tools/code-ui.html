@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html class="dark">
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	
+	<!-- web app settings -->
+	<!--
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="mobile-web-app-capable" content="yes">
+	-->
+	<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=0">
+	
+	<!-- Title, icons and colors -->
+	<title>S.E.P.I.A. Code UI</title>
+	<meta name="application-name" content="S.E.P.I.A. Code UI"/>
+	<meta name="apple-mobile-web-app-title" content="S.E.P.I.A. Code UI">
+	<meta name="description" content="Code editor for the S.E.P.I.A.-Framework to create custom smart services.">
+	<meta name="theme-color" content="#000">
+	<!-- Icons -->
+	<link rel="icon" sizes="192x192" href="img/icon-w.png">
+	<link rel="apple-touch-icon" href="img/icon-w.png">
+	
+	<!-- open graph settings -->
+	<meta property="og:title" content="S.E.P.I.A. Code UI"/>
+	<meta property="og:determiner" content="the" />
+	<meta property="og:url" content="https://sepia-framework.github.io/tools/"/>
+	<meta property="og:description" content="Code editor for the S.E.P.I.A.-Framework to create custom smart services.">
+	<meta property="og:image" content="https://sepia-framework.github.io/img/logo-w.png"/>
+	<meta property="og:image:width" content="960"/>
+	<meta property="og:image:height" content="960"/>
+	<meta property="og:image:type" content="image/png"/>
+	<meta property="og:image:alt" content="SEPIA Logo"/>
+	<meta property="og:image" content="https://sepia-framework.github.io/tools/img/icon-w.png"/>
+	<meta property="og:image:width" content="192"/>
+	<meta property="og:image:height" content="192"/>
+	<meta property="og:image:type" content="image/png"/>
+	<meta property="og:image:alt" content="SEPIA Icon"/>
+	<meta property="og:type" content="website"/>
+	<meta property="og:locale" content="en_GB"/>
+	<meta property="og:locale:alternate" content="en_US"/>
+	
+	<!--SCRIPTS / STYLES -->
+	<script type="text/javascript" src="lib/jquery-3.1.1.min.js" charset="UTF-8"></script>
+	<script type="text/javascript" src="lib/sjcl.js"  charset="UTF-8"></script>
+	<script type="text/javascript" src="js/shared.js" charset="UTF-8"></script>
+	<script type="text/javascript" src="js/authentication.js" charset="UTF-8"></script>
+	<link rel="stylesheet" href="lib/googleMaterialIcons.css">
+	<!-- PAGE CODE -->
+	<link rel="stylesheet" href="css/code-ui-standalone.css">
+	<link rel="stylesheet" href="css/code-ui.css">
+	<link rel="stylesheet" href="lib/codemirror.css">
+	<link rel="stylesheet" href="theme/sepia-fw.css">
+	<script type="text/javascript" src="js/code-ui.js" charset="UTF-8"></script>
+	<script src="lib/codemirror.js"></script>
+	<script src="mode/clike/clike.js"></script>
+</head>
+<body>
+<div id="main-view">
+	<div id="header">
+		<h3>SEPIA Code UI for Smart-Services</h3>
+	</div>
+	<!-- CONTROL HUB IMPORT SECTION -->
+	<div id="page-code-ui">
+		<!-- PAGE -->
+		<div id='code-ui-upload-service-box'>
+			<div id="code-ui-auth" class="block" style="display:none;">
+				<input id='code-ui-server' type='text' spellcheck="false" value="http://localhost:20721/" placeholder="http://localhost:20721/">
+				<input id="code-ui-id" type='text' form='code-ui-upload-form' name='GUUID' spellcheck="false" placeholder="User-ID">
+				<input id="code-ui-pwd" type='password' form='code-ui-upload-form' name='PWD' placeholder="Password">
+				<input id="code-ui-key" type='password' form='code-ui-upload-form' name='KEY' placeholder="Key">
+				<input id="code-ui-client" type='text' form='code-ui-upload-form' name='client' placeholder="Client ID">
+			</div>
+			<div id="code-ui-controls" class="block hide-on-full-screen">
+				<div class="group">
+					<label>Extension Type:</label><select id="code-ui-extension-type" onchange="codeUiExtensionTypeChange()">
+						<option value="" selected disabled>Select</option>
+						<option value="smart-service">Smart-Service</option>
+						<option value="mesh-plugin">Mesh-Plugin</option>
+					</select>
+				</div>
+				<div class="group">
+					<label>Extensions:</label><select id="code-ui-extension-name" onchange="codeUiUpdateExtension()">
+						<option value="" selected disabled>Load please</option>
+						<!-- dynamically generated -->
+					</select>
+				</div>
+				<div class="group">
+					<button id="code-ui-load-repo-btn" class='interface_button' onclick="codeUiLoadExtensionConfigFromServer()" style="display:none;">Online repository</button>
+					<label id="code-ui-file-label" class="fileContainer" onchange="codeUiOpenSourceFile(event)">
+						Load file<input id="code-ui-file-input" type='file' accept='.java,.sservice,.yaml'>
+					</label>
+				</div>
+				<div class="group">
+					<button id="code-ui-upload-btn" class='interface_button' form='code-ui-upload-form' type='submit' style="display:none;">UPLOAD</button>
+					<!--<input type='file' form='code-ui-upload-form' name='upload_file' accept='.java,.sservice,.yaml'>-->
+				</div>
+			</div>
+			<form id='code-ui-upload-form' action='/upload-service' method='post' enctype='multipart/form-data' target='_blank' onsubmit="return codeUiBuildSubmitURL()"></form>
+			<h3 class="hide-on-full-screen">Source Code Editor</h3>
+			<div class="group"><label>Name (public class ...):
+					<input id="code-ui-source-class-name" type='text' form='code-ui-upload-form' name='upload_code_class_name' spellcheck="false" onchange="codeUiUpdatedClassName()" required>
+			</label></div>
+			<div id="code-ui-code-box-container">
+				<textarea id='code-ui-code-box' form='code-ui-upload-form' name='upload_code'></textarea>
+			</div>
+		</div>
+		<textarea id="code-ui-source-code" style="display:none;">package my.awesome.extensions.source;</textarea>
+	</div>
+	<div id="footer"><a href="https://github.com/SEPIA-Framework/sepia-sdk-java" target=_blank>SEPIA-SDK at GitHub</a></div>
+</div>
+<script>
+	//load on document ready
+	$(document).ready(function() {
+		//call login
+		$('#code-ui-auth').show();
+		$('#code-ui-client').val("web_app_tools");
+		login(function(data){
+			//on success...
+		});
+		//restore session variables
+		var id = sessionStorage.getItem('code-ui-id');
+		if (id){
+			$('#code-ui-id').val(id);
+		}
+		var pwd = sessionStorage.getItem('code-ui-pwd');
+		if (pwd){
+			$('#code-ui-pwd').val(pwd);
+			updatePasswordSecurityWarning();
+		}
+		//set server
+		if (location.host.indexOf(":") > 0){
+			//local server [IP]:[PORT]
+			$('#code-ui-server').val(location.origin + "/");
+		}
+		//setup
+		codeUiOnReady();
+	});
+</script>
+</body>
+</html>
