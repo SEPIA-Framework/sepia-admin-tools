@@ -89,6 +89,18 @@ input[type="button"] {
 .bytemind-nav-bar-button {
 	margin: 16px 16px !important;
 }
+@media screen and (max-height: 600px) {
+	.bytemind-nav-bar-button {
+		margin: 10px 16px !important;
+		font-size: 15px;
+	}
+}
+@media screen and (max-height: 500px) {
+	.bytemind-nav-bar-button {
+		margin: 8px 16px !important;
+		font-size: 13px;
+	}
+}
 
 #bytemind-login-box,
 #bytemind-popup-message {
@@ -268,6 +280,8 @@ input[type="button"] {
 	padding-top: 0;
 }
 #home-section {
+	/*flex: 0 0 auto;
+	height: auto;*/
 	width: 100%;
 	height: 100%;
 	display: flex;
@@ -277,6 +291,15 @@ input[type="button"] {
 }
 #home-logo {
 	height: 50%;
+}
+
+@media screen and (max-height: 600px) {
+	#home h1 {
+		font-size: 26px;
+	}
+	#home h2 {
+		font-size: 20px;
+	}
 }
 
 /*------ SERVER CONNECTIONS ------*/
