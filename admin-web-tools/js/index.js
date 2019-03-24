@@ -357,6 +357,13 @@ function handleCommonHosts(customHost){
 	if (customHost == "localhost" || endsWith(customHost, ".local") || !!customHost.match(/\.\d{1,3}$/)){
 		customHost += ":20721";
 	}
+	if (customHost.indexOf("http") != 0){
+		if (endsWith(customHost, "/sepia/") || endsWith(customHost, "/sepia")){
+			customHost = "https://" + customHost; 		//assume HTTPS
+		}else{
+			customHost = "http://" + customHost;
+		}
+	}
 	return customHost;
 }
 
