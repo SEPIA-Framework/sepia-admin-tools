@@ -191,12 +191,29 @@
 				<div id="core-settings" class="bytemind-view">
 					<section class="group">
 						<h3>Load Settings</h3>
+						<p class="info-text">Show ad-hoc and persistent settings.</p>
 						<div class="interface_button_box">
-							<button onclick="getServerConfig()" class="interface_button">GET SETTINGS</button>
+							<button onclick="getAdHocServerConfig()" class="interface_button">Get Ad-HOC Settings</button>
+							<button onclick="getFullServerConfig()" class="interface_button">Get Persistent Settings</button>
 						</div>
 					</section>
 					<section class="group">
-						<h3>Change Settings</h3>
+						<h3>Change Setting</h3>
+						<p class="info-text">Write key-value pair to config. Will take effect after server restart.</p>
+						<div class="group">
+							<input id="settings-write-kvpair-k" type="text" spellcheck="false" placeholder="key">
+							<span> = </span>
+							<input id="settings-write-kvpair-v" type="text" spellcheck="false" placeholder="value">
+						</div>
+						<div class="interface_button_box">
+							<button onclick="writeKeyValueToServerConfig()" class="interface_button">Write to config</button>
+							<button onclick="getSpecificServerConfig()" class="interface_button">Read this key</button>
+							<button onclick="alert('Under construction!')" class="interface_button">Restart Server</button>
+						</div>
+					</section>
+					<section class="group">
+						<h3>Ad-hoc Toggles</h3>
+						<p class="info-text">Changes some settings ad-hoc without writing to config file. Will reset on server-restart.</p>
 						<div class="interface_button_box">
 							<button onclick="toggleServerAnswers()" class="interface_button">Toggle Answers Module</button>
 							<button onclick="toggleSentencesDb()" class="interface_button">Switch user sentences ON/OFF</button>
@@ -206,6 +223,7 @@
 					</section>
 					<section class="group">
 						<h3>Database Functions</h3>
+						<p class="info-text">Modify database configuration. Use with CAUTION!</p>
 						<div class="group">
 							<label>Reload cmd: </label><input id="settings-db-reload" type="text" spellcheck="false" placeholder="[db]-[index], e.g.: es-answers">
 						</div>

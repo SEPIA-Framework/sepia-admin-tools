@@ -7,8 +7,33 @@ function serverConfigRequest(requestBody){
 	});
 }
 
-function getServerConfig(){
+function getAdHocServerConfig(){
 	serverConfigRequest({});
+}
+function getFullServerConfig(){
+	var body = {
+		getConfig: "all"
+	}
+	serverConfigRequest(body);
+}
+function getSpecificServerConfig(key){
+	if (!key) key = $('#settings-write-kvpair-k').val();
+	var body = {
+		getConfig: key
+	}
+	serverConfigRequest(body);
+}
+function writeKeyValueToServerConfig(){
+	var k = $('#settings-write-kvpair-k').val();
+	var v = $('#settings-write-kvpair-v').val();
+	if (k && v != undefined){
+		var d = {};
+		d[k] = v;
+		var body = {
+			"setConfig": JSON.stringify(d)
+		};
+		serverConfigRequest(body);
+	}
 }
 function toggleServerAnswers(){
 	var body = {

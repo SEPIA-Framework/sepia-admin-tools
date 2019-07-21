@@ -179,6 +179,11 @@ input[type="button"] {
     margin: 8px 0px;
 }
 /* .bytemind-view input:not([type="submit"]):not([type="checkbox"]):not([type="button"]), */
+.bytemind-view .info-text {
+	color: #beff1a;
+	text-align: center;
+    font-size: 13px;
+}
 
 #bytemind-webapp-main .input-inline-indicator {
     display: inline-block;
