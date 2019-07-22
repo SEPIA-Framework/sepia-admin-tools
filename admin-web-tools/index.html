@@ -199,7 +199,7 @@
 					</section>
 					<section class="group">
 						<h3>Change Setting</h3>
-						<p class="info-text">Write key-value pair to config. Will take effect after server restart.</p>
+						<p class="info-text">Write key-value pair to config. Will take effect after server reload.</p>
 						<div class="group">
 							<input id="settings-write-kvpair-k" type="text" spellcheck="false" placeholder="key">
 							<span> = </span>
@@ -208,7 +208,7 @@
 						<div class="interface_button_box">
 							<button onclick="writeKeyValueToServerConfig()" class="interface_button">Write to config</button>
 							<button onclick="getSpecificServerConfig()" class="interface_button">Read this key</button>
-							<button onclick="alert('Under construction!')" class="interface_button">Restart Server</button>
+							<button onclick="softRestartServer()" class="interface_button">Reload Server</button>
 						</div>
 					</section>
 					<section class="group">
@@ -276,6 +276,7 @@
 						<h3>Access</h3>
 						<div class="group"><label>Select system: </label>
 							<select id="smarthome_system_select" name="smarthome_system_sel">
+								<option value="" disabled selected>-Select-</option>
 								<option value="openhab">openHAB</option>
 							</select>
 						</div>
@@ -288,6 +289,7 @@
 					</section>
 					<section class="group">
 						<div class="interface_button_box">
+							<button onclick="getSmartHomeHubDataFromServer()" class="interface_button">LOAD HUB INFO</button>
 							<button onclick="getSmartHomeDevices()" class="interface_button">GET DEVICES</button>
 						</div>
 					</section>
