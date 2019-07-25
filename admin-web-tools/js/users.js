@@ -98,6 +98,48 @@ function setUserRoles(){
 	});
 }
 
+function deleteUser(){
+	var userIdToDelete = getUserToEdit();
+	if (!userIdToDelete){
+		alert('Please enter a user ID first. As system admin you can delete ANY user BUT the core admin and assistant. As "normal" user you can ONLY delete yourself!');
+		return;
+	}else{
+		if (userid == userIdToDelete){
+			//authentication endpoint
+			var r = confirm("Do you really want to delete your account?! WARNING: This cannot be undone unless you have a database backup!");
+			if (r == true){
+				var reqBody = {
+					action: "deleteUser"
+				}
+				genericPostRequest("assist", "authentication", reqBody, 
+					function(data){
+						showMessage(JSON.stringify(data, null, 2));
+					}, function(data){
+						showMessage(JSON.stringify(data, null, 2));
+					}
+				);
+			}
+		}else{
+			//user-management endpoint
+			var r = confirm("Do you really want to delete the user with ID '" + userIdToDelete + "' ?! WARNING: This cannot be undone unless you have a database backup!");
+			if (r == true){
+				var reqBody = {
+					service: "users",
+					action: "delete",
+					data: {
+						userId: userIdToDelete
+					}
+				}
+				userServicesPostRequest(reqBody, function(data){
+					showMessage(JSON.stringify(data, null, 2));
+				}, function(data){
+					showMessage(JSON.stringify(data, null, 2));
+				});
+			}
+		}		
+	}
+}
+
 //------------
 
 function userServicesPostRequest(data, successCallback, errorCallback){
