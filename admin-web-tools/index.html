@@ -422,15 +422,19 @@
 				<div id="chat-server-settings" class="bytemind-view">
 					<section class="group">
 						<h3>Create channel</h3>
-						<form id="chat-server-settings-form" onsubmit="return createMessengerChannel()" action="">
-							<div class="group"><label>Channel name: </label><input id="msg-channel-name" type="text" required></div>
-							<div class="group"><label>Members: </label><input id="msg-channel-members" type="text"></div>
-							<div class="group"><label>Public? </label><input type="checkbox" id="msg-channel-public" style="min-width: 192px;"></div>
-							<div class="group"><label>Add assistant? </label><input type="checkbox" id="msg-channel-assist" style="min-width: 192px;" checked></div>
-							<div class="interface_button_box">
-								<input type="submit" value="CREATE" class="interface_button">
-							</div>
-						</form>
+						<p class="info-text">NOTE: When you create a channel as admin he will initially be a member of the channel. This might not be desired.</p>
+						<div class="group2">
+							<form id="chat-server-settings-form" onsubmit="return createMessengerChannel()" action="">
+								<div class="group"><label>Channel name: </label><input id="msg-channel-name" type="text" required></div>
+								<div class="group"><label>Members: </label><input id="msg-channel-members" type="text"></div>
+								<div class="group"><label>Public? </label><input type="checkbox" id="msg-channel-public" style="min-width: 100px;"></div>
+								<div class="group"><label>Add assistant? </label><input type="checkbox" id="msg-channel-assist" style="min-width: 100px;" checked></div>
+								<br>
+								<div class="interface_button_box">
+									<input type="submit" value="CREATE" class="interface_button">
+								</div>
+							</form>
+						</div>
 					</section>
 				</div>
 

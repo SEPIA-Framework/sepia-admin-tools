@@ -191,6 +191,11 @@ input[type="button"] {
 	border-bottom: 1px solid #aaa;
     padding: 4px 6px;
     margin: 8px 0px;
+	flex-grow: 1;
+    flex-shrink: 1;
+}
+.bytemind-view .server-card input {
+	flex-grow: 0;
 }
 /* .bytemind-view input:not([type="submit"]):not([type="checkbox"]):not([type="button"]), */
 .bytemind-view div.group2 > div.group > input {
