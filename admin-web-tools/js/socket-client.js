@@ -24,3 +24,29 @@ function createMessengerChannel(){
 	//console.log(JSON.stringify(data));
 	return false;
 }
+
+//Check statistics of channels
+function checkChannelHistoryStats(){
+	//call
+	genericPostRequest("chat", "getChannelHistoryStatistic", {},
+		function (data){
+			showMessage(JSON.stringify(data, null, 2));
+		},
+		function (data){
+			showMessage(JSON.stringify(data, null, 2));
+		}
+	);
+}
+
+//Ask server to clean up outdated channel histories
+function removeOutdatedChannelMessages(){
+	//call
+	genericPostRequest("chat", "removeOutdatedChannelMessages", {},
+		function (data){
+			showMessage(JSON.stringify(data, null, 2));
+		},
+		function (data){
+			showMessage(JSON.stringify(data, null, 2));
+		}
+	);
+}
