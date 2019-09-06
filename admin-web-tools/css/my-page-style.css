@@ -207,6 +207,9 @@ input[type="button"] {
     font-size: 14px;
 	margin: 18px 0 24px;
 }
+.bytemind-view .highlight-text {
+	color: #beff1a;
+}
 
 #bytemind-webapp-main .input-inline-indicator {
     display: inline-block;

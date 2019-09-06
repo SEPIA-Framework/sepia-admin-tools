@@ -1,3 +1,7 @@
+//---------App:
+
+var controlHubVersion = "1.2.1";
+
 //---------Pages:
 
 var HOME = "home";

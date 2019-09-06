@@ -82,6 +82,9 @@ $(document).ready(function(){
 		});
 	});
 	
+	//App info
+	$('#control-hub-version').html(controlHubVersion);
+	
 	//From index.js (run before ByteMind.account tries to restore account data)
 	if (ByteMind.account && beforeLoginRestore){
 		beforeLoginRestore();
