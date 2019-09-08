@@ -1,14 +1,48 @@
 //send server config request to assist API
-function serverConfigRequest(requestBody){
-	genericFormPostRequest("assist", "config", requestBody, function(data){
+function serverConfigRequest(requestBody, successCallback, errorCallback){
+	if (!successCallback) successCallback = function(data){
 		showMessage(JSON.stringify(data, null, 2));
-	}, function(data){
+	}
+	if (!errorCallback) errorCallback = function(data){
 		showMessage(JSON.stringify(data, null, 2));
-	});
+	}
+	genericFormPostRequest("assist", "config", requestBody, successCallback, errorCallback);
 }
 
-function getServerConfig(){
+function softRestartServer(){
+	var body = {
+		restartServer: true
+	}
+	serverConfigRequest(body);
+}
+
+function getAdHocServerConfig(){
 	serverConfigRequest({});
+}
+function getFullServerConfig(){
+	var body = {
+		getConfig: "all"
+	}
+	serverConfigRequest(body);
+}
+function getSpecificServerConfig(key, successCallback, errorCallback){
+	if (!key) key = $('#settings-write-kvpair-k').val();
+	var body = {
+		getConfig: key
+	}
+	serverConfigRequest(body, successCallback, errorCallback);
+}
+function writeKeyValueToServerConfig(){
+	var k = $('#settings-write-kvpair-k').val();
+	var v = $('#settings-write-kvpair-v').val();
+	if (k && v != undefined){
+		var d = {};
+		d[k] = v;
+		var body = {
+			"setConfig": JSON.stringify(d)
+		};
+		serverConfigRequest(body);
+	}
 }
 function toggleServerAnswers(){
 	var body = {

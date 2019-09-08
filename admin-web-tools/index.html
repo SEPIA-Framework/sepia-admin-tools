@@ -125,7 +125,7 @@
 					<div id="home-section">
 						<img id="home-logo" src="img/icon-512-alpha.png" alt="SEPIA">
 						<h1>S.E.P.I.A. Control HUB</h1>
-						<h2>Set up your Voice-Assistant Ecosystem</h2>
+						<h2>Set up your Voice-Assistant Environment</h2>
 					</div>
 				</div>
 
@@ -191,12 +191,29 @@
 				<div id="core-settings" class="bytemind-view">
 					<section class="group">
 						<h3>Load Settings</h3>
+						<p class="info-text">Show ad-hoc and persistent settings.</p>
 						<div class="interface_button_box">
-							<button onclick="getServerConfig()" class="interface_button">GET SETTINGS</button>
+							<button onclick="getAdHocServerConfig()" class="interface_button">Get Ad-HOC Settings</button>
+							<button onclick="getFullServerConfig()" class="interface_button">Get Persistent Settings</button>
 						</div>
 					</section>
 					<section class="group">
-						<h3>Change Settings</h3>
+						<h3>Change Setting</h3>
+						<p class="info-text">Write key-value pair to config. Will take effect after server reload.</p>
+						<div class="group">
+							<input id="settings-write-kvpair-k" type="text" spellcheck="false" placeholder="key">
+							<span> = </span>
+							<input id="settings-write-kvpair-v" type="text" spellcheck="false" placeholder="value">
+						</div>
+						<div class="interface_button_box">
+							<button onclick="writeKeyValueToServerConfig()" class="interface_button">Write to config</button>
+							<button onclick="getSpecificServerConfig()" class="interface_button">Read this key</button>
+							<button onclick="softRestartServer()" class="interface_button">Reload Server</button>
+						</div>
+					</section>
+					<section class="group">
+						<h3>Ad-hoc Toggles</h3>
+						<p class="info-text">Changes some settings ad-hoc without writing to config file. Will reset on server-restart.</p>
 						<div class="interface_button_box">
 							<button onclick="toggleServerAnswers()" class="interface_button">Toggle Answers Module</button>
 							<button onclick="toggleSentencesDb()" class="interface_button">Switch user sentences ON/OFF</button>
@@ -206,6 +223,7 @@
 					</section>
 					<section class="group">
 						<h3>Database Functions</h3>
+						<p class="info-text">Modify database configuration. Use with CAUTION!</p>
 						<div class="group">
 							<label>Reload cmd: </label><input id="settings-db-reload" type="text" spellcheck="false" placeholder="[db]-[index], e.g.: es-answers">
 						</div>
@@ -213,7 +231,7 @@
 							<span>Attention: This will overwrite the old database index!</span>
 						</div>
 						<div class="interface_button_box">
-							<button onclick="reloadDatabaseIndex()" class="interface_button">RELOAD</button>
+							<button onclick="reloadDatabaseIndex()" class="interface_button dangerous-button">RELOAD</button>
 							<!--<button onclick="getServicesUpload()" class="interface_button">SERVICES UPLOAD INTERFACE</button>-->
 						</div>
 					</section>
@@ -223,8 +241,11 @@
 				<div id="user-management" class="bytemind-view">
 					<section class="group">
 						<h3>Create new user</h3>
-						<div class="group"><label>Email: </label><input id="new-user-email" type="text" title="Real or 'fake' email address to identify user"></div>
-						<div class="group"><label>Password: </label><input id="new-user-pwd" type="password"></div>
+						<p class="info-text">By default you register a new user by setting his email (real or "fake", e.g. test@sepia.local) on the whitelist first.</p>
+						<div class="group2">
+							<div class="group"><label>Email: </label><input id="new-user-email" type="text" title="Real or 'fake' email address to identify user"></div>
+							<div class="group"><label>Password: </label><input id="new-user-pwd" type="password"></div>
+						</div>
 					</section>
 					<section class="group">
 						<div class="interface_button_box">
@@ -234,14 +255,17 @@
 					</section>
 					<section class="group">
 						<h3>Edit user</h3>
-						<div class="group"><label>UserID: </label><input id="edit-user-id" type="text" placeholder="User to edit"></div>
-						<p>Overwrite Roles:</p>
-						<div class="group"><input id="new-user-roles" type="text" placeholder="e.g.: user, developer, tester"></div>
+						<p class="info-text">As admin you can change user roles and delete ANY user (but the core admin). Other users can delete ONLY themselves.</p>
+						<div class="group2">
+							<div class="group"><label>UserID: </label><input id="edit-user-id" type="text" placeholder="User to edit"></div>
+							<div class="group"><label>Roles: </label><input id="new-user-roles" type="text" placeholder="e.g.: user, developer, tester"></div>
+						</div>
 					</section>
 					<section class="group">
 						<div class="interface_button_box">
 							<button onclick="getUserRoles()" class="interface_button">GET ROLES</button>
 							<button onclick="setUserRoles()" class="interface_button">SET ROLES</button>
+							<button onclick="deleteUser()" class="interface_button dangerous-button">DELETE USER</button>
 						</div>
 					</section>
 				</div>
@@ -258,6 +282,7 @@
 						<h3>Access</h3>
 						<div class="group"><label>Select system: </label>
 							<select id="smarthome_system_select" name="smarthome_system_sel">
+								<option value="" disabled selected>-Select-</option>
 								<option value="openhab">openHAB</option>
 							</select>
 						</div>
@@ -270,6 +295,7 @@
 					</section>
 					<section class="group">
 						<div class="interface_button_box">
+							<button onclick="getSmartHomeHubDataFromServer()" class="interface_button">LOAD HUB INFO</button>
 							<button onclick="getSmartHomeDevices()" class="interface_button">GET DEVICES</button>
 						</div>
 					</section>
@@ -396,15 +422,27 @@
 				<div id="chat-server-settings" class="bytemind-view">
 					<section class="group">
 						<h3>Create channel</h3>
-						<form id="chat-server-settings-form" onsubmit="return createMessengerChannel()" action="">
-							<div class="group"><label>Channel ID: </label><input id="msg-channel-id" type="text" required></div>
-							<div class="group"><label>Members: </label><input id="msg-channel-members" type="text" required></div>
-							<div class="group"><label>Public? </label><input type="checkbox" id="msg-channel-public" style="min-width: 192px;"></div>
-							<div class="group"><label>Add assistant? </label><input type="checkbox" id="msg-channel-assist" style="min-width: 192px;" checked></div>
-							<div class="interface_button_box">
-								<input type="submit" value="CREATE" class="interface_button">
-							</div>
-						</form>
+						<p class="info-text">NOTE: When you create a channel as admin he will initially be a member of the channel. This might not be desired.</p>
+						<div class="group2">
+							<form id="chat-server-settings-form" onsubmit="return createMessengerChannel()" action="">
+								<div class="group"><label>Channel name: </label><input id="msg-channel-name" type="text" required></div>
+								<div class="group"><label>Members: </label><input id="msg-channel-members" type="text"></div>
+								<div class="group"><label>Public? </label><input type="checkbox" id="msg-channel-public" style="min-width: 100px;"></div>
+								<div class="group"><label>Add assistant? </label><input type="checkbox" id="msg-channel-assist" style="min-width: 100px;" checked></div>
+								<br>
+								<div class="interface_button_box">
+									<input type="submit" value="CREATE" class="interface_button">
+								</div>
+							</form>
+						</div>
+					</section>
+					<section class="group">
+						<h3>Channel history statistics</h3>
+						<p class="info-text">Get info about all (cached) channels that store a chat history. Check e.g. channel ID, size and last message poll.</p>
+						<div class="interface_button_box">
+							<button onclick="checkChannelHistoryStats()" class="interface_button">GET INFO</button>
+							<button onclick="removeOutdatedChannelMessages()" class="interface_button">REMOVE OLD MESSAGES</button>
+						</div>
 					</section>
 				</div>
 
@@ -446,6 +484,10 @@
 					<section class="group">
 						<h3>Credits</h3>
 						<div class="group"><a href="http://bytemind.de" target=_blank>bytemind.de</a></div>
+					</section>
+					<section class="group">
+						<h3>Control HUB Info</h3>
+						<div class="group">Version:&nbsp;<span id="control-hub-version" class="highlight-text"></span></div>
 					</section>
 				</div>
 			</div>

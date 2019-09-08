@@ -70,7 +70,7 @@ input[type="button"] {
 	/* background: #ddd; */
 	background-color: #beff1a;
 	color: #181818;
-	margin: 5px 8px;
+	margin: 5px 8px 8px 8px;
 	padding: 5px 8px;
 	cursor: pointer;
 }
@@ -147,12 +147,26 @@ input[type="button"] {
 	/*min-width: 36%;*/
 	max-width: 100%;
 }
+.bytemind-view section.group.center {
+	display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
 .bytemind-view div.group {
 	display: flex;
     /* justify-content: center; */
 	align-items: center;
 	flex-wrap: wrap;
     margin: 0px 0 16px 0;
+}
+.bytemind-view div.group2 {
+	display: flex;
+    flex-direction: column;
+	align-items: center;
+}
+.bytemind-view div.group.center {
+    justify-content: center;
 }
 
 .bytemind-view .interface_button_box {
@@ -177,8 +191,25 @@ input[type="button"] {
 	border-bottom: 1px solid #aaa;
     padding: 4px 6px;
     margin: 8px 0px;
+	flex-grow: 1;
+    flex-shrink: 1;
+}
+.bytemind-view .server-card input {
+	flex-grow: 0;
 }
 /* .bytemind-view input:not([type="submit"]):not([type="checkbox"]):not([type="button"]), */
+.bytemind-view div.group2 > div.group > input {
+	flex-grow: 1;
+}
+.bytemind-view .info-text {
+	color: #beff1a;
+	text-align: center;
+    font-size: 14px;
+	margin: 18px 0 24px;
+}
+.bytemind-view .highlight-text {
+	color: #beff1a;
+}
 
 #bytemind-webapp-main .input-inline-indicator {
     display: inline-block;
@@ -272,6 +303,11 @@ input[type="button"] {
 	display: inline-block;
     min-width: 90px;
 	text-align: left;
+}
+
+.dangerous-button {
+	background: #f33;
+    color: #fff;
 }
 
 /*------ HOME ------*/
