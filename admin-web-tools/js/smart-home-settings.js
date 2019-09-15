@@ -159,7 +159,8 @@ function buildSmartHomeItem(shi){
 function buildSmartHomeTypeOptions(selected){
 	var options = {
 		"light" : "Light",
-		"heater" : "Heater"
+		"heater" : "Heater",
+		"device" : "Device"
 	}
 	var optionsObj = "";
 	foundSelected = false;
