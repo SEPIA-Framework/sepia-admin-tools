@@ -8,6 +8,7 @@ If you've installed SEPIA using the [SEPIA-Home bundle](https://github.com/SEPIA
 
 Or you can check-out the officially hosted version:  
 * https://sepia-framework.github.io/tools/index.html  
+
 NOTE: When you use the public version make sure [your server uses HTTPS](https://github.com/SEPIA-Framework/sepia-docs/wiki/SSL-for-your-Server) as well or your requests will be blocked by the browser.
   
 ## Credits
