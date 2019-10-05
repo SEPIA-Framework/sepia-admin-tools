@@ -340,12 +340,14 @@ function bytemind_build_account(){
 			if (debugCallback) debugCallback(data);
 			if (data && data.result){
 				if (!Account.loginSuccessTest(data)){
-					//TODO: removed for now, add another 'overwritable' here?
-					//if (data.code && data.code == 3){
-					//	if (errorCallback) errorCallback(ByteMind.local.g('loginFailedServer'));
-					//}else{
+					//TODO: add another 'overwritable' here?
+					if (data.code && data.code == 3){
+						if (errorCallback) errorCallback(ByteMind.local.g('loginFailedServer'));
+					}else if (data.code && data.code == 10){
+						if (errorCallback) errorCallback(ByteMind.local.g('loginFailedBlocked'));
+					}else{
 						if (errorCallback) errorCallback(ByteMind.local.g('loginFailedUser'));
-					//}
+					}
 					return;
 				
 				//assume success

@@ -17,11 +17,22 @@ function checkLoginToken(successCallback, errorCallback){
 		successCallback, errorCallback
 	);
 }
-function showLoginToken() {
+function showLoginToken(){
+	//NOTE: old method that does not use the ByteMind login-box - might not use all features ...
 	getLoginToken(function(data){
 		$('#id').val(data.uid);
 		$('#pwd').val(data.keyToken);
-		getKey();	//refresh stored key and security indicator
+		
+		//refresh stored key (session storage) and security indicator
+		getKey();	//TODO: this not up-to-date
+		
+		//refresh account (updated method)
+		var account = ByteMind.account.storeData(data);		//as 'defined' in index.js
+		account.lastRefresh = new Date().getTime();
+		account.url = ByteMind.account.apiURL;
+		ByteMind.account.data = account;
+		ByteMind.data.set('account', account);
+		
 		showMessage(JSON.stringify(data, null, 2));
 	}, function(data){
 		showMessage(JSON.stringify(data, null, 2));
@@ -30,6 +41,10 @@ function showLoginToken() {
 
 //logout
 function logoutThis(successCallback, errorCallback){
+	//NOTE: new method
+	ByteMind.account.logoutAction();
+	sessionStorage.setItem('pwd', '');
+	/* --- old method ---
 	genericPostRequest("assist", "authentication", {"action" : "logout"}, 
 		function(data){
 			showMessage(JSON.stringify(data, null, 2));
@@ -50,17 +65,25 @@ function logoutThis(successCallback, errorCallback){
 			if (errorCallback) errorCallback(data);
 		}
 	);
+	*/
 }
 function logoutAll(successCallback, errorCallback){
+	//NOTE: old method but should still work (check proper clean-up again maybe?)
 	genericPostRequest("assist", "authentication", {"action" : "logoutAllClients"}, 
 		function(data){
 			showMessage(JSON.stringify(data, null, 2));
-			//TODO: remove session storage and value of password field
+			//remove session storage and value of password field
 			$('#pwd').val("");
 			sessionStorage.setItem('pwd', "");
+			//remove ByteMind login data
+			if (window.ByteMind) ByteMind.data.del('account');
 			if (successCallback) successCallback(data);
 		}, function(data){
 			showMessage(JSON.stringify(data, null, 2));
+			//remove session and ByteMind login data anyway
+			$('#pwd').val("");
+			sessionStorage.setItem('pwd', "");
+			if (window.ByteMind) ByteMind.data.del('account');
 			if (errorCallback) errorCallback(data);
 		}
 	);
