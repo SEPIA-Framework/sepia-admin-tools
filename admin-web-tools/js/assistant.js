@@ -88,21 +88,59 @@ function reportSentence(){
 //remote-action types available
 function buildRemoteActionTypeSelectorOptions(){
 	var html = '' 
-		+ '<option value="hotkey">Hotkey</option>';
+		+ '<option value="" selected disabled>-Select-</option>'
+		+ '<option value="hotkey">Hotkey</option>'
+		;
 	return html;
+}
+function onRemoteActionTypeChange(){
+	var type = $('#remote-action-type-sel').val();
+	if (type == 'hotkey'){
+		$('#remote-action').attr('placeholder', '{"key":"F4", "language":"de"}');
+	}else{
+		$('#remote-action').attr('placeholder', 'Action');
+	}
 }
 //get type of remote action from select
 function getRemoteActionType(){
 	return $('#remote-action-type-sel').val();
 }
+//get action data of remote action
+function getRemoteActionData(actionType){
+	var str = $('#remote-action').val();
+	if (actionType && str){
+		str = str.trim();
+		//modify if not object
+		if (actionType == "hotkey"){
+			if (str.indexOf("{") != 0){
+				str = '{"key":"' + str + '"}';
+			}
+		}
+		return str;
+	}else{
+		return str;
+	}
+}
 
 //send remote-action
 function sendRemoteAction(){
-	var data = {
-		type: getRemoteActionType()
+	var actionType = getRemoteActionType();
+	var actionData = getRemoteActionData(actionType);
+	var targetChannelId = $('#remote-action-channel-id').val();
+	var targetDeviceId = $('#remote-action-device-id').val();
+	var body = {
+		type: actionType,
+		action: actionData
 	}
-	console.log('RemoteAction: ' + JSON.stringify(data));
-	alert('Under construction');
+	if (targetChannelId) body.targetChannelId = targetChannelId;
+	if (targetDeviceId) body.targetDeviceId = targetDeviceId;
+	console.log('RemoteAction: ' + JSON.stringify(body));
+	
+	genericFormPostRequest("assist", "remote-action", body, function(data){
+		showMessage(JSON.stringify(data, null, 2));
+	}, function(data){
+		showMessage(JSON.stringify(data, null, 2));
+	});
 }
 
 //---- PERFORMANCE TESTS ----
