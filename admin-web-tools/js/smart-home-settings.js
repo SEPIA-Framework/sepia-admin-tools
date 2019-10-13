@@ -161,6 +161,13 @@ function buildSmartHomeTypeOptions(selected){
 		"light" : "Light",
 		"heater" : "Heater",
 		"device" : "Device"
+		/* ---tbd---
+		"tv" : "TV",
+		"music_player" : "Music Player",
+		"fridge" : "Fridge",
+		"oven" : " "Oven",
+		"coffee_maker" : "Coffee Maker",
+		*/
 	}
 	var optionsObj = "";
 	foundSelected = false;
@@ -182,9 +189,11 @@ function buildSmartHomeTypeOptions(selected){
 function buildSmartHomeRoomOptions(selected){
 	var options = {
 		"livingroom" : "Living room",
+		"diningroom" : "Dining room",
 		"kitchen" : "Kitchen",
 		"bedroom" : "Bedroom",
 		"bath" : "Bath",
+		"office" : "Office",
 		"study" : "Study room",
 		"garage" : "Garage",
 		"shack" : "Shack"

@@ -113,8 +113,7 @@
 				<div><label>Client ID: </label><input id="custom-client" type="url" placeholder="web_app_tools" spellcheck="false"></div>
 				<div id="login-info-box-buttons">
 					<button onclick="showLoginToken()" class="interface_button">NEW LOGIN</button>
-					<!--<button onclick="logoutThis()" class="interface_button">LOGOUT</button>--><!-- the old button -->
-					<button onclick="ByteMind.account.logoutAction()" class="interface_button">SIGN OUT</button>
+					<button onclick="logoutThis()" class="interface_button">SIGN OUT</button>
 					<button onclick="logoutAll()" class="interface_button">SIGN OUT ALL MY CLIENTS</button>
 				</div>
 			</div>
@@ -258,7 +257,7 @@
 						<p class="info-text">As admin you can change user roles and delete ANY user (but the core admin). Other users can delete ONLY themselves.</p>
 						<div class="group2">
 							<div class="group"><label>UserID: </label><input id="edit-user-id" type="text" placeholder="User to edit"></div>
-							<div class="group"><label>Roles: </label><input id="new-user-roles" type="text" placeholder="e.g.: user, developer, tester"></div>
+							<div class="group"><label>Roles: </label><input id="new-user-roles" type="text" placeholder="e.g.: user, developer, smarthomeguest"></div>
 						</div>
 					</section>
 					<section class="group">
@@ -332,6 +331,12 @@
 								<!-- generated dynamically on start -->
 							</select>
 							<!--<label>Action: </label>--><input id="remote-action" placeholder="Action" type="text">
+						</div>
+						<div class="group">
+							<label style="min-width:100px; padding:0 6px; margin:0 8px;">device ID: </label><input id="remote-action-device-id" placeholder="b1" type="text">
+						</div>
+						<div class="group">
+							<label style="min-width:100px; padding:0 6px; margin:0 8px;">channel ID: </label><input id="remote-action-channel-id" placeholder="openWorld" type="text">
 						</div>
 					</section>
 					<section class="group">
@@ -506,7 +511,7 @@
 <!--<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">-->
 <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500" rel="stylesheet">
 <!-- JS -->
-<script src="lib/jquery-3.1.1.min.js"></script>
+<script src="lib/jquery-3.4.1.min.js"></script>
 <script src="lib/hammer.min.js"></script>
 <script src="lib/hammer-time.min.js"></script>
 <script src="lib/sjcl.js"></script>

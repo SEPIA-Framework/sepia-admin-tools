@@ -1,6 +1,6 @@
 //---------App:
 
-var controlHubVersion = "1.2.1";
+var controlHubVersion = "1.2.2";
 
 //---------Pages:
 
@@ -344,7 +344,8 @@ function onStart(){
 
 	//build assistant stuff
 	$('#assist-language-select').html(buildLanguageSelectorOptions());
-	$('#remote-action-type-sel').html(buildRemoteActionTypeSelectorOptions());
+	$('#remote-action-type-sel').html(buildRemoteActionTypeSelectorOptions()).on('change', onRemoteActionTypeChange);
+	
 	//build answer-manager stuff
 	$('#answer-manager-lang-sel').html(buildLanguageSelectorOptions());
 
