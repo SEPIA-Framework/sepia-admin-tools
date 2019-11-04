@@ -283,18 +283,25 @@
 							<select id="smarthome_system_select" name="smarthome_system_sel">
 								<option value="" disabled selected>-Select-</option>
 								<option value="openhab">openHAB</option>
+								<option value="fhem">FHEM</option>
+								<option value="custom">Custom</option>
 							</select>
+						</div>
+						<div id="smarthome_system_custom" class="group" style="display: none;">
+							<label style="position: relative;">Custom: </label>
+							<input id="smarthome_system_custom_select" type="text" placeholder="e.g.: MyHUB or class name" title="Class name sample: net.b07z.sepia.sdk.services.uid1007.MyService$MyHub">
 						</div>
 						<div class="group">
 							<label style="position: relative;">Server: 
 								<span id="smarthome-server-indicator" class="input-inline-indicator inactive" title="Red: server not found, Green: connection established"></span>
 							</label>
-							<input id="smarthome-server" type="text" onchange="checkSmartHomeServer()" placeholder="e.g.: http://localhost:8080">
+							<input id="smarthome-server" type="text" placeholder="e.g.: http://localhost:8080">
 						</div>
 					</section>
 					<section class="group">
 						<div class="interface_button_box">
 							<button onclick="getSmartHomeHubDataFromServer()" class="interface_button">LOAD HUB INFO</button>
+							<button onclick="registerSepiaInsideSmartHomeHub()" class="interface_button">REGISTER SEPIA</button>
 							<button onclick="getSmartHomeDevices()" class="interface_button">GET DEVICES</button>
 						</div>
 					</section>

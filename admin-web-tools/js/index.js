@@ -1,6 +1,6 @@
 //---------App:
 
-var controlHubVersion = "1.2.2";
+var controlHubVersion = "1.3.0";
 
 //---------Pages:
 
@@ -316,19 +316,7 @@ function onStart(){
 		$('#mesh-node-server').val(meshNodeServer);
 	}
 
-	smartHomeSystem = sessionStorage.getItem('smartHomeSystem');
-	if (smartHomeSystem){
-		$('#smarthome_system_select').val(smartHomeSystem);
-	}
-	smartHomeServer = sessionStorage.getItem('smartHomeServer');
-	if (smartHomeServer){
-		$('#smarthome-server').val(smartHomeServer);
-	}else{
-		var serverViaUrl = getURLParameter('smarthome-server');
-		if (serverViaUrl){
-			$('#smarthome-server').val(serverViaUrl);
-		}
-	}
+	smartHomeOnStart();
 
 	sttServer = sessionStorage.getItem('sttServer');
 	if (sttServer){

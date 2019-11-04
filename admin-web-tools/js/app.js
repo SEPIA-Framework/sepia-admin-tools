@@ -9,7 +9,7 @@ $(document).ready(function(){
 		return false;
 	});
 	
-	//handle service worker to make page offline available
+	//handle service worker to make page available offline
 	/*
 	if ('serviceWorker' in navigator) {
 		window.addEventListener('load', function() {

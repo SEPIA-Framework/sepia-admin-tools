@@ -32,6 +32,23 @@ function getSpecificServerConfig(key, successCallback, errorCallback){
 	}
 	serverConfigRequest(body, successCallback, errorCallback);
 }
+/* Example:
+getSpecificServerConfig("smarthome_hub_", function(data){
+	$('#smarthome_system_select').val('');
+	$('#smarthome-server').val('');
+	var hubData = data.config;
+	if (hubData && hubData.length >= 2){
+		hubData.forEach(function(hd){
+			if (hd.indexOf("smarthome_hub_name=") == 0){
+				$('#smarthome_system_select').val(hd.split("=")[1]);
+			}else if (hd.indexOf("smarthome_hub_host=") == 0){
+				$('#smarthome-server').val(hd.split("=")[1]);
+			}
+		});
+	}else{
+		showMessage(JSON.stringify(data, null, 2));
+	}
+}); */
 function writeKeyValueToServerConfig(){
 	var k = $('#settings-write-kvpair-k').val();
 	var v = $('#settings-write-kvpair-v').val();

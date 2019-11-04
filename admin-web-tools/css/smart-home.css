@@ -10,20 +10,24 @@
 	border-radius: 0px;
 	background: #17acc3;
     color: #fff;
-	width: 100%;
-    margin: 2px 0px;
+	/* width: 100%; */
+    margin: 8px;
+    flex: 1 1 calc(50% - 16px);
 }
 .smarthome-item-title {
-	background: #beff1a;
-    color: #121212;
-	padding: 8px;
+	background: #212121;
+    color: #beff1a;
+    padding: 8px;
+    font-size: 15px;
 }
 .smarthome-item-body {
-	padding: 8px;
+	padding: 12px 16px;
+    font-size: 15px;
 }
 
 .smarthome-item-body select {
 	background: #212121;
-    color: #eee;
-    border-bottom: 1px solid #eee;
+    color: #beff1a;
+    border-bottom: 0px solid #eee;
+    border-radius: 3px;
 }

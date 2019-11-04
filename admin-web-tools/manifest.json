@@ -17,7 +17,7 @@
   "dir": "ltr",
   "serviceworker": {
     "src": "sw.js",
-    "scope": "/webapp/",
+    "scope": "/",
     "use_cache": true
   }
 }
