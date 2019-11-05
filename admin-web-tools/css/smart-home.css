@@ -31,3 +31,9 @@
     border-bottom: 0px solid #eee;
     border-radius: 3px;
 }
+.smarthome-item-body span {
+	display: inline-block;
+    min-height: 26px;
+    padding: 4px 0;
+    margin: 8px 0;
+}
