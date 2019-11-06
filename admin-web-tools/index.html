@@ -278,7 +278,7 @@
 				<!-- SMART HOME -->
 				<div id="smart-home" class="bytemind-view">
 					<section class="group">
-						<h3>Access</h3>
+						<h3>Smart Home HUB</h3>
 						<div class="group"><label>Select system: </label>
 							<select id="smarthome_system_select" name="smarthome_system_sel">
 								<option value="" disabled selected>-Select-</option>
@@ -306,9 +306,14 @@
 						</div>
 					</section>
 					<section class="group">
-						<h3>Devices</h3>
+						<h3>Devices <span id="smarthome-devices-last-refresh"></span></h3>
 						<div id="smarthome-devices-list">
-							Press "GET DEVICES" to load all items.
+							<ul>
+								<li>Set or load <a href="https://github.com/SEPIA-Framework/sepia-docs/wiki/Smart-Home-Controls" target="_blank">smart home HUB info</a> from server</li>
+								<li>Register SEPIA Framework (required once for some HUBs)</li>
+								<li>Get the list of smart devices from HUB</li>
+								<li>Configure devices for SEPIA as needed</li>
+							</ul>
 						</div>
 					</section>
 				</div>
@@ -517,6 +522,19 @@
 <link rel="stylesheet" href="lib/googleMaterialIcons.css">
 <!--<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">-->
 <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500" rel="stylesheet">
+<!-- Polyfills -->
+<script>
+(function () { 
+	if (typeof window.CustomEvent === "function") return false; 
+	function CustomEvent (event, params) { 
+		params = params || { bubbles: false, cancelable: false, detail: null }; 
+		var evt = document.createEvent("CustomEvent"); 
+		evt.initCustomEvent( event, params.bubbles, params.cancelable, params.detail ); 
+		return evt; 
+	} 
+	window.CustomEvent = CustomEvent; 
+})();
+</script>
 <!-- JS -->
 <script src="lib/jquery-3.4.1.min.js"></script>
 <script src="lib/hammer.min.js"></script>

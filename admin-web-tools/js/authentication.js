@@ -1,44 +1,53 @@
-//test account and get login-token
-function getLoginToken(successCallback, errorCallback){
-	genericPostRequest("assist", "authentication", 
-		{
-			//"KEY" : getKey(),
-			//"client" : client_info,
-			"action" : "validate"
-		}, 
-		successCallback, errorCallback
-	);
-}
-function checkLoginToken(successCallback, errorCallback){
-	genericPostRequest("assist", "authentication", 
-		{
-			"action" : "check"
-		}, 
-		successCallback, errorCallback
-	);
-}
-function showLoginToken(){
-	//NOTE: old method that does not use the ByteMind login-box - might not use all features ...
-	getLoginToken(function(data){
-		$('#id').val(data.uid);
-		$('#pwd').val(data.keyToken);
-		
-		//refresh stored key (session storage) and security indicator
-		getKey();	//TODO: this not up-to-date
-		
-		//refresh account (updated method)
-		var account = ByteMind.account.storeData(data);		//as 'defined' in index.js
-		account.lastRefresh = new Date().getTime();
-		account.url = ByteMind.account.apiURL;
-		ByteMind.account.data = account;
-		ByteMind.data.set('account', account);
-		
-		showMessage(JSON.stringify(data, null, 2));
-	}, function(data){
-		showMessage(JSON.stringify(data, null, 2));
-	});
+//post-message handler for account
+var accountPostMessageHandlerLogin = function(ev){
+	//refresh account (updated method)
+	ev.apiURL = handleCommonHosts(ev.apiURL);
+	ByteMind.account.setApiURL(ev.apiURL);
+	ByteMind.config.clientInfo = ev.clientInfo;
+	var account = ByteMind.account.storeData(ev);		//as 'defined' in index.js
+	account.lastRefresh = new Date().getTime();
+	account.url = ev.apiURL;
+	ByteMind.data.set('account', account);
+	sessionStorage.setItem('customClient', ev.clientInfo);
+	/* Example for SEPIA client:
+	var ev = {
+		uid: SepiaFW.account.getUserId(),
+		keyToken: SepiaFW.account.getToken(),
+		user_lang_code: SepiaFW.account.getLanguage(),
+		clientInfo: SepiaFW.config.getClientDeviceInfo(),
+		apiURL: SepiaFW.config.host
+	}*/
+	location.reload();
 }
 
+function toggleLoginInfoBox(){
+	$('#login-info-box').toggle();
+}
+
+//get credentials for server access
+function login(successCallback){
+	//call login or restore data
+	var login = (window.ByteMind && ByteMind.account)? ByteMind.account.getData() : "";
+	//transfer parameters
+	if (login){
+		language = login.language;
+		userid = login.userId;
+		key = login.userToken;
+		user_name = login.userName || "Boss";
+		//possible overwrite
+		//client_info = ByteMind.config.clientInfo;
+		//environment = login.environment;
+		//is_html_app = login.is_html_app;
+
+		//note: not used but I'll just leave it active
+		$('#login-info-box-id').html(user_name + " (" + userid + ")");
+		$('#login-info-box-host').html(login.url);
+		$('#login-info-box-client').html(client_info);
+		
+		if (successCallback) successCallback(login);
+	}
+	return '';
+}
 //logout
 function logoutThis(successCallback, errorCallback){
 	//NOTE: new method
@@ -87,6 +96,47 @@ function logoutAll(successCallback, errorCallback){
 			if (errorCallback) errorCallback(data);
 		}
 	);
+}
+
+//test account and get login-token
+function getLoginToken(successCallback, errorCallback){
+	genericPostRequest("assist", "authentication", 
+		{
+			//"KEY" : getKey(),
+			//"client" : client_info,
+			"action" : "validate"
+		}, 
+		successCallback, errorCallback
+	);
+}
+function checkLoginToken(successCallback, errorCallback){
+	genericPostRequest("assist", "authentication", 
+		{
+			"action" : "check"
+		}, 
+		successCallback, errorCallback
+	);
+}
+function showLoginToken(){
+	//NOTE: old method that does not use the ByteMind login-box - might not use all features ...
+	getLoginToken(function(data){
+		$('#id').val(data.uid);
+		$('#pwd').val(data.keyToken);
+		
+		//refresh stored key (session storage) and security indicator
+		getKey();	//TODO: this not up-to-date
+		
+		//refresh account (updated method)
+		var account = ByteMind.account.storeData(data);		//as 'defined' in index.js
+		account.lastRefresh = new Date().getTime();
+		account.url = ByteMind.account.apiURL;
+		ByteMind.account.data = account;
+		ByteMind.data.set('account', account);
+		
+		showMessage(JSON.stringify(data, null, 2));
+	}, function(data){
+		showMessage(JSON.stringify(data, null, 2));
+	});
 }
 
 //check server status
@@ -170,4 +220,13 @@ function testAuthPerformance(){
 			+ "<br>Maximum (ms): " + Math.max(...accountResults);
 		showMessage(msg);
 	});
+}
+
+function showCookieLS(){
+	console.log('all cookies: ' + document.cookie);
+	/* -- deprecated:
+	var cook = 'sepia_auth_' + client_info;
+	console.log('localStorage: ' + localStorage.getItem(cook));
+	console.log('sessionStorage: ' + sessionStorage.getItem(cook));
+	*/
 }

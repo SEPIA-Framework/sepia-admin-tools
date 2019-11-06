@@ -357,6 +357,7 @@ input[type="button"] {
 	justify-content: space-between;
 	align-items: center;
 	background: #181818;
+	border: 1px solid #212121;
 	margin: 8px;
 	padding: 16px;
 	max-width: 290px;

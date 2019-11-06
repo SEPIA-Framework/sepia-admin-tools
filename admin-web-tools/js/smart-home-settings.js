@@ -116,15 +116,33 @@ function getSmartHomeDevices(successCallback, errorCallback){
 			console.log(data);
 			$('#smarthome-server-indicator').removeClass('inactive');
 			$('#smarthome-server-indicator').addClass('secure');
+			$('#smarthome-devices-last-refresh').html('- last refresh:<br>' + 
+				'<button onclick="getSmartHomeDevices();">' + new Date().toLocaleTimeString() + ' <i class="material-icons md-btn" style="vertical-align:bottom;">refresh</i></button>'
+			);
 			var devices = data.devices;
+			var hiddenDevices = 0;
 			if (devices && devices.length > 0){
 				//build DOM objects
 				devices.forEach(function(item){
 					var domObj = buildSmartHomeItem(item);
 					if (domObj){
 						$('#smarthome-devices-list').append(domObj);
+						if (item.type == "hidden"){
+							$(domObj).addClass("hidden");
+							hiddenDevices++;
+						}
 					}
 				});
+				//hidden items?
+				if (hiddenDevices > 0){
+					var showHiddenBtn = document.createElement("button");
+					showHiddenBtn.id = "smarthome-devices-list-show-hidden-btn";
+					showHiddenBtn.innerHTML = "Show " + hiddenDevices + " hidden devices";
+					$('#smarthome-devices-list').append(showHiddenBtn);
+					$(showHiddenBtn).on('click', function(){
+						$('.smarthome-item.hidden').toggle();
+					});
+				}
 				//add button listeners
 				$('.shi-property').off().on('change', function(){
 					var $item = $(this).closest('.smarthome-item');
@@ -147,12 +165,14 @@ function getSmartHomeDevices(successCallback, errorCallback){
 			}else{
 				alert("No devices found.");
 			}
+			if (successCallback) successCallback(devices);
 		},
 		function (data){
 			showMessage(JSON.stringify(data, null, 2));
 			$('#smarthome-server-indicator').removeClass('secure');
 			$('#smarthome-server-indicator').removeClass('inactive');
 			alert("No items found or no access to smart home system.");
+			if (errorCallback) errorCallback(data);
 		}
 	);
 }
@@ -202,7 +222,7 @@ function putSmartHomeItemProperty(shi, property, value, successCallback, errorCa
 	};
 	genericPostRequest("assist", "integrations/smart-home/setDeviceAttributes", body,
 		function (data){
-			showMessage(JSON.stringify(data, null, 2));
+			//showMessage(JSON.stringify(data, null, 2));
 			//console.log(data);
 			$('#smarthome-server-indicator').removeClass('inactive');
 			$('#smarthome-server-indicator').addClass('secure');
@@ -221,11 +241,24 @@ function deleteSmartHomeItemProperty(shi, property, successCallback, errorCallba
 	putSmartHomeItemProperty(shi, property, "", successCallback, errorCallback);
 }
 
+function setSmartHomeItemState(shd){
+	console.log(shd);
+	alert("Coming soon :-)");
+}
+
 //------ DOM ------
 
 function buildSmartHomeItem(shi){
-	var shiObj = "<div class='smarthome-item' data-shi='" + JSON.stringify(shi) + "'>" +
-		"<div class='smarthome-item-title'>" + shi.name.replace("<", "&lt;").replace(">", "&gt;") + "</div>" +
+	var shiObj = document.createElement("div");
+	shiObj.className = "smarthome-item";
+	shiObj.setAttribute("data-shi", JSON.stringify(shi));
+	var shiObjContent = "" +
+		"<div class='smarthome-item-title'>" + 
+			"<span>" + shi.name.replace("<", "&lt;").replace(">", "&gt;") + "</span>" +
+			"<div>" +
+				"<button class='shi-control-toggle'><i class='material-icons md-18'>power_settings_new</i></button>" +
+			"</div>" +
+		"</div>" +
 		"<div class='smarthome-item-body'>" + 
 			"<div><label>State:</label>" + "<span class='shi-info smarthome-item-state'>" + shi.state + "</span></div>" + 
 			"<div><label>Type:</label>" + "<select class='shi-property smarthome-item-type' data-shi-property='" + SEPIA_TAG_TYPE + "'>" +
@@ -234,15 +267,20 @@ function buildSmartHomeItem(shi){
 			"<div><label>Room:</label>" + "<select class='shi-property smarthome-item-room' data-shi-property='" + SEPIA_TAG_ROOM + "'>" +
 					buildSmartHomeRoomOptions(shi.room) +
 			"</select></div>" + 
-		"</div>" +
-	"</div>";
+		"</div>"
+	;
+	$(shiObj).append(shiObjContent);
+	$(shiObj).find('.shi-control-toggle').on('click', function(){
+		setSmartHomeItemState(shi);
+	});
 	return shiObj;
 }
 function buildSmartHomeTypeOptions(selected){
 	var options = {
 		"light" : "Light",
 		"heater" : "Heater",
-		"device" : "Device"
+		"device" : "Device",
+		"hidden" : "Hidden"
 		/* ---tbd---
 		"tv" : "TV",
 		"music_player" : "Music Player",

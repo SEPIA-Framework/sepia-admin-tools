@@ -248,6 +248,7 @@ function beforeLoginRestore(){
 	var customClient = sessionStorage.getItem('customClient');
 	if (customClient){
 		$('#custom-client').val(customClient);
+		ByteMind.config.clientInfo = customClient;
 	}
 
 	//Store host and build all other API URLs as good as we can
@@ -343,6 +344,39 @@ function onStart(){
 	makeDraggable('result-container', 'result-drag-btn');
 }
 
+//------ Post-Message Interface ------
+
+var sepiaPostMessageHandlers = {
+	"test": 	console.log,
+	"login": 	accountPostMessageHandlerLogin 	//authentication.js
+}
+function addPostMessageHandler(handlerName, handlerFun){
+	sepiaPostMessageHandlers[handlerName] = handlerFun;
+}
+window.addEventListener('message', function(message){
+	if (message.data && message.data.type){
+		if (message.data.type == "sepia-common-interface-event"){
+			//console.log(message);
+			var handler = sepiaPostMessageHandlers[message.data.fun];
+			if (handler && typeof handler == "function"){
+				handler(message.data.ev);
+			}else{
+				console.error('SEPIA - sendInputEvent of ' + message.source + ': Message handler not available!');
+			}
+		}
+	}
+});
+//Example: window.postMessage({type: "sepia-common-interface-event", fun:"test", ev: "Hello"}, "*");
+//postMessage to parent window
+/*
+function parentPostMsg(msg){
+	//post only if really a child
+	if (window !== parent){
+		parent.postMessage(msg, "*");
+	}
+}
+*/
+
 //------ more globals ------
 
 //fix some potential input errors
@@ -360,7 +394,7 @@ function handleCommonHosts(customHost){
 	return customHost;
 }
 
-//update host ander servers
+//update host and servers
 function updateHostServer(customHost){
 	customHost = customHost.replace(/\/$/,"").trim();
 	ByteMind.debug.info("Set custom host: " + customHost);
