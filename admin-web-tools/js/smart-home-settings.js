@@ -85,6 +85,7 @@ function getSmartHomeHubDataFromServer(){
 		function (data){
 			//showMessage(JSON.stringify(data, null, 2));
 			console.log(data);
+			data.hubName = data.hubName.toLowerCase();
 			$('#smarthome_system_select').val(data.hubName);
 			$('#smarthome-server').val(data.hubHost);
 			$('#smarthome-server-indicator').removeClass('inactive');
