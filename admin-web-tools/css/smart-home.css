@@ -26,11 +26,23 @@
 	background: #17acc3;
     color: #fff;
 	/* width: 100%; */
+	max-width: 512px;
     margin: 8px;
     flex: 0 1 calc(50% - 16px);
 }
 .smarthome-item.hidden {
 	display: none;
+}
+@media only screen and (max-width: 880px) {
+  .smarthome-item {
+	flex: 1 1 100%;
+  }
+}
+@media only screen and (max-width: 512px) {
+  .smarthome-item {
+	max-width: 100%;
+	min-width: 225px;
+  }
 }
 
 .smarthome-item-title {
@@ -47,6 +59,17 @@
     color: #beff1a;
     padding: 0;
     margin: 0 8px;
+}
+.smarthome-item-title span {
+	overflow-wrap: break-word;
+}
+.smarthome-item-title .smarthome-item-id {
+	display: none;
+	font-size: 14px;
+	color: #eee;
+}
+.smarthome-item-title .smarthome-item-name {
+	cursor: pointer;
 }
 
 .smarthome-item-body {

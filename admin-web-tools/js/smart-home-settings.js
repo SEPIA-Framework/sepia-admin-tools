@@ -145,21 +145,18 @@ function getSmartHomeDevices(successCallback, errorCallback){
 					});
 				}
 				//add button listeners
-				$('.shi-property').off().on('change', function(){
+				$('.shi-property').on('change', function(){
+					var that = this;
 					var $item = $(this).closest('.smarthome-item');
 					var property = $(this).attr('data-shi-property');
 					//console.log(property);
-					var newVal = $(this).val();
+					var newVal = $(this).attr('data-shi-value') || $(this).val();
 					var shiString = $item.attr('data-shi');
 					if (shiString){
 						var shi = JSON.parse(shiString);
 						putSmartHomeItemProperty(shi, property, newVal, function(){
-							console.log("Smart home item: " + shi.name + ", changed '" + property + "' to: " + newVal);
+							//$(that).attr('data-shi-value', newVal);
 							$item.attr('data-shi', JSON.stringify(shi));
-						}, function(){
-							var msg = "Smart home item: " + shi.name + ", FAILED to change '" + property + "' to: " + newVal;
-							console.log(msg);
-							alert(msg);
 						});
 					}
 				});
@@ -179,7 +176,7 @@ function getSmartHomeDevices(successCallback, errorCallback){
 }
 
 function registerSepiaInsideSmartHomeHub(){
-	$('#smarthome-devices-list').html("");
+	//$('#smarthome-devices-list').html("");
 	var hubHost = getSmartHomeServer();
 	var hubName = getSmartHomeSystem();
 	if (!hubHost || !hubName){
@@ -227,12 +224,31 @@ function putSmartHomeItemProperty(shi, property, value, successCallback, errorCa
 			//console.log(data);
 			$('#smarthome-server-indicator').removeClass('inactive');
 			$('#smarthome-server-indicator').addClass('secure');
+			console.log("Smart home item: " + shi.name + ", changed '" + property + "' to: " + value);
+			//refresh attributes
+			switch(property) {
+				case SEPIA_TAG_NAME:
+					shi.name = value;
+					break;
+				case SEPIA_TAG_TYPE:
+					shi.type = value;
+					break;
+				case SEPIA_TAG_ROOM:
+					shi.room = value;
+					break;
+				default:
+					console.error("Smart Home Device property unknown: " + property);
+			}
+			//TODO: refresh UI?
 			if (successCallback) successCallback();
 		},
 		function (data){
 			showMessage(JSON.stringify(data, null, 2));
 			$('#smarthome-server-indicator').removeClass('secure');
 			$('#smarthome-server-indicator').removeClass('inactive');
+			var msg = "Smart home item: " + shi.name + ", FAILED to change '" + property + "' to: " + value;
+			console.log(msg);
+			alert(msg);
 			if (errorCallback) errorCallback();
 		}
 	);
@@ -242,9 +258,33 @@ function deleteSmartHomeItemProperty(shi, property, successCallback, errorCallba
 	putSmartHomeItemProperty(shi, property, "", successCallback, errorCallback);
 }
 
-function setSmartHomeItemState(shd){
-	console.log(shd);
-	alert("Coming soon :-)");
+function setSmartHomeItemState(shi){
+	console.log(shi);
+	//alert("Coming soon :-)");
+	var hubHost = getSmartHomeServer();
+	var hubName = getSmartHomeSystem();
+	if (!hubHost || !hubName){
+		showMessage('Error: missing HUB server or host address');
+		return;
+	}
+	var state = {
+		value: ((shi.state.toLowerCase() == "off")? "on" : "off"),
+		type: shi.type
+	};
+	var body = {
+		hubName: hubName,
+		hubHost: hubHost,
+		device: shi,
+		state: state
+	};
+	genericPostRequest("assist", "integrations/smart-home/setDeviceState", body,
+		function (data){
+			showMessage(JSON.stringify(data, null, 2));
+		},
+		function (data){
+			showMessage(JSON.stringify(data, null, 2));
+		}
+	);
 }
 
 //------ DOM ------
@@ -253,10 +293,16 @@ function buildSmartHomeItem(shi){
 	var shiObj = document.createElement("div");
 	shiObj.className = "smarthome-item";
 	shiObj.setAttribute("data-shi", JSON.stringify(shi));
+	var itemName = shi.name;
+	var itemId = shi.meta.id;
 	var shiObjContent = "" +
 		"<div class='smarthome-item-title'>" + 
-			"<span>" + shi.name.replace("<", "&lt;").replace(">", "&gt;") + "</span>" +
-			"<div>" +
+			"<div style='overflow:hidden;'>" +
+				"<span class='shi-property smarthome-item-name' data-shi-property='" + SEPIA_TAG_NAME + "' data-shi-value='" + itemName + "'>" + itemName.replace("<", "&lt;").replace(">", "&gt;") + "</span>" +
+				"<span class='smarthome-item-id'> - " + itemId.replace("<", "&lt;").replace(">", "&gt;") + "</span>" +
+			"</div>" +
+			"<div style='display:flex;'>" +
+				"<button class='shi-control-name'><i class='material-icons md-18'>edit</i></button>" +
 				"<button class='shi-control-toggle'><i class='material-icons md-18'>power_settings_new</i></button>" +
 			"</div>" +
 		"</div>" +
@@ -271,6 +317,18 @@ function buildSmartHomeItem(shi){
 		"</div>"
 	;
 	$(shiObj).append(shiObjContent);
+	$(shiObj).find('.smarthome-item-name').on('click', function(){
+		$(shiObj).find('.smarthome-item-id').toggle();
+	});
+	$(shiObj).find('.shi-control-name').on('click', function(){
+		var newName = prompt("New name:", shi.name);
+		if (newName){
+			$(shiObj).find('.smarthome-item-name')
+				.html(newName.replace("<", "&lt;").replace(">", "&gt;"))
+				.attr("data-shi-value", newName)
+				.trigger('change');
+		}
+	});
 	$(shiObj).find('.shi-control-toggle').on('click', function(){
 		setSmartHomeItemState(shi);
 	});
