@@ -302,7 +302,10 @@
 						<div class="interface_button_box">
 							<button onclick="getSmartHomeHubDataFromServer()" class="interface_button">LOAD HUB INFO</button>
 							<button onclick="registerSepiaInsideSmartHomeHub()" class="interface_button">REGISTER SEPIA</button>
-							<button onclick="getSmartHomeDevices()" class="interface_button">GET DEVICES</button>
+							<div>
+								<label>GET DEVICES:</label><select id="smarthome-devices-filter" style="min-width: unset;"></select>
+								<!--<button onclick="getSmartHomeDevices()" class="interface_button">GET DEVICES</button>-->
+							</div>
 						</div>
 					</section>
 					<section class="group">

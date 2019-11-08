@@ -109,7 +109,8 @@ function getSmartHomeDevices(successCallback, errorCallback){
 	}
 	var body = {
 		hubName: hubName,
-		hubHost: hubHost
+		hubHost: hubHost,
+		deviceTypeFilter: $('#smarthome-devices-filter').val()
 	};
 	genericPostRequest("assist", "integrations/smart-home/getDevices", body,
 		function (data){
@@ -289,6 +290,13 @@ function setSmartHomeItemState(shi){
 
 //------ DOM ------
 
+function loadSmartHomeGetDevicesFilter(){
+	var options = buildSmartHomeTypeOptions('', true);
+	$('#smarthome-devices-filter').html(options).on('change', function(){
+		getSmartHomeDevices();
+	});
+}
+
 function buildSmartHomeItem(shi){
 	var shiObj = document.createElement("div");
 	shiObj.className = "smarthome-item";
@@ -309,7 +317,7 @@ function buildSmartHomeItem(shi){
 		"<div class='smarthome-item-body'>" + 
 			"<div><label>State:</label>" + "<span class='shi-info smarthome-item-state'>" + shi.state + "</span></div>" + 
 			"<div><label>Type:</label>" + "<select class='shi-property smarthome-item-type' data-shi-property='" + SEPIA_TAG_TYPE + "'>" +
-					buildSmartHomeTypeOptions(shi.type) +
+					buildSmartHomeTypeOptions(shi.type, false) +
 			"</select></div>" + 
 			"<div><label>Room:</label>" + "<select class='shi-property smarthome-item-room' data-shi-property='" + SEPIA_TAG_ROOM + "'>" +
 					buildSmartHomeRoomOptions(shi.room) +
@@ -334,19 +342,21 @@ function buildSmartHomeItem(shi){
 	});
 	return shiObj;
 }
-function buildSmartHomeTypeOptions(selected){
+function buildSmartHomeTypeOptions(selected, addAllOption){
 	var options = {
 		"light" : "Light",
 		"heater" : "Heater",
-		"device" : "Device",
-		"hidden" : "Hidden"
-		/* ---tbd---
 		"tv" : "TV",
 		"music_player" : "Music Player",
+		"roller_shutter" : "Roller Shutter",
+		"power_outlet" : "Power Outlet",
+		"sensor" : "Sensor",
 		"fridge" : "Fridge",
-		"oven" : " "Oven",
+		"oven" : "Oven",
 		"coffee_maker" : "Coffee Maker",
-		*/
+		"device" : "Device",
+		"other" : "Other",
+		"hidden" : "Hidden"
 	}
 	var optionsObj = "";
 	foundSelected = false;
@@ -360,9 +370,17 @@ function buildSmartHomeTypeOptions(selected){
 		}
 	}
 	if (foundSelected){
-		return ("<option value='' disabled>- Choose -</option>" + optionsObj);
+		if (addAllOption){
+			return ("<option value='' disabled>- Choose -</option><option value=''>All</option>" + optionsObj);
+		}else{
+			return ("<option value='' disabled>- Choose -</option>" + optionsObj);
+		}
 	}else{
-		return ("<option value='' disabled selected>- Choose -</option>" + optionsObj);
+		if (addAllOption){
+			return ("<option value='' disabled selected>- Choose -</option><option value=''>All</option>" + optionsObj);
+		}else{
+			return ("<option value='' disabled selected>- Choose -</option>" + optionsObj);
+		}
 	}
 }
 function buildSmartHomeRoomOptions(selected){
@@ -375,6 +393,9 @@ function buildSmartHomeRoomOptions(selected){
 		"office" : "Office",
 		"study" : "Study room",
 		"garage" : "Garage",
+		"basement" : "Basement",
+		"garden" : "Garden",
+		"hallway" : "Hallway",
 		"shack" : "Shack"
 	}
 	var optionsObj = "";
@@ -394,3 +415,7 @@ function buildSmartHomeRoomOptions(selected){
 		return ("<option value='' disabled selected>- Choose -</option>" + optionsObj);
 	}
 }
+
+//------- build some stuff for DOM --------
+
+loadSmartHomeGetDevicesFilter();
