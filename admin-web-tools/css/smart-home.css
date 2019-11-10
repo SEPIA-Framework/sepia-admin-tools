@@ -28,7 +28,7 @@
 	/* width: 100%; */
 	max-width: 512px;
     margin: 8px;
-    flex: 0 1 calc(50% - 16px);
+    flex: 1 1 calc(50% - 16px);
 }
 .smarthome-item.hidden {
 	display: none;

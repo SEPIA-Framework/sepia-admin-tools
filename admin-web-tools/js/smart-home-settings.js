@@ -268,9 +268,40 @@ function setSmartHomeItemState(shi){
 		showMessage('Error: missing HUB server or host address');
 		return;
 	}
+	var newVal;
+	var oldVal = shi.state.toLowerCase();
+	var deviceType = shi.type;
+	var stateType = "text_binary";	//shi["state-type"]
+	switch (oldVal) {
+		case "off":
+			newVal = "on";
+			break;
+		case "on":
+			newVal = "off";
+			break;
+		case "open":
+			newVal = "closed";
+			break;
+		case "closed":
+			newVal = "open";
+			break;
+		default:
+			if (!!oldVal.match(/^\d+$/)){
+				if (deviceType == 'roller_shutter'){
+					newVal = "closed";
+				}else{
+					//TODO: this might be too general
+					newVal = "off";
+				}
+			}
+	}
+	if (newVal == undefined){
+		alert("Coming soon :-)");
+		return;
+	}
 	var state = {
-		value: ((shi.state.toLowerCase() == "off")? "on" : "off"),
-		type: shi.type
+		value: newVal,
+		type: stateType
 	};
 	var body = {
 		hubName: hubName,

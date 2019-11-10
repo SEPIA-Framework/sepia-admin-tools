@@ -9,14 +9,6 @@ var accountPostMessageHandlerLogin = function(ev){
 	account.url = ev.apiURL;
 	ByteMind.data.set('account', account);
 	sessionStorage.setItem('customClient', ev.clientInfo);
-	/* Example for SEPIA client:
-	var ev = {
-		uid: SepiaFW.account.getUserId(),
-		keyToken: SepiaFW.account.getToken(),
-		user_lang_code: SepiaFW.account.getLanguage(),
-		clientInfo: SepiaFW.config.getClientDeviceInfo(),
-		apiURL: SepiaFW.config.host
-	}*/
 	location.reload();
 }
 
