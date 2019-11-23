@@ -291,7 +291,11 @@ function setSmartHomeItemState(shi){
 					newVal = "closed";
 				}else{
 					//TODO: this might be too general
-					newVal = "off";
+					if (oldVal == 0){
+						newVal = "on";
+					}else{
+						newVal = "off";
+					}
 				}
 			}
 	}

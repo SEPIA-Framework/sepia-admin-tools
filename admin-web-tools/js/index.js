@@ -357,6 +357,7 @@ window.addEventListener('message', function(message){
 	if (message.data && message.data.type){
 		if (message.data.type == "sepia-common-interface-event"){
 			//console.log(message);
+			console.log("SEPIA Control HUB received message for handler: " + message.data.fun);
 			var handler = sepiaPostMessageHandlers[message.data.fun];
 			if (handler && typeof handler == "function"){
 				handler(message.data.ev);
@@ -366,7 +367,7 @@ window.addEventListener('message', function(message){
 		}
 	}
 });
-//Example: window.postMessage({type: "sepia-common-interface-event", fun:"test", ev: "Hello"}, "*");
+//Example: iframe.contentWindow.postMessage({type: "sepia-common-interface-event", fun:"test", ev: "Hello"}, "*");
 //postMessage to parent window
 /*
 function parentPostMsg(msg){
@@ -376,6 +377,9 @@ function parentPostMsg(msg){
 	}
 }
 */
+if (window !== parent){
+	console.log("SEPIA Control HUB loaded inside frame. PostMessage interface available.");
+}
 
 //------ more globals ------
 
