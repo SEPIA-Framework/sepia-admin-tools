@@ -66,6 +66,7 @@ function getSttModel(){
 }
 
 function sttAdaptLm(langTag){
+	if (!langTag) langTag = $('#stt-language-select').val();
 	var newVersion = $('#stt-model-version').val();
 	if (!newVersion){
 		showMessage('Error: please set a version tag for the adapted new model!');
@@ -79,4 +80,16 @@ function sttAdaptLm(langTag){
 	}, function(err){
 		//ERROR
 	}, "POST", dataBody, "", 600000);
+}
+
+function sttGetTrainingDataFromTeachServer(langTag){
+	if (!langTag) langTag = $('#stt-language-select').val();
+	var data = {
+		language: langTag
+	}
+	genericFormPostRequest("teach", "getAllCustomSentencesAsTrainingData", data, function(res){
+		showMessage(JSON.stringify(res, null, 2));
+	}, function(res){
+		showMessage(JSON.stringify(res, null, 2));
+	});
 }

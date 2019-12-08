@@ -337,6 +337,9 @@ function onStart(){
 	
 	//build answer-manager stuff
 	$('#answer-manager-lang-sel').html(buildLanguageSelectorOptions());
+	
+	//build speech-recognition stuff
+	//$('#stt-language-select').html(buildLanguageSelectorOptions());	//we just use DE and EN for now
 
 	//--- global elements ---
 

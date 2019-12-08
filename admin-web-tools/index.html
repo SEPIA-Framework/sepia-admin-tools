@@ -428,8 +428,12 @@
 							<label>Version tag: </label><input id="stt-model-version" type="text" placeholder="04">
 						</div>
 						<div class="interface_button_box">
-							<button onclick="sttAdaptLm('en')" class="interface_button">Adapt English LM</button>
-							<button onclick="sttAdaptLm('de')" class="interface_button">Adapt German LM</button>
+							<select id="stt-language-select" name="stt-lang" style="min-width: 70px; margin-right: 8px;"> 
+								<option value="en">EN</option>
+								<option value="de">DE</option>
+							</select>
+							<button onclick="sttAdaptLm()" class="interface_button">Adapt LM</button>
+							<button onclick="sttGetTrainingDataFromTeachServer()" class="interface_button">Get Adapt Data</button>
 						</div>
 					</section>
 					<section class="group">
