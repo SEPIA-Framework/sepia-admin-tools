@@ -9,6 +9,8 @@ var SEPIA_TAG_ROOM = "sepia-room";
 var SEPIA_TAG_DATA = "sepia-data";
 var SEPIA_TAG_MEM_STATE = "sepia-mem-state";
 
+var showHidden = false;		//state of show/hide button, starts with false
+
 function smartHomeOnStart(){
 	smartHomeSystem = sessionStorage.getItem('smartHomeSystem');
 	if (smartHomeSystem){
@@ -100,7 +102,6 @@ function getSmartHomeHubDataFromServer(){
 }
 
 function getSmartHomeDevices(successCallback, errorCallback){
-	$('#smarthome-devices-list').html("");
 	var hubHost = getSmartHomeServer();
 	var hubName = getSmartHomeSystem();
 	if (!hubHost || !hubName){
@@ -119,18 +120,22 @@ function getSmartHomeDevices(successCallback, errorCallback){
 			$('#smarthome-server-indicator').removeClass('inactive');
 			$('#smarthome-server-indicator').addClass('secure');
 			$('#smarthome-devices-last-refresh').html('- last refresh:<br>' + 
-				'<button onclick="getSmartHomeDevices();">' + new Date().toLocaleTimeString() + ' <i class="material-icons md-btn" style="vertical-align:bottom;">refresh</i></button>'
+				'<button onclick="refreshSmartHomeDevices();">' + new Date().toLocaleTimeString() + ' <i class="material-icons md-btn" style="vertical-align:bottom;">refresh</i></button>'
 			);
 			var devices = data.devices;
 			var hiddenDevices = 0;
 			if (devices && devices.length > 0){
 				//build DOM objects
+				$('#smarthome-devices-list').html("");
 				devices.forEach(function(item){
 					var domObj = buildSmartHomeItem(item);
 					if (domObj){
 						$('#smarthome-devices-list').append(domObj);
 						if (item.type == "hidden"){
 							$(domObj).addClass("hidden");
+							if (showHidden){
+								$(domObj).show();
+							}
 							hiddenDevices++;
 						}
 					}
@@ -139,10 +144,19 @@ function getSmartHomeDevices(successCallback, errorCallback){
 				if (hiddenDevices > 0){
 					var showHiddenBtn = document.createElement("button");
 					showHiddenBtn.id = "smarthome-devices-list-show-hidden-btn";
-					showHiddenBtn.innerHTML = "Show " + hiddenDevices + " hidden devices";
+					var updateBtnText = function(){
+						if (!showHidden){
+							showHiddenBtn.innerHTML = "Show " + hiddenDevices + " hidden devices";
+						}else{
+							showHiddenBtn.innerHTML = "Hide " + hiddenDevices + " hidden devices";
+						}
+					}
+					updateBtnText();
 					$('#smarthome-devices-list').append(showHiddenBtn);
 					$(showHiddenBtn).on('click', function(){
 						$('.smarthome-item.hidden').toggle();
+						showHidden = !showHidden;
+						updateBtnText();
 					});
 				}
 				//add button listeners
@@ -162,6 +176,7 @@ function getSmartHomeDevices(successCallback, errorCallback){
 					}
 				});
 			}else{
+				$('#smarthome-devices-list').html("");
 				alert("No devices found.");
 			}
 			if (successCallback) successCallback(devices);
@@ -170,10 +185,23 @@ function getSmartHomeDevices(successCallback, errorCallback){
 			showMessage(JSON.stringify(data, null, 2));
 			$('#smarthome-server-indicator').removeClass('secure');
 			$('#smarthome-server-indicator').removeClass('inactive');
+			$('#smarthome-devices-list').html("");
 			alert("No items found or no access to smart home system.");
 			if (errorCallback) errorCallback(data);
 		}
 	);
+}
+
+function refreshSmartHomeDevices(changedDevices){
+	//TODO: improve and use 'changedDevices' array
+	//		maybe let user select if refresh is: onEvent, onTime, manually ?
+	if (changedDevices){
+		setTimeout(function(){
+			getSmartHomeDevices();
+		}, 3000);
+	}else{
+		getSmartHomeDevices();
+	}
 }
 
 function registerSepiaInsideSmartHomeHub(){
@@ -240,7 +268,11 @@ function putSmartHomeItemProperty(shi, property, value, successCallback, errorCa
 				default:
 					console.error("Smart Home Device property unknown: " + property);
 			}
-			//TODO: refresh UI?
+			//refresh UI
+			var changedDevices = [];
+			changedDevices.push(shi);
+			refreshSmartHomeDevices(changedDevices);
+			//done
 			if (successCallback) successCallback();
 		},
 		function (data){
@@ -316,6 +348,10 @@ function setSmartHomeItemState(shi){
 	genericPostRequest("assist", "integrations/smart-home/setDeviceState", body,
 		function (data){
 			showMessage(JSON.stringify(data, null, 2));
+			//refresh device items
+			var changedDevices = [];
+			changedDevices.push(shi);
+			refreshSmartHomeDevices(changedDevices);
 		},
 		function (data){
 			showMessage(JSON.stringify(data, null, 2));
@@ -338,6 +374,9 @@ function buildSmartHomeItem(shi){
 	shiObj.setAttribute("data-shi", JSON.stringify(shi));
 	var itemName = shi.name;
 	var itemId = shi.meta.id;
+	var itemNameSpan = document.createElement('span');
+	var itemNameSpan = document.createElement('span');
+	var itemNameSpan = document.createElement('span');
 	var shiObjContent = "" +
 		"<div class='smarthome-item-title'>" + 
 			"<div style='overflow:hidden;'>" +
