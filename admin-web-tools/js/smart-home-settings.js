@@ -486,7 +486,8 @@ function buildSmartHomeRoomOptions(selected){
 		"garden" : "Garden",
 		"hallway" : "Hallway",
 		"shack" : "Shack",
-		"other" : "Other"
+		"other" : "Other",
+		"unassigned" : "Not assigned"
 	}
 	var optionsObj = "";
 	var foundSelected = false;
