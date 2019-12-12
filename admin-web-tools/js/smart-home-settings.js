@@ -10,6 +10,7 @@ var SEPIA_TAG_DATA = "sepia-data";
 var SEPIA_TAG_MEM_STATE = "sepia-mem-state";
 
 var showHidden = false;		//state of show/hide button, starts with false
+var refreshDelayTimer;		//timer that automatically refreshes stuff after change by user
 
 function smartHomeOnStart(){
 	smartHomeSystem = sessionStorage.getItem('smartHomeSystem');
@@ -83,6 +84,7 @@ function getSmartHomeServer(successCallback, errorCallback){
 }
 function getSmartHomeHubDataFromServer(){
 	var body = {};
+	if (refreshDelayTimer) clearTimeout(refreshDelayTimer);
 	genericPostRequest("assist", "integrations/smart-home/getConfiguration", body,
 		function (data){
 			//showMessage(JSON.stringify(data, null, 2));
@@ -107,6 +109,8 @@ function getSmartHomeDevices(successCallback, errorCallback){
 	if (!hubHost || !hubName){
 		showMessage('Error: missing HUB server or host address');
 		return;
+	}else{
+		if (refreshDelayTimer) clearTimeout(refreshDelayTimer);
 	}
 	var body = {
 		hubName: hubName,
@@ -167,13 +171,15 @@ function getSmartHomeDevices(successCallback, errorCallback){
 					//console.log(property);
 					var newVal = $(this).attr('data-shi-value') || $(this).val();
 					var shiString = $item.attr('data-shi');
-					if (shiString){
+					if (shiString && newVal){
 						var shi = JSON.parse(shiString);
 						putSmartHomeItemProperty(shi, property, newVal, function(){
 							//$(that).attr('data-shi-value', newVal);
 							$item.attr('data-shi', JSON.stringify(shi));
 						});
 					}
+				}).on('click', function(){
+					if (refreshDelayTimer) clearTimeout(refreshDelayTimer);
 				});
 			}else{
 				$('#smarthome-devices-list').html("");
@@ -195,8 +201,9 @@ function getSmartHomeDevices(successCallback, errorCallback){
 function refreshSmartHomeDevices(changedDevices){
 	//TODO: improve and use 'changedDevices' array
 	//		maybe let user select if refresh is: onEvent, onTime, manually ?
+	if (refreshDelayTimer) clearTimeout(refreshDelayTimer);
 	if (changedDevices){
-		setTimeout(function(){
+		refreshDelayTimer = setTimeout(function(){
 			getSmartHomeDevices();
 		}, 3000);
 	}else{
@@ -211,6 +218,8 @@ function registerSepiaInsideSmartHomeHub(){
 	if (!hubHost || !hubName){
 		showMessage('Error: missing HUB server or host address');
 		return;
+	}else{
+		if (refreshDelayTimer) clearTimeout(refreshDelayTimer);
 	}
 	var body = {
 		hubName: hubName,
@@ -238,6 +247,8 @@ function putSmartHomeItemProperty(shi, property, value, successCallback, errorCa
 	if (!hubHost || !hubName){
 		showMessage('Error: missing HUB server or host address');
 		return;
+	}else{
+		if (refreshDelayTimer) clearTimeout(refreshDelayTimer);
 	}
 	var attribs = {};
 	attribs[property] = value;
@@ -332,8 +343,10 @@ function setSmartHomeItemState(shi){
 			}
 	}
 	if (newVal == undefined){
-		alert("Coming soon :-)");
+		alert("Cannot switch device state due to unknown old state: " + oldVal);
 		return;
+	}else{
+		if (refreshDelayTimer) clearTimeout(refreshDelayTimer);
 	}
 	var state = {
 		value: newVal,
@@ -403,6 +416,7 @@ function buildSmartHomeItem(shi){
 		$(shiObj).find('.smarthome-item-id').toggle();
 	});
 	$(shiObj).find('.shi-control-name').on('click', function(){
+		if (refreshDelayTimer) clearTimeout(refreshDelayTimer);
 		var newName = prompt("New name:", shi.name);
 		if (newName){
 			$(shiObj).find('.smarthome-item-name')
@@ -466,11 +480,13 @@ function buildSmartHomeRoomOptions(selected){
 		"bath" : "Bath",
 		"office" : "Office",
 		"study" : "Study room",
+		"childsroom" : "Child's room",
 		"garage" : "Garage",
 		"basement" : "Basement",
 		"garden" : "Garden",
 		"hallway" : "Hallway",
-		"shack" : "Shack"
+		"shack" : "Shack",
+		"other" : "Other"
 	}
 	var optionsObj = "";
 	var foundSelected = false;
