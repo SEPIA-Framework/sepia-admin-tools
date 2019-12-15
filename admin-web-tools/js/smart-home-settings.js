@@ -6,8 +6,10 @@ var smartHomeServer = "";
 var SEPIA_TAG_NAME = "sepia-name";
 var SEPIA_TAG_TYPE = "sepia-type";
 var SEPIA_TAG_ROOM = "sepia-room";
+var SEPIA_TAG_ROOM_INDEX = "sepia-room-index";
 var SEPIA_TAG_DATA = "sepia-data";
 var SEPIA_TAG_MEM_STATE = "sepia-mem-state";
+var SEPIA_TAG_STATE_TYPE = "sepia-state-type";
 
 var showHidden = false;		//state of show/hide button, starts with false
 var refreshDelayTimer;		//timer that automatically refreshes stuff after change by user
@@ -171,7 +173,7 @@ function getSmartHomeDevices(successCallback, errorCallback){
 					//console.log(property);
 					var newVal = $(this).attr('data-shi-value') || $(this).val();
 					var shiString = $item.attr('data-shi');
-					if (shiString && newVal){
+					if (shiString && newVal != undefined){
 						var shi = JSON.parse(shiString);
 						putSmartHomeItemProperty(shi, property, newVal, function(){
 							//$(that).attr('data-shi-value', newVal);
@@ -275,6 +277,12 @@ function putSmartHomeItemProperty(shi, property, value, successCallback, errorCa
 					break;
 				case SEPIA_TAG_ROOM:
 					shi.room = value;
+					break;
+				case SEPIA_TAG_ROOM_INDEX:
+					shi["room-index"] = value;
+					break;
+				case SEPIA_TAG_STATE_TYPE:
+					shi["state-type"] = value;
 					break;
 				default:
 					console.error("Smart Home Device property unknown: " + property);
@@ -405,9 +413,13 @@ function buildSmartHomeItem(shi){
 			"<div><label>State:</label>" + "<span class='shi-info smarthome-item-state'>" + shi.state + "</span></div>" + 
 			"<div><label>Type:</label>" + "<select class='shi-property smarthome-item-type' data-shi-property='" + SEPIA_TAG_TYPE + "'>" +
 					buildSmartHomeTypeOptions(shi.type, false) +
+					//TODO: check if type is automatically found or set and offer 'confirm' button (&#10003;)
 			"</select></div>" + 
 			"<div><label>Room:</label>" + "<select class='shi-property smarthome-item-room' data-shi-property='" + SEPIA_TAG_ROOM + "'>" +
 					buildSmartHomeRoomOptions(shi.room) +
+			"</select></div>" + 
+			"<div><label>State type:</label>" + "<select class='shi-property smarthome-item-state-type' data-shi-property='" + SEPIA_TAG_STATE_TYPE + "'>" +
+					buildSmartHomeStateTypeOptions(shi["state-type"])
 			"</select></div>" + 
 		"</div>"
 	;
@@ -504,6 +516,31 @@ function buildSmartHomeRoomOptions(selected){
 		return ("<option value='' disabled>- Choose -</option>" + optionsObj);
 	}else{
 		return ("<option value='' disabled selected>- Choose -</option>" + optionsObj);
+	}
+}
+function buildSmartHomeStateTypeOptions(selected){
+	var options = {
+		"text_binary" : "Binary (ON, OPEN, ...)",
+		"number_plain" : "Number (plain)",
+		"number_percent" : "Number (percent)",
+		"number_temperature_c" : "Temperature °C",
+		"number_temperature_f" : "Temperature °F"
+	}
+	var optionsObj = "";
+	var foundSelected = false;
+	for (o in options){
+		var oName = options[o];
+		if (o == selected){
+			optionsObj += "<option value='" + o + "' selected>" + oName + "</option>";
+			foundSelected = true;
+		}else{
+			optionsObj += "<option value='" + o + "'>" + oName + "</option>";
+		}
+	}
+	if (foundSelected){
+		return ("<option value='' disabled>- Choose -</option><option value=''>Automatic</option>" + optionsObj);
+	}else{
+		return ("<option value='' disabled selected>- Choose -</option><option value=''>Automatic</option>" + optionsObj);
 	}
 }
 
