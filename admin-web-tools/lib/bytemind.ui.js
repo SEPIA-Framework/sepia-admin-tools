@@ -150,7 +150,7 @@ function bytemind_build_ui(){
 		if ($loader.length < 1){
 			var loader = document.createElement('div');
 			loader.id = 'bytemind-loader';
-			parent.append(loader);
+			parent.appendChild(loader);
 			$loader = $(loader);
 		}
 		//handle

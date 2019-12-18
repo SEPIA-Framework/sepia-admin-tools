@@ -208,9 +208,11 @@ function testAuthPerformance(){
 			+ "<br>Result times (ms): " + accountResults 
 			+ "<br>Error times (ms): " + accountErrors
 			+ "<br>Average (ms): " + avg
-			+ "<br>Minimum (ms): " + Math.min(...accountResults)
-			+ "<br>Maximum (ms): " + Math.max(...accountResults);
-		showMessage(msg);
+			//+ "<br>Minimum (ms): " + Math.min(...accountResults)
+			//+ "<br>Maximum (ms): " + Math.max(...accountResults);		for IE11 ...
+			+ "<br>Minimum (ms): " + Math.min.apply(Math, accountResults)
+			+ "<br>Maximum (ms): " + Math.max.apply(Math, accountResults);
+		showMessage(msg, true);
 	});
 }
 

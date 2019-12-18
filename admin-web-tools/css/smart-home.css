@@ -5,6 +5,11 @@
     justify-content: center;
     flex-wrap: wrap;
 }
+@media only screen and (max-width: 460px) {
+	#smarthome-devices-list {
+		padding: 0 0;
+	}
+}
 #smarthome-devices-list-show-hidden-btn {
 	width: 100%;
     background: #212121;
@@ -30,19 +35,24 @@
     margin: 8px;
     flex: 1 1 calc(50% - 16px);
 }
+@media only screen and (max-width: 420px) {
+	.smarthome-item {
+		margin: 8px 0;
+	}
+}
 .smarthome-item.hidden {
 	display: none;
 }
 @media only screen and (max-width: 880px) {
-  .smarthome-item {
-	flex: 1 1 100%;
-  }
+	.smarthome-item {
+		flex: 1 1 100%;
+	}
 }
 @media only screen and (max-width: 512px) {
-  .smarthome-item {
-	max-width: 100%;
-	min-width: 225px;
-  }
+	.smarthome-item {
+		max-width: 100%;
+		min-width: 225px;
+	}
 }
 
 .smarthome-item-title {
@@ -88,6 +98,23 @@
     border-bottom: 0px solid #eee;
     border-radius: 3px;
 	flex: 1 0 128px;
+	margin-left: 2px !important;
+    margin-right: 2px !important;
+}
+.smarthome-item-body input {
+	background: #212121 !important;
+    color: #beff1a !important;
+    border-bottom: 0px solid #eee !important;
+    border-radius: 3px !important;
+	flex: 1 0 128px;
+	height: 26px;
+	padding: 4px 10px !important;
+	margin-left: 2px !important;
+    margin-right: 2px !important;
+}
+.smarthome-item-body label {
+	margin-left: 2px !important;
+    margin-right: 2px !important;
 }
 .smarthome-item-body span {
 	display: inline-block;

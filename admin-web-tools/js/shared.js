@@ -8,6 +8,18 @@ var key = "";
 var environment = "web_app";
 var is_html_app = false;
 
+//appStorage - TODO: replace all sessionStorage (with this) and localStorage (with appLocalStorage or something) in all scripts
+if (!('sessionStorage' in window) || window.sessionStorage == undefined){
+	//--- polyfill to make page at least load in IE11 ---
+	console.log('Note: sessionStorage is NOT working');
+	window.appStorage = {
+		getItem: function(){},
+		setItem: function(){}
+	}
+}else{
+	window.appStorage = sessionStorage;
+}
+
 //get parameter from URL
 function getURLParameter(name) {
 	if (window.ByteMind){

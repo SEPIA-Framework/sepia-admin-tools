@@ -232,7 +232,7 @@ function beforeLoginRestore(){
 	}
 	var serverViaUrl = getURLParameter('server');
 	var storedAccountUrl = ByteMind.data.get('account-api-url');
-	var customServer = sessionStorage.getItem('customServer');
+	var customServer = appStorage.getItem('customServer');
 	//choose:	
 	var customHost = customServer || serverViaUrl || storedAccountUrl || locationHost;
 	if (customHost){
@@ -241,11 +241,11 @@ function beforeLoginRestore(){
 		updateHostServer(customHost);
 	}
 
-	/* var server = sessionStorage.getItem('server');
+	/* var server = appStorage.getItem('server');
 	if (server){
 		server_select.value = server;
 	} */
-	var customClient = sessionStorage.getItem('customClient');
+	var customClient = appStorage.getItem('customClient');
 	if (customClient){
 		$('#custom-client').val(customClient);
 		ByteMind.config.clientInfo = customClient;
@@ -258,7 +258,7 @@ function beforeLoginRestore(){
 			host = handleCommonHosts(host);
 			ByteMind.data.set('account-api-url', host);
 			$('#server').val(host);
-			sessionStorage.setItem('customServer', host); 	//do it?
+			appStorage.setItem('customServer', host); 	//do it?
 			updateHostServer(host);
 		}
 	});
@@ -282,7 +282,7 @@ function beforeLoginRestore(){
 		$('#bytemind-login-box').hide();
 		//clean up custom server
 		$('#server').val("");
-		sessionStorage.setItem('customServer', "");
+		appStorage.setItem('customServer', "");
 		//TODO: remove more data like host?
 		
 		//reload pop-up
@@ -300,26 +300,26 @@ function onStart(){
 
 	//--- session variables ---
 
-	var assistServer = sessionStorage.getItem('assistServer');
+	var assistServer = appStorage.getItem('assistServer');
 	if (assistServer){
 		$('#assist-server').val(assistServer);
 	}
-	var teachServer = sessionStorage.getItem('teachServer');
+	var teachServer = appStorage.getItem('teachServer');
 	if (teachServer){
 		$('#teach-server').val(teachServer);
 	}
-	var chatServer = sessionStorage.getItem('chatServer');
+	var chatServer = appStorage.getItem('chatServer');
 	if (chatServer){
 		$('#chat-server').val(chatServer);
 	}
-	var meshNodeServer = sessionStorage.getItem('meshNodeServer');
+	var meshNodeServer = appStorage.getItem('meshNodeServer');
 	if (meshNodeServer){
 		$('#mesh-node-server').val(meshNodeServer);
 	}
 
 	smartHomeOnStart();
 
-	sttServer = sessionStorage.getItem('sttServer');
+	sttServer = appStorage.getItem('sttServer');
 	if (sttServer){
 		$('#stt-server').val(sttServer);
 	}else{

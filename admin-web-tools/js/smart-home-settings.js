@@ -15,7 +15,7 @@ var showHidden = false;		//state of show/hide button, starts with false
 var refreshDelayTimer;		//timer that automatically refreshes stuff after change by user
 
 function smartHomeOnStart(){
-	smartHomeSystem = sessionStorage.getItem('smartHomeSystem');
+	smartHomeSystem = appStorage.getItem('smartHomeSystem');
 	if (smartHomeSystem){
 		if (hasSelectedKnownSmartHomeSystem(smartHomeSystem)){
 			$('#smarthome_system_select').val(smartHomeSystem);
@@ -25,7 +25,7 @@ function smartHomeOnStart(){
 			$('#smarthome_system_custom').show();
 		}
 	}
-	smartHomeServer = sessionStorage.getItem('smartHomeServer');
+	smartHomeServer = appStorage.getItem('smartHomeServer');
 	if (smartHomeServer){
 		$('#smarthome-server').val(smartHomeServer);
 	}else{
@@ -64,21 +64,21 @@ function getSmartHomeSystem(){
 		system = $('#smarthome_system_custom_select').val();
 	}
 	if (system){
-		sessionStorage.setItem('smartHomeSystem', system);
+		appStorage.setItem('smartHomeSystem', system);
 		smartHomeSystem = system;
 	}else{
-		sessionStorage.setItem('smartHomeSystem', "");
+		appStorage.setItem('smartHomeSystem', "");
 	}
 	return system;
 }
 function getSmartHomeServer(successCallback, errorCallback){
 	var host = $('#smarthome-server').val();
 	if (host){
-		sessionStorage.setItem('smartHomeServer', host);
+		appStorage.setItem('smartHomeServer', host);
 		smartHomeServer = host;
 		if (successCallback) successCallback(host);
 	}else{
-		sessionStorage.setItem('smartHomeServer', "");
+		appStorage.setItem('smartHomeServer', "");
 		smartHomeServer = "";
 		if (errorCallback) errorCallback();
 	}
@@ -415,9 +415,13 @@ function buildSmartHomeItem(shi){
 					buildSmartHomeTypeOptions(shi.type, false) +
 					//TODO: check if type is automatically found or set and offer 'confirm' button (&#10003;)
 			"</select></div>" + 
-			"<div><label>Room:</label>" + "<select class='shi-property smarthome-item-room' data-shi-property='" + SEPIA_TAG_ROOM + "'>" +
+			"<div><label>Room:</label><div style='flex: 1 0 128px; min-width: 196px;'>" + 
+				"<select style='width: calc(70% - 4px); min-width: auto;' class='shi-property smarthome-item-room' data-shi-property='" + SEPIA_TAG_ROOM + "'>" +
 					buildSmartHomeRoomOptions(shi.room) +
-			"</select></div>" + 
+				"</select>" + 
+				"<input style='width: calc(30% - 4px); min-width: auto;' class='shi-property smarthome-item-room-index' data-shi-property='" + SEPIA_TAG_ROOM_INDEX 
+					+ "' value='" + (shi["room-index"] || "") + "' placeholder='index' type='text'>" +
+			"</div></div>" + 
 			"<div><label>State type:</label>" + "<select class='shi-property smarthome-item-state-type' data-shi-property='" + SEPIA_TAG_STATE_TYPE + "'>" +
 					buildSmartHomeStateTypeOptions(shi["state-type"])
 			"</select></div>" + 

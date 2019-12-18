@@ -196,8 +196,10 @@ function testAnswerPerformance(){
 			+ "<br>Result times (ms): " + results 
 			+ "<br>Error times (ms): " + errors
 			+ "<br>Average (ms): " + avg
-			+ "<br>Minimum (ms): " + Math.min(...results)
-			+ "<br>Maximum (ms): " + Math.max(...results);
+			//+ "<br>Minimum (ms): " + Math.min(...results)
+			//+ "<br>Maximum (ms): " + Math.max(...results);			for IE11 ...
+			+ "<br>Minimum (ms): " + Math.min.apply(Math, results)
+			+ "<br>Maximum (ms): " + Math.max.apply(Math, results);
 		showMessage(msg);
 	});
 }
