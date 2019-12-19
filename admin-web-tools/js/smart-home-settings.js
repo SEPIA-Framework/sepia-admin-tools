@@ -10,6 +10,7 @@ var SEPIA_TAG_ROOM_INDEX = "sepia-room-index";
 var SEPIA_TAG_DATA = "sepia-data";
 var SEPIA_TAG_MEM_STATE = "sepia-mem-state";
 var SEPIA_TAG_STATE_TYPE = "sepia-state-type";
+var SEPIA_TAG_SET_CMD = "sepia-set-cmd";
 
 var showHidden = false;		//state of show/hide button, starts with false
 var refreshDelayTimer;		//timer that automatically refreshes stuff after change by user
@@ -184,8 +185,8 @@ function getSmartHomeDevices(successCallback, errorCallback){
 					if (refreshDelayTimer) clearTimeout(refreshDelayTimer);
 				});
 			}else{
-				$('#smarthome-devices-list').html("");
-				alert("No devices found.");
+				$('#smarthome-devices-list').html("<h3 style='color: #beff1a;'>No devices found.</h3>");
+				//alert("No devices found.");
 			}
 			if (successCallback) successCallback(devices);
 		},
@@ -193,8 +194,8 @@ function getSmartHomeDevices(successCallback, errorCallback){
 			showMessage(JSON.stringify(data, null, 2));
 			$('#smarthome-server-indicator').removeClass('secure');
 			$('#smarthome-server-indicator').removeClass('inactive');
-			$('#smarthome-devices-list').html("");
-			alert("No items found or no access to smart home system.");
+			$('#smarthome-devices-list').html("<h3 style='color: #f00;'>No items found or no access to smart home system.</h3>");
+			//alert("No items found or no access to smart home system.");
 			if (errorCallback) errorCallback(data);
 		}
 	);
@@ -283,6 +284,9 @@ function putSmartHomeItemProperty(shi, property, value, successCallback, errorCa
 					break;
 				case SEPIA_TAG_STATE_TYPE:
 					shi["state-type"] = value;
+					break;
+				case SEPIA_TAG_SET_CMD:
+					shi.meta["setCmd"] = value;
 					break;
 				default:
 					console.error("Smart Home Device property unknown: " + property);
@@ -411,23 +415,44 @@ function buildSmartHomeItem(shi){
 		"</div>" +
 		"<div class='smarthome-item-body'>" + 
 			"<div><label>State:</label>" + "<span class='shi-info smarthome-item-state'>" + shi.state + "</span></div>" + 
-			"<div><label>Type:</label>" + "<select class='shi-property smarthome-item-type' data-shi-property='" + SEPIA_TAG_TYPE + "'>" +
+			"<div><label>Type:" + 
+					"<span class='smarthome-item-type-confirm' style='display:none;' title='Type is an automatic guess. Confirm?'>&#10003;</span>" + 
+				"</label>" + 
+				"<select class='shi-property smarthome-item-type' data-shi-property='" + SEPIA_TAG_TYPE + "'>" +
 					buildSmartHomeTypeOptions(shi.type, false) +
-					//TODO: check if type is automatically found or set and offer 'confirm' button (&#10003;)
 			"</select></div>" + 
 			"<div><label>Room:</label><div style='flex: 1 0 128px; min-width: 196px;'>" + 
 				"<select style='width: calc(70% - 4px); min-width: auto;' class='shi-property smarthome-item-room' data-shi-property='" + SEPIA_TAG_ROOM + "'>" +
 					buildSmartHomeRoomOptions(shi.room) +
 				"</select>" + 
-				"<input style='width: calc(30% - 4px); min-width: auto;' class='shi-property smarthome-item-room-index' data-shi-property='" + SEPIA_TAG_ROOM_INDEX 
-					+ "' value='" + (shi["room-index"] || "") + "' placeholder='index' type='text'>" +
+				"<input style='width: calc(30% - 4px); min-width: auto; text-align: center;' class='shi-property smarthome-item-room-index' " 
+					+ "data-shi-property='" + SEPIA_TAG_ROOM_INDEX + "' " 
+					+ "value='" + (shi["room-index"] || "") + "' placeholder='index' type='text' title='Room index, e.g. 1, 22, 303, ...'>" +
 			"</div></div>" + 
-			"<div><label>State type:</label>" + "<select class='shi-property smarthome-item-state-type' data-shi-property='" + SEPIA_TAG_STATE_TYPE + "'>" +
-					buildSmartHomeStateTypeOptions(shi["state-type"])
+			"<div class='start-hidden' style='display:none;'><label>State type:</label>" + "<select class='shi-property smarthome-item-state-type' data-shi-property='" + SEPIA_TAG_STATE_TYPE + "'>" +
+					buildSmartHomeStateTypeOptions(shi["state-type"]) +
 			"</select></div>" + 
-		"</div>"
+			"<div class='start-hidden' style='display:none;'><label>Set command:</label>" + 
+				"<input class='shi-property smarthome-item-set-cmd' data-shi-property='" + SEPIA_TAG_SET_CMD + "' "
+					+ "value='" + (shi.meta["setCmd"] || "") + "' placeholder='e.g.: pct, dim, desired-temp, ...' type='text' title='Set command used when writing a new state (for experts)'>" +
+			"</select></div>" + 
+		"</div>" +
+		"<div class='smarthome-extend-body-btn'><div class='smarthome-extend-body-icon'>&#8250;</div></div>"
 	;
 	$(shiObj).append(shiObjContent);
+	//is type guessed?
+	if (shi.meta && shi.meta.typeGuessed){
+		$(shiObj).find('.smarthome-item-type-confirm').show().on('click', function(){
+			$(shiObj).find('.smarthome-item-type').trigger('change');
+			$(this).hide();
+		});
+	}
+	//extend button
+	$(shiObj).find('.smarthome-extend-body-btn').on('click', function(){
+		$(this).find('.smarthome-extend-body-icon').toggleClass('up');
+		$(shiObj).find('.start-hidden').toggle();
+	});
+	//title
 	$(shiObj).find('.smarthome-item-name').on('click', function(){
 		$(shiObj).find('.smarthome-item-id').toggle();
 	});
@@ -441,6 +466,7 @@ function buildSmartHomeItem(shi){
 				.trigger('change');
 		}
 	});
+	//toggle button
 	$(shiObj).find('.shi-control-toggle').on('click', function(){
 		setSmartHomeItemState(shi);
 	});
@@ -528,7 +554,8 @@ function buildSmartHomeStateTypeOptions(selected){
 		"number_plain" : "Number (plain)",
 		"number_percent" : "Number (percent)",
 		"number_temperature_c" : "Temperature °C",
-		"number_temperature_f" : "Temperature °F"
+		"number_temperature_f" : "Temperature °F",
+		"text_raw" : "Raw text"
 	}
 	var optionsObj = "";
 	var foundSelected = false;
