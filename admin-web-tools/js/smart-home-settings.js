@@ -10,7 +10,7 @@ var SEPIA_TAG_ROOM_INDEX = "sepia-room-index";
 var SEPIA_TAG_DATA = "sepia-data";
 var SEPIA_TAG_MEM_STATE = "sepia-mem-state";
 var SEPIA_TAG_STATE_TYPE = "sepia-state-type";
-var SEPIA_TAG_SET_CMD = "sepia-set-cmd";
+var SEPIA_TAG_SET_CMDS = "sepia-set-cmds";
 
 var showHidden = false;		//state of show/hide button, starts with false
 var refreshDelayTimer;		//timer that automatically refreshes stuff after change by user
@@ -105,6 +105,28 @@ function getSmartHomeHubDataFromServer(){
 		}
 	);
 }
+
+//item methods
+
+function getItemMetaData(item, fieldName, asObject){
+	var val = item.meta[fieldName];
+	if (val && typeof val == "object"){
+		if (asObject){
+			return val;
+		}else{
+			val = JSON.stringify(val);
+			return val;
+		}
+	}else if (!val){
+		if (asObject){
+			return undefined;
+		}else{
+			return "";
+		}
+	}
+}
+
+//other methods
 
 function getSmartHomeDevices(successCallback, errorCallback){
 	var hubHost = getSmartHomeServer();
@@ -285,8 +307,8 @@ function putSmartHomeItemProperty(shi, property, value, successCallback, errorCa
 				case SEPIA_TAG_STATE_TYPE:
 					shi["state-type"] = value;
 					break;
-				case SEPIA_TAG_SET_CMD:
-					shi.meta["setCmd"] = value;
+				case SEPIA_TAG_SET_CMDS:
+					shi.meta["setCmds"] = value;
 					break;
 				default:
 					console.error("Smart Home Device property unknown: " + property);
@@ -327,22 +349,30 @@ function setSmartHomeItemState(shi){
 	var oldVal = shi.state.toLowerCase();
 	var deviceType = shi.type;
 	var stateType = "text_binary";	//shi["state-type"]
+	var shiSetCmds = getItemMetaData(shi, "setCmds", true);
 	switch (oldVal) {
 		case "off":
-			newVal = "on";
+			newVal = ((shiSetCmds.enable != undefined)? shiSetCmds.enable : "on");
 			break;
 		case "on":
-			newVal = "off";
+			newVal = ((shiSetCmds.disable != undefined)? shiSetCmds.disable : "off");
 			break;
 		case "open":
-			newVal = "closed";
+			newVal = ((shiSetCmds.disable != undefined)? shiSetCmds.disable : "closed");
 			break;
 		case "closed":
-			newVal = "open";
+			newVal = ((shiSetCmds.enable != undefined)? shiSetCmds.enable : "open");
 			break;
 		default:
-			if (!!oldVal.match(/^\d+$/)){
-				if (deviceType == 'roller_shutter'){
+			if (!!oldVal.match(/^[\d,.]+$/)){
+				if (shiSetCmds.enable != undefined && shiSetCmds.disable != undefined){
+					newVal = shiSetCmds.disable;
+					if (oldVal == 0){
+						newVal = shiSetCmds.enable;
+					}else{
+						newVal = shiSetCmds.disable;
+					}
+				}else if (deviceType == 'roller_shutter'){
 					newVal = "closed";
 				}else{
 					//TODO: this might be too general
@@ -399,6 +429,7 @@ function buildSmartHomeItem(shi){
 	shiObj.setAttribute("data-shi", JSON.stringify(shi));
 	var itemName = shi.name;
 	var itemId = shi.meta.id;
+	var shiSetCmds = getItemMetaData(shi, "setCmds", false);
 	var itemNameSpan = document.createElement('span');
 	var itemNameSpan = document.createElement('span');
 	var itemNameSpan = document.createElement('span');
@@ -432,9 +463,9 @@ function buildSmartHomeItem(shi){
 			"<div class='start-hidden' style='display:none;'><label>State type:</label>" + "<select class='shi-property smarthome-item-state-type' data-shi-property='" + SEPIA_TAG_STATE_TYPE + "'>" +
 					buildSmartHomeStateTypeOptions(shi["state-type"]) +
 			"</select></div>" + 
-			"<div class='start-hidden' style='display:none;'><label>Set command:</label>" + 
-				"<input class='shi-property smarthome-item-set-cmd' data-shi-property='" + SEPIA_TAG_SET_CMD + "' "
-					+ "value='" + (shi.meta["setCmd"] || "") + "' placeholder='e.g.: pct, dim, desired-temp, ...' type='text' title='Set command used when writing a new state (for experts)'>" +
+			"<div class='start-hidden' style='display:none;'><label>Custom config:</label>" + 
+				"<input class='shi-property smarthome-item-set-cmds' data-shi-property='" + SEPIA_TAG_SET_CMDS + "' style='font-size: 11px;' "
+					+ "value='" + shiSetCmds + "' placeholder='e.g.: {\"enable\":\"on\", \"disable\":\"off\", \"number\":\"pct <val>\"}' type='text' title='For experts: Set custom commands used when writing a new state.'>" +
 			"</select></div>" + 
 		"</div>" +
 		"<div class='smarthome-extend-body-btn'><div class='smarthome-extend-body-icon'>&#8250;</div></div>"
