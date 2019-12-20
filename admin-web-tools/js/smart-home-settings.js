@@ -349,7 +349,7 @@ function setSmartHomeItemState(shi){
 	var oldVal = shi.state.toLowerCase();
 	var deviceType = shi.type;
 	var stateType = "text_binary";	//shi["state-type"]
-	var shiSetCmds = getItemMetaData(shi, "setCmds", true);
+	var shiSetCmds = getItemMetaData(shi, "setCmds", true) || {};
 	switch (oldVal) {
 		case "off":
 			newVal = ((shiSetCmds.enable != undefined)? shiSetCmds.enable : "on");
