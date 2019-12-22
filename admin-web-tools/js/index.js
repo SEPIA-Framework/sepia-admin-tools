@@ -345,10 +345,16 @@ function onStart(){
 
 	//make results view draggable
 	makeDraggable('result-container', 'result-drag-btn');
+	
+	//activate postMessage interface
+	sepiaPostMessageInterfaceReady = true;
+	releaseBufferedSepiaPostMessages();
 }
 
 //------ Post-Message Interface ------
 
+var sepiaPostMessageInterfaceReady = false;
+var sepiaPostMessageInterfaceBuffer = [];
 var sepiaPostMessageHandlers = {
 	"test": 	console.log,
 	"login": 	accountPostMessageHandlerLogin 	//authentication.js
@@ -356,16 +362,34 @@ var sepiaPostMessageHandlers = {
 function addPostMessageHandler(handlerName, handlerFun){
 	sepiaPostMessageHandlers[handlerName] = handlerFun;
 }
+function releaseBufferedSepiaPostMessages(){
+	sepiaPostMessageInterfaceBuffer.forEach(function(data){
+		var handler = sepiaPostMessageHandlers[data.fun];
+		if (handler && typeof handler == "function"){
+			handler(data.ev);
+		}else{
+			console.error('SEPIA - sendInputEvent of ' + data.source + ': Message handler not available!');
+		}
+	});
+}
 window.addEventListener('message', function(message){
 	if (message.data && message.data.type){
 		if (message.data.type == "sepia-common-interface-event"){
 			//console.log(message);
 			console.log("SEPIA Control HUB received message for handler: " + message.data.fun);
-			var handler = sepiaPostMessageHandlers[message.data.fun];
-			if (handler && typeof handler == "function"){
-				handler(message.data.ev);
+			if (sepiaPostMessageInterfaceReady){
+				var handler = sepiaPostMessageHandlers[message.data.fun];
+				if (handler && typeof handler == "function"){
+					handler(message.data.ev);
+				}else{
+					console.error('SEPIA - sendInputEvent of ' + message.source + ': Message handler not available!');
+				}
 			}else{
-				console.error('SEPIA - sendInputEvent of ' + message.source + ': Message handler not available!');
+				sepiaPostMessageInterfaceBuffer.push({
+					fun: message.data.fun,
+					ev: message.data.ev,
+					source: message.source
+				});
 			}
 		}
 	}
