@@ -58,8 +58,8 @@ function callAssistApi(endpoint, text, successCallback, errorCallback){
 function interpret(text, successCallback, errorCallback){
 	callAssistApi("interpret", text, successCallback, errorCallback);
 }
-function interpretV2(text, successCallback, errorCallback){
-	callAssistApi("interpretV2", text, successCallback, errorCallback);
+function understand(text, successCallback, errorCallback){
+	callAssistApi("understand", text, successCallback, errorCallback);
 }
 function interview(text, successCallback, errorCallback){
 	callAssistApi("interview", text, successCallback, errorCallback);

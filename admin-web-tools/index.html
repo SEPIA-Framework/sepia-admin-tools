@@ -324,7 +324,7 @@
 
 				<!-- ASSISTANT -->
 				<div id="assistant" class="bytemind-view">
-					<section class="group">
+					<section class="group" style='margin-bottom: 0;'>
 						<h3>Test sentence</h3>
 						<div class="group">
 							<select id="assist-language-select" name="assist-lang" style="min-width: 100px;"> 
@@ -335,8 +335,9 @@
 					</section>
 					<section class="group">
 						<div class="interface_button_box">
+							<p style='margin: 8px 0 16px 0;'>API endpoints</p>
 							<button onclick="interpret()" class="interface_button">INTERPRET</button>
-							<button onclick="interpretV2()" class="interface_button">INTERPRET V2</button>
+							<button onclick="understand()" class="interface_button">UNDERSTAND</button>
 							<button onclick="interview()" class="interface_button">INTERVIEW</button>
 							<button onclick="answer()" class="interface_button">ANSWER</button>
 							<button onclick="reportSentence()" class="interface_button">REPORT</button>
