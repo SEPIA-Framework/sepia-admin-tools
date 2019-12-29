@@ -189,29 +189,30 @@
 				<!-- CORE SETTINGS -->
 				<div id="core-settings" class="bytemind-view">
 					<section class="group">
-						<h3>Load Settings</h3>
-						<p class="info-text">Show ad-hoc and persistent settings.</p>
+						<h3>Load and Change Settings</h3>
+						<p class="info-text">Persistent settings are the settings stored in the properties file of the Assist-Server.</p>
 						<div class="interface_button_box">
-							<button onclick="getAdHocServerConfig()" class="interface_button">Get Ad-HOC Settings</button>
 							<button onclick="getFullServerConfig()" class="interface_button">Get Persistent Settings</button>
 						</div>
-					</section>
-					<section class="group">
-						<h3>Change Setting</h3>
+						<div id="settings-list-box"></div>
 						<p class="info-text">Write key-value pair to config. Will take effect after server reload.</p>
 						<div class="group">
 							<input id="settings-write-kvpair-k" type="text" spellcheck="false" placeholder="key">
-							<span> = </span>
+							<span style='min-width: 32px; text-align: center; color: #beff1a;'>=</span>
 							<input id="settings-write-kvpair-v" type="text" spellcheck="false" placeholder="value">
 						</div>
 						<div class="interface_button_box">
-							<button onclick="writeKeyValueToServerConfig()" class="interface_button">Write to config</button>
 							<button onclick="getSpecificServerConfig()" class="interface_button">Read this key</button>
+							<button onclick="writeKeyValueToServerConfig()" class="interface_button">Write to config</button>
 							<button onclick="softRestartServer()" class="interface_button">Reload Server</button>
 						</div>
 					</section>
 					<section class="group">
 						<h3>Ad-hoc Toggles</h3>
+						<p class="info-text">Ad-hoc settings are settings that will not persist on server restart (e.g. for testing).</p>
+						<div class="interface_button_box">
+							<button onclick="getAdHocServerConfig()" class="interface_button">Get Ad-Hoc Settings</button>
+						</div>
 						<p class="info-text">Changes some settings ad-hoc without writing to config file. Will reset on server-restart.</p>
 						<div class="interface_button_box">
 							<button onclick="toggleServerAnswers()" class="interface_button">Toggle Answers Module</button>
@@ -559,6 +560,7 @@
 <script src="lib/bytemind.ui.carousel-1.1.0.js"></script>
 <script src="lib/bytemind.ui.sidemenu-1.1.0.js"></script>
 <!--APP -->
+<link rel="stylesheet" href="css/server-config.css" title='main'>
 <link rel="stylesheet" href="css/smart-home.css" title='main'>
 <script type="text/javascript" src="js/shared.js" charset="UTF-8"></script>
 <script type="text/javascript" src="js/authentication.js" charset="UTF-8"></script>

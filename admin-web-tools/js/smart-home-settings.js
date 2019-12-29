@@ -430,9 +430,6 @@ function buildSmartHomeItem(shi){
 	var itemName = shi.name;
 	var itemId = shi.meta.id;
 	var shiSetCmds = getItemMetaData(shi, "setCmds", false);
-	var itemNameSpan = document.createElement('span');
-	var itemNameSpan = document.createElement('span');
-	var itemNameSpan = document.createElement('span');
 	var shiObjContent = "" +
 		"<div class='smarthome-item-title'>" + 
 			"<div style='overflow:hidden;'>" +

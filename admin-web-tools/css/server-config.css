@@ -1,0 +1,45 @@
+#settings-list-box {
+    padding: 16px 0 0 0;
+}
+
+.settings-list-entry {
+	display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+	background: #181818;
+}
+.settings-list-entry:nth-child(even) {
+	background: #202020;
+}
+.settings-list-entry div {
+	flex: 1;
+	padding: 4px;
+	font-size: 14px;
+}
+.settings-list-entry div:nth-child(2) {
+	text-align: right;
+	padding-right: 8px;
+	min-width: 30px;
+	color: #beff1a;
+}
+.settings-list-entry div:nth-child(3) {
+	padding: 0;
+}
+
+.settings-list-confirm-btn {
+	flex: 0 !important;
+	display: none;
+	cursor: pointer;
+}
+
+.settings-list-entry input {
+	border: 0;
+	border-bottom: 1px solid #beff1a;
+	background: transparent;
+	color: #eee;
+	padding: 4px;
+	min-width: 240px;
+	width: 100%;
+}
