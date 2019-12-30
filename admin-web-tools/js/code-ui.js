@@ -170,6 +170,7 @@ function codeUiOpenSourceFile(event){
 			$('#code-ui-extension-name').val(name);
 			codeUiUpdateExtension();
 			//console.log(reader.result.substring(0, 200));
+			$('#code-ui-file-input').val('');	//reset so it works when loading same file again
 		};
 		reader.readAsText(input.files[0]);
 	}

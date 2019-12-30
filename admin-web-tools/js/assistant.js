@@ -32,8 +32,7 @@ function getAssistantLanguage(){
 //some missing data
 var testLocation = JSON.stringify({	latitude: "52.52",	longitude: "13.37", city: "Berlin" });
 
-//test interpreter
-function interpret(text, successCallback, errorCallback){
+function callAssistApi(endpoint, text, successCallback, errorCallback){
 	if (!text){
 		text = $('#test-sentence').val();
 	}
@@ -45,9 +44,9 @@ function interpret(text, successCallback, errorCallback){
 		"user_location" : testLocation
 	}
 	if (successCallback){
-		genericFormPostRequest("assist", "interpret", body, successCallback, errorCallback);
+		genericFormPostRequest("assist", endpoint, body, successCallback, errorCallback);
 	}else{
-		genericFormPostRequest("assist", "interpret", body, function(data){
+		genericFormPostRequest("assist", endpoint, body, function(data){
 			showMessage(JSON.stringify(data, null, 2));
 		}, function(data){
 			showMessage(JSON.stringify(data, null, 2));
@@ -55,27 +54,19 @@ function interpret(text, successCallback, errorCallback){
 	}
 }
 
+//test interpreter
+function interpret(text, successCallback, errorCallback){
+	callAssistApi("interpret", text, successCallback, errorCallback);
+}
+function understand(text, successCallback, errorCallback){
+	callAssistApi("understand", text, successCallback, errorCallback);
+}
+function interview(text, successCallback, errorCallback){
+	callAssistApi("interview", text, successCallback, errorCallback);
+}
 //test answer
 function answer(text, successCallback, errorCallback){
-	if (!text){
-		text = $('#test-sentence').val();
-	}
-	var body = {
-		"text" : text,
-		"lang" : getAssistantLanguage(),
-		"time" : new Date().getTime(),
-		"time_local" : getLocalDateTime(),
-		"user_location" : testLocation
-	}
-	if (successCallback){
-		genericFormPostRequest("assist", "answer", body, successCallback, errorCallback);
-	}else{
-		genericFormPostRequest("assist", "answer", body, function(data){
-			showMessage(JSON.stringify(data, null, 2));
-		}, function(data){
-			showMessage(JSON.stringify(data, null, 2));
-		});
-	}
+	callAssistApi("answer", text, successCallback, errorCallback);
 }
 
 //report wrong answer/command
@@ -196,8 +187,10 @@ function testAnswerPerformance(){
 			+ "<br>Result times (ms): " + results 
 			+ "<br>Error times (ms): " + errors
 			+ "<br>Average (ms): " + avg
-			+ "<br>Minimum (ms): " + Math.min(...results)
-			+ "<br>Maximum (ms): " + Math.max(...results);
+			//+ "<br>Minimum (ms): " + Math.min(...results)
+			//+ "<br>Maximum (ms): " + Math.max(...results);			for IE11 ...
+			+ "<br>Minimum (ms): " + Math.min.apply(Math, results)
+			+ "<br>Maximum (ms): " + Math.max.apply(Math, results);
 		showMessage(msg);
 	});
 }

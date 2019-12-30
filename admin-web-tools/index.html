@@ -189,29 +189,30 @@
 				<!-- CORE SETTINGS -->
 				<div id="core-settings" class="bytemind-view">
 					<section class="group">
-						<h3>Load Settings</h3>
-						<p class="info-text">Show ad-hoc and persistent settings.</p>
+						<h3>Load and Change Settings</h3>
+						<p class="info-text">Persistent settings are the settings stored in the properties file of the Assist-Server.</p>
 						<div class="interface_button_box">
-							<button onclick="getAdHocServerConfig()" class="interface_button">Get Ad-HOC Settings</button>
 							<button onclick="getFullServerConfig()" class="interface_button">Get Persistent Settings</button>
 						</div>
-					</section>
-					<section class="group">
-						<h3>Change Setting</h3>
+						<div id="settings-list-box"></div>
 						<p class="info-text">Write key-value pair to config. Will take effect after server reload.</p>
 						<div class="group">
 							<input id="settings-write-kvpair-k" type="text" spellcheck="false" placeholder="key">
-							<span> = </span>
+							<span style='min-width: 32px; text-align: center; color: #beff1a;'>=</span>
 							<input id="settings-write-kvpair-v" type="text" spellcheck="false" placeholder="value">
 						</div>
 						<div class="interface_button_box">
-							<button onclick="writeKeyValueToServerConfig()" class="interface_button">Write to config</button>
 							<button onclick="getSpecificServerConfig()" class="interface_button">Read this key</button>
+							<button onclick="writeKeyValueToServerConfig()" class="interface_button">Write to config</button>
 							<button onclick="softRestartServer()" class="interface_button">Reload Server</button>
 						</div>
 					</section>
 					<section class="group">
 						<h3>Ad-hoc Toggles</h3>
+						<p class="info-text">Ad-hoc settings are settings that will not persist on server restart (e.g. for testing).</p>
+						<div class="interface_button_box">
+							<button onclick="getAdHocServerConfig()" class="interface_button">Get Ad-Hoc Settings</button>
+						</div>
 						<p class="info-text">Changes some settings ad-hoc without writing to config file. Will reset on server-restart.</p>
 						<div class="interface_button_box">
 							<button onclick="toggleServerAnswers()" class="interface_button">Toggle Answers Module</button>
@@ -257,7 +258,7 @@
 						<p class="info-text">As admin you can change user roles and delete ANY user (but the core admin). Other users can delete ONLY themselves.</p>
 						<div class="group2">
 							<div class="group"><label>UserID: </label><input id="edit-user-id" type="text" placeholder="User to edit"></div>
-							<div class="group"><label>Roles: </label><input id="new-user-roles" type="text" placeholder="e.g.: user, developer, smarthomeguest"></div>
+							<div class="group"><label>Roles: </label><input id="new-user-roles" type="text" placeholder="e.g.: developer, smarthomeguest, tinkerer" title="More roles: smarthomeguest, seniordev, chiefdev, tester, inviter"></div>
 						</div>
 					</section>
 					<section class="group">
@@ -278,37 +279,53 @@
 				<!-- SMART HOME -->
 				<div id="smart-home" class="bytemind-view">
 					<section class="group">
-						<h3>Access</h3>
+						<h3>Smart Home HUB</h3>
 						<div class="group"><label>Select system: </label>
 							<select id="smarthome_system_select" name="smarthome_system_sel">
 								<option value="" disabled selected>-Select-</option>
 								<option value="openhab">openHAB</option>
+								<option value="fhem">FHEM</option>
+								<option value="test">Test HUB</option>
+								<option value="custom">Custom</option>
 							</select>
+						</div>
+						<div id="smarthome_system_custom" class="group" style="display: none;">
+							<label style="position: relative;">Custom: </label>
+							<input id="smarthome_system_custom_select" type="text" placeholder="e.g.: MyHUB or class name" title="Class name sample: net.b07z.sepia.sdk.services.uid1007.MyService$MyHub">
 						</div>
 						<div class="group">
 							<label style="position: relative;">Server: 
 								<span id="smarthome-server-indicator" class="input-inline-indicator inactive" title="Red: server not found, Green: connection established"></span>
 							</label>
-							<input id="smarthome-server" type="text" onchange="checkSmartHomeServer()" placeholder="e.g.: http://localhost:8080">
+							<input id="smarthome-server" type="text" placeholder="e.g.: http://localhost:8080">
 						</div>
 					</section>
 					<section class="group">
 						<div class="interface_button_box">
 							<button onclick="getSmartHomeHubDataFromServer()" class="interface_button">LOAD HUB INFO</button>
-							<button onclick="getSmartHomeDevices()" class="interface_button">GET DEVICES</button>
+							<button onclick="registerSepiaInsideSmartHomeHub()" class="interface_button">REGISTER SEPIA</button>
+							<div>
+								<label>GET DEVICES:</label><select id="smarthome-devices-filter" style="min-width: unset;"></select>
+								<!--<button onclick="getSmartHomeDevices()" class="interface_button">GET DEVICES</button>-->
+							</div>
 						</div>
 					</section>
 					<section class="group">
-						<h3>Devices</h3>
+						<h3>Devices <span id="smarthome-devices-last-refresh"></span></h3>
 						<div id="smarthome-devices-list">
-							Press "GET DEVICES" to load all items.
+							<ul>
+								<li>Set or load <a href="https://github.com/SEPIA-Framework/sepia-docs/wiki/Smart-Home-Controls" target="_blank">smart home HUB info</a> from server</li>
+								<li>Register SEPIA Framework (required once for some HUBs)</li>
+								<li>Get the list of smart devices from HUB</li>
+								<li>Configure devices for SEPIA as needed</li>
+							</ul>
 						</div>
 					</section>
 				</div>
 
 				<!-- ASSISTANT -->
 				<div id="assistant" class="bytemind-view">
-					<section class="group">
+					<section class="group" style='margin-bottom: 0;'>
 						<h3>Test sentence</h3>
 						<div class="group">
 							<select id="assist-language-select" name="assist-lang" style="min-width: 100px;"> 
@@ -319,7 +336,10 @@
 					</section>
 					<section class="group">
 						<div class="interface_button_box">
+							<p style='margin: 8px 0 16px 0;'>API endpoints</p>
 							<button onclick="interpret()" class="interface_button">INTERPRET</button>
+							<button onclick="understand()" class="interface_button">UNDERSTAND</button>
+							<button onclick="interview()" class="interface_button">INTERVIEW</button>
 							<button onclick="answer()" class="interface_button">ANSWER</button>
 							<button onclick="reportSentence()" class="interface_button">REPORT</button>
 						</div>
@@ -413,8 +433,12 @@
 							<label>Version tag: </label><input id="stt-model-version" type="text" placeholder="04">
 						</div>
 						<div class="interface_button_box">
-							<button onclick="sttAdaptLm('en')" class="interface_button">Adapt English LM</button>
-							<button onclick="sttAdaptLm('de')" class="interface_button">Adapt German LM</button>
+							<select id="stt-language-select" name="stt-lang" style="min-width: 70px; margin-right: 8px;"> 
+								<option value="en">EN</option>
+								<option value="de">DE</option>
+							</select>
+							<button onclick="sttAdaptLm()" class="interface_button">Adapt LM</button>
+							<button onclick="sttGetTrainingDataFromTeachServer()" class="interface_button">Get Adapt Data</button>
 						</div>
 					</section>
 					<section class="group">
@@ -510,6 +534,19 @@
 <link rel="stylesheet" href="lib/googleMaterialIcons.css">
 <!--<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">-->
 <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500" rel="stylesheet">
+<!-- Polyfills -->
+<script>
+(function () { 
+	if (typeof window.CustomEvent === "function") return false; 
+	function CustomEvent (event, params) { 
+		params = params || { bubbles: false, cancelable: false, detail: null }; 
+		var evt = document.createEvent("CustomEvent"); 
+		evt.initCustomEvent( event, params.bubbles, params.cancelable, params.detail ); 
+		return evt; 
+	} 
+	window.CustomEvent = CustomEvent; 
+})();
+</script>
 <!-- JS -->
 <script src="lib/jquery-3.4.1.min.js"></script>
 <script src="lib/hammer.min.js"></script>
@@ -523,6 +560,7 @@
 <script src="lib/bytemind.ui.carousel-1.1.0.js"></script>
 <script src="lib/bytemind.ui.sidemenu-1.1.0.js"></script>
 <!--APP -->
+<link rel="stylesheet" href="css/server-config.css" title='main'>
 <link rel="stylesheet" href="css/smart-home.css" title='main'>
 <script type="text/javascript" src="js/shared.js" charset="UTF-8"></script>
 <script type="text/javascript" src="js/authentication.js" charset="UTF-8"></script>

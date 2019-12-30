@@ -3,171 +3,518 @@
 var smartHomeSystem = "";
 var smartHomeServer = "";
 
-function SmartHomeItem(name, type, room, groups, link){
-	this.name = name;
-	this.type = type;
-	this.room = room;
-	this.groups = groups;
-	this.link = link;
+var SEPIA_TAG_NAME = "sepia-name";
+var SEPIA_TAG_TYPE = "sepia-type";
+var SEPIA_TAG_ROOM = "sepia-room";
+var SEPIA_TAG_ROOM_INDEX = "sepia-room-index";
+var SEPIA_TAG_DATA = "sepia-data";
+var SEPIA_TAG_MEM_STATE = "sepia-mem-state";
+var SEPIA_TAG_STATE_TYPE = "sepia-state-type";
+var SEPIA_TAG_SET_CMDS = "sepia-set-cmds";
+
+var showHidden = false;		//state of show/hide button, starts with false
+var refreshDelayTimer;		//timer that automatically refreshes stuff after change by user
+
+function smartHomeOnStart(){
+	smartHomeSystem = appStorage.getItem('smartHomeSystem');
+	if (smartHomeSystem){
+		if (hasSelectedKnownSmartHomeSystem(smartHomeSystem)){
+			$('#smarthome_system_select').val(smartHomeSystem);
+		}else{
+			$('#smarthome_system_select').val('custom');
+			$('#smarthome_system_custom_select').val(smartHomeSystem);
+			$('#smarthome_system_custom').show();
+		}
+	}
+	smartHomeServer = appStorage.getItem('smartHomeServer');
+	if (smartHomeServer){
+		$('#smarthome-server').val(smartHomeServer);
+	}else{
+		var serverViaUrl = getURLParameter('smarthome-server');
+		if (serverViaUrl){
+			$('#smarthome-server').val(serverViaUrl);
+		}
+	}
+	//change listener
+	$('#smarthome_system_select').on('change', function(){
+		$('#smarthome-server-indicator').removeClass('secure');
+		$('#smarthome-server-indicator').removeClass('inactive');
+		if (this.value == "custom"){
+			$('#smarthome_system_custom').show();
+		}else{
+			$('#smarthome_system_custom').hide();
+		}
+	});
+}
+
+function hasSelectedKnownSmartHomeSystem(sys){
+	var isOption = false;
+	$('#smarthome_system_select option').each(function(){
+		if (this.value == sys) {
+			isOption = true;
+			return false;
+		}
+	});
+	return isOption;
 }
 
 function getSmartHomeSystem(){
 	var system = $('#smarthome_system_select').val();
+	if (system == "custom"){
+		$('#smarthome_system_custom').show();
+		system = $('#smarthome_system_custom_select').val();
+	}
 	if (system){
-		sessionStorage.setItem('smartHomeSystem', system);
+		appStorage.setItem('smartHomeSystem', system);
 		smartHomeSystem = system;
 	}else{
-		sessionStorage.setItem('smartHomeSystem', "");
+		appStorage.setItem('smartHomeSystem', "");
 	}
 	return system;
 }
 function getSmartHomeServer(successCallback, errorCallback){
 	var host = $('#smarthome-server').val();
 	if (host){
-		sessionStorage.setItem('smartHomeServer', host);
+		appStorage.setItem('smartHomeServer', host);
 		smartHomeServer = host;
 		if (successCallback) successCallback(host);
 	}else{
-		sessionStorage.setItem('smartHomeServer', "");
+		appStorage.setItem('smartHomeServer', "");
 		smartHomeServer = "";
 		if (errorCallback) errorCallback();
 	}
 	return host;
 }
 function getSmartHomeHubDataFromServer(){
-	getSpecificServerConfig("smarthome_hub_", function(data){
-		$('#smarthome_system_select').val('');
-		$('#smarthome-server').val('');
-		var hubData = data.config;
-		if (hubData && hubData.length >= 2){
-			hubData.forEach(function(hd){
-				if (hd.indexOf("smarthome_hub_name=") == 0){
-					$('#smarthome_system_select').val(hd.split("=")[1]);
-				}else if (hd.indexOf("smarthome_hub_host=") == 0){
-					$('#smarthome-server').val(hd.split("=")[1]);
-				}
-			});
-		}else{
-			showMessage(JSON.stringify(data, null, 2));
-		}
-	});
-}
-
-function checkSmartHomeServer(_host){
-	var host = _host || getSmartHomeServer();
-	if (!host){
-		$('#smarthome-server-indicator').removeClass('secure'); 	//secure = connected (in this case)
-		$('#smarthome-server-indicator').addClass('inactive');
-		return;
-	}
-	if (getSmartHomeSystem() == "openhab"){
-		openHabCheckConnection(host, function(){
-			//success
+	var body = {};
+	if (refreshDelayTimer) clearTimeout(refreshDelayTimer);
+	genericPostRequest("assist", "integrations/smart-home/getConfiguration", body,
+		function (data){
+			//showMessage(JSON.stringify(data, null, 2));
+			console.log(data);
+			data.hubName = data.hubName.toLowerCase();
+			$('#smarthome_system_select').val(data.hubName);
+			$('#smarthome-server').val(data.hubHost);
 			$('#smarthome-server-indicator').removeClass('inactive');
 			$('#smarthome-server-indicator').addClass('secure');
-		}, function(){
-			//error
+		},
+		function (data){
+			showMessage(JSON.stringify(data, null, 2));
 			$('#smarthome-server-indicator').removeClass('secure');
 			$('#smarthome-server-indicator').removeClass('inactive');
-		});
-		
-	}else{
-		console.error("Unsupported smart home system: " + smartHomeSystem);
+		}
+	);
+}
+
+//item methods
+
+function getItemMetaData(item, fieldName, asObject){
+	var val = item.meta[fieldName];
+	if (val && typeof val == "object"){
+		if (asObject){
+			return val;
+		}else{
+			val = JSON.stringify(val);
+			return val;
+		}
+	}else if (!val){
+		if (asObject){
+			return undefined;
+		}else{
+			return "";
+		}
 	}
 }
 
+//other methods
+
 function getSmartHomeDevices(successCallback, errorCallback){
-	$('#smarthome-devices-list').html("");
-	var host = getSmartHomeServer();
-	if (!host){
-		showMessage('Error: missing server');
+	var hubHost = getSmartHomeServer();
+	var hubName = getSmartHomeSystem();
+	if (!hubHost || !hubName){
+		showMessage('Error: missing HUB server or host address');
 		return;
+	}else{
+		if (refreshDelayTimer) clearTimeout(refreshDelayTimer);
 	}
-	if (getSmartHomeSystem() == "openhab"){
-		checkSmartHomeServer(host);
-		openHabGetItems(host, function(data){
+	var body = {
+		hubName: hubName,
+		hubHost: hubHost,
+		deviceTypeFilter: $('#smarthome-devices-filter').val()
+	};
+	genericPostRequest("assist", "integrations/smart-home/getDevices", body,
+		function (data){
 			//showMessage(JSON.stringify(data, null, 2));
-			if (data && data.length > 0){
+			console.log(data);
+			$('#smarthome-server-indicator').removeClass('inactive');
+			$('#smarthome-server-indicator').addClass('secure');
+			$('#smarthome-devices-last-refresh').html('- last refresh:<br>' + 
+				'<button onclick="refreshSmartHomeDevices();">' + new Date().toLocaleTimeString() + ' <i class="material-icons md-btn" style="vertical-align:bottom;">refresh</i></button>'
+			);
+			var devices = data.devices;
+			var hiddenDevices = 0;
+			if (devices && devices.length > 0){
 				//build DOM objects
-				data.forEach(function(item){
+				$('#smarthome-devices-list').html("");
+				devices.forEach(function(item){
 					var domObj = buildSmartHomeItem(item);
 					if (domObj){
 						$('#smarthome-devices-list').append(domObj);
+						if (item.type == "hidden"){
+							$(domObj).addClass("hidden");
+							if (showHidden){
+								$(domObj).show();
+							}
+							hiddenDevices++;
+						}
 					}
 				});
+				//hidden items?
+				if (hiddenDevices > 0){
+					var showHiddenBtn = document.createElement("button");
+					showHiddenBtn.id = "smarthome-devices-list-show-hidden-btn";
+					var updateBtnText = function(){
+						if (!showHidden){
+							showHiddenBtn.innerHTML = "Show " + hiddenDevices + " hidden devices";
+						}else{
+							showHiddenBtn.innerHTML = "Hide " + hiddenDevices + " hidden devices";
+						}
+					}
+					updateBtnText();
+					$('#smarthome-devices-list').append(showHiddenBtn);
+					$(showHiddenBtn).on('click', function(){
+						$('.smarthome-item.hidden').toggle();
+						showHidden = !showHidden;
+						updateBtnText();
+					});
+				}
 				//add button listeners
-				$('.shi-property').off().on('change', function(){
+				$('.shi-property').on('change', function(){
+					var that = this;
 					var $item = $(this).closest('.smarthome-item');
 					var property = $(this).attr('data-shi-property');
 					//console.log(property);
-					var newVal = $(this).val();
+					var newVal = $(this).attr('data-shi-value') || $(this).val();
 					var shiString = $item.attr('data-shi');
-					if (shiString){
+					if (shiString && newVal != undefined){
 						var shi = JSON.parse(shiString);
 						putSmartHomeItemProperty(shi, property, newVal, function(){
-							console.log("Smart home item: " + shi.name + ", changed '" + property + "' to: " + newVal);
+							//$(that).attr('data-shi-value', newVal);
 							$item.attr('data-shi', JSON.stringify(shi));
-						}, function(){
-							var msg = "Smart home item: " + shi.name + ", FAILED to change '" + property + "' to: " + newVal;
-							console.log(msg);
-							alert(msg);
 						});
 					}
+				}).on('click', function(){
+					if (refreshDelayTimer) clearTimeout(refreshDelayTimer);
 				});
+			}else{
+				$('#smarthome-devices-list').html("<h3 style='color: #beff1a;'>No devices found.</h3>");
+				//alert("No devices found.");
 			}
-		}, function(e){
-			alert("No items found or no access to smart home system.");
-		});
-		
+			if (successCallback) successCallback(devices);
+		},
+		function (data){
+			showMessage(JSON.stringify(data, null, 2));
+			$('#smarthome-server-indicator').removeClass('secure');
+			$('#smarthome-server-indicator').removeClass('inactive');
+			$('#smarthome-devices-list').html("<h3 style='color: #f00;'>No items found or no access to smart home system.</h3>");
+			//alert("No items found or no access to smart home system.");
+			if (errorCallback) errorCallback(data);
+		}
+	);
+}
+
+function refreshSmartHomeDevices(changedDevices){
+	//TODO: improve and use 'changedDevices' array
+	//		maybe let user select if refresh is: onEvent, onTime, manually ?
+	if (refreshDelayTimer) clearTimeout(refreshDelayTimer);
+	if (changedDevices){
+		refreshDelayTimer = setTimeout(function(){
+			getSmartHomeDevices();
+		}, 3000);
 	}else{
-		console.error("Unsupported smart home system: " + smartHomeSystem);
+		getSmartHomeDevices();
 	}
+}
+
+function registerSepiaInsideSmartHomeHub(){
+	//$('#smarthome-devices-list').html("");
+	var hubHost = getSmartHomeServer();
+	var hubName = getSmartHomeSystem();
+	if (!hubHost || !hubName){
+		showMessage('Error: missing HUB server or host address');
+		return;
+	}else{
+		if (refreshDelayTimer) clearTimeout(refreshDelayTimer);
+	}
+	var body = {
+		hubName: hubName,
+		hubHost: hubHost
+	};
+	genericPostRequest("assist", "integrations/smart-home/registerFramework", body,
+		function (data){
+			showMessage(JSON.stringify(data, null, 2));
+			//console.log(data);
+			$('#smarthome-server-indicator').removeClass('inactive');
+			$('#smarthome-server-indicator').addClass('secure');
+			
+		},
+		function (data){
+			showMessage(JSON.stringify(data, null, 2));
+			$('#smarthome-server-indicator').removeClass('secure');
+			$('#smarthome-server-indicator').removeClass('inactive');
+		}
+	);
 }
 
 function putSmartHomeItemProperty(shi, property, value, successCallback, errorCallback){
-	if (getSmartHomeSystem() == "openhab"){
-		openHabPutItemTag(shi, property, value, successCallback, errorCallback);
+	var hubHost = getSmartHomeServer();
+	var hubName = getSmartHomeSystem();
+	if (!hubHost || !hubName){
+		showMessage('Error: missing HUB server or host address');
+		return;
 	}else{
-		console.error("Unsupported smart home system: " + smartHomeSystem);
+		if (refreshDelayTimer) clearTimeout(refreshDelayTimer);
 	}
+	var attribs = {};
+	attribs[property] = value;
+	var body = {
+		hubName: hubName,
+		hubHost: hubHost,
+		device: shi,
+		attributes: attribs
+	};
+	genericPostRequest("assist", "integrations/smart-home/setDeviceAttributes", body,
+		function (data){
+			//showMessage(JSON.stringify(data, null, 2));
+			//console.log(data);
+			$('#smarthome-server-indicator').removeClass('inactive');
+			$('#smarthome-server-indicator').addClass('secure');
+			console.log("Smart home item: " + shi.name + ", changed '" + property + "' to: " + value);
+			//refresh attributes
+			switch(property) {
+				case SEPIA_TAG_NAME:
+					shi.name = value;
+					break;
+				case SEPIA_TAG_TYPE:
+					shi.type = value;
+					break;
+				case SEPIA_TAG_ROOM:
+					shi.room = value;
+					break;
+				case SEPIA_TAG_ROOM_INDEX:
+					shi["room-index"] = value;
+					break;
+				case SEPIA_TAG_STATE_TYPE:
+					shi["state-type"] = value;
+					break;
+				case SEPIA_TAG_SET_CMDS:
+					shi.meta["setCmds"] = value;
+					break;
+				default:
+					console.error("Smart Home Device property unknown: " + property);
+			}
+			//refresh UI
+			var changedDevices = [];
+			changedDevices.push(shi);
+			refreshSmartHomeDevices(changedDevices);
+			//done
+			if (successCallback) successCallback();
+		},
+		function (data){
+			showMessage(JSON.stringify(data, null, 2));
+			$('#smarthome-server-indicator').removeClass('secure');
+			$('#smarthome-server-indicator').removeClass('inactive');
+			var msg = "Smart home item: " + shi.name + ", FAILED to change '" + property + "' to: " + value;
+			console.log(msg);
+			alert(msg);
+			if (errorCallback) errorCallback();
+		}
+	);
+}
+function deleteSmartHomeItemProperty(shi, property, successCallback, errorCallback){
+	//TODO: for now we just set value to empty
+	putSmartHomeItemProperty(shi, property, "", successCallback, errorCallback);
 }
 
-function deleteSmartHomeItemProperty(shi, property, successCallback, errorCallback){
-	if (getSmartHomeSystem() == "openhab"){
-		openHabDeleteItemTag(shi, property, value, successCallback, errorCallback);
-	}else{
-		console.error("Unsupported smart home system: " + smartHomeSystem);
+function setSmartHomeItemState(shi){
+	console.log(shi);
+	//alert("Coming soon :-)");
+	var hubHost = getSmartHomeServer();
+	var hubName = getSmartHomeSystem();
+	if (!hubHost || !hubName){
+		showMessage('Error: missing HUB server or host address');
+		return;
 	}
+	var newVal;
+	var oldVal = shi.state.toLowerCase();
+	var deviceType = shi.type;
+	var stateType = "text_binary";	//shi["state-type"]
+	var shiSetCmds = getItemMetaData(shi, "setCmds", true) || {};
+	switch (oldVal) {
+		case "off":
+			newVal = ((shiSetCmds.enable != undefined)? shiSetCmds.enable : "on");
+			break;
+		case "on":
+			newVal = ((shiSetCmds.disable != undefined)? shiSetCmds.disable : "off");
+			break;
+		case "open":
+			newVal = ((shiSetCmds.disable != undefined)? shiSetCmds.disable : "closed");
+			break;
+		case "closed":
+			newVal = ((shiSetCmds.enable != undefined)? shiSetCmds.enable : "open");
+			break;
+		default:
+			if (!!oldVal.match(/^[\d,.]+$/)){
+				if (shiSetCmds.enable != undefined && shiSetCmds.disable != undefined){
+					newVal = shiSetCmds.disable;
+					if (oldVal == 0){
+						newVal = shiSetCmds.enable;
+					}else{
+						newVal = shiSetCmds.disable;
+					}
+				}else if (deviceType == 'roller_shutter'){
+					newVal = "closed";
+				}else{
+					//TODO: this might be too general
+					if (oldVal == 0){
+						newVal = "on";
+					}else{
+						newVal = "off";
+					}
+				}
+			}
+	}
+	if (newVal == undefined){
+		alert("Cannot switch device state due to unknown old state: " + oldVal);
+		return;
+	}else{
+		if (refreshDelayTimer) clearTimeout(refreshDelayTimer);
+	}
+	var state = {
+		value: newVal,
+		type: stateType
+	};
+	var body = {
+		hubName: hubName,
+		hubHost: hubHost,
+		device: shi,
+		state: state
+	};
+	genericPostRequest("assist", "integrations/smart-home/setDeviceState", body,
+		function (data){
+			showMessage(JSON.stringify(data, null, 2));
+			//refresh device items
+			var changedDevices = [];
+			changedDevices.push(shi);
+			refreshSmartHomeDevices(changedDevices);
+		},
+		function (data){
+			showMessage(JSON.stringify(data, null, 2));
+		}
+	);
 }
 
 //------ DOM ------
 
+function loadSmartHomeGetDevicesFilter(){
+	var options = buildSmartHomeTypeOptions('', true);
+	$('#smarthome-devices-filter').html(options).on('change', function(){
+		getSmartHomeDevices();
+	});
+}
+
 function buildSmartHomeItem(shi){
-	var shiObj = "<div class='smarthome-item' data-shi='" + JSON.stringify(shi) + "'>" +
-		"<div class='smarthome-item-title'>" + shi.name + "</div>" +
+	var shiObj = document.createElement("div");
+	shiObj.className = "smarthome-item";
+	shiObj.setAttribute("data-shi", JSON.stringify(shi));
+	var itemName = shi.name;
+	var itemId = shi.meta.id;
+	var shiSetCmds = getItemMetaData(shi, "setCmds", false);
+	var shiObjContent = "" +
+		"<div class='smarthome-item-title'>" + 
+			"<div style='overflow:hidden;'>" +
+				"<span class='shi-property smarthome-item-name' data-shi-property='" + SEPIA_TAG_NAME + "' data-shi-value='" + itemName + "'>" + itemName.replace("<", "&lt;").replace(">", "&gt;") + "</span>" +
+				"<span class='smarthome-item-id'> - " + itemId.replace("<", "&lt;").replace(">", "&gt;") + "</span>" +
+			"</div>" +
+			"<div style='display:flex;'>" +
+				"<button class='shi-control-name'><i class='material-icons md-18'>edit</i></button>" +
+				"<button class='shi-control-toggle'><i class='material-icons md-18'>power_settings_new</i></button>" +
+			"</div>" +
+		"</div>" +
 		"<div class='smarthome-item-body'>" + 
-			"<div><label>Type:</label>" + "<select class='shi-property smarthome-item-type' data-shi-property='type'>" +
-					buildSmartHomeTypeOptions(shi.type) +
+			"<div><label>State:</label>" + "<span class='shi-info smarthome-item-state'>" + shi.state + "</span></div>" + 
+			"<div><label>Type:" + 
+					"<span class='smarthome-item-type-confirm' style='display:none;' title='Type is an automatic guess. Confirm?'>&#10003;</span>" + 
+				"</label>" + 
+				"<select class='shi-property smarthome-item-type' data-shi-property='" + SEPIA_TAG_TYPE + "'>" +
+					buildSmartHomeTypeOptions(shi.type, false) +
 			"</select></div>" + 
-			"<div><label>Room:</label>" + "<select class='shi-property smarthome-item-room' data-shi-property='room'>" +
+			"<div><label>Room:</label><div style='flex: 1 0 128px; min-width: 196px;'>" + 
+				"<select style='width: calc(70% - 4px); min-width: auto;' class='shi-property smarthome-item-room' data-shi-property='" + SEPIA_TAG_ROOM + "'>" +
 					buildSmartHomeRoomOptions(shi.room) +
+				"</select>" + 
+				"<input style='width: calc(30% - 4px); min-width: auto; text-align: center;' class='shi-property smarthome-item-room-index' " 
+					+ "data-shi-property='" + SEPIA_TAG_ROOM_INDEX + "' " 
+					+ "value='" + (shi["room-index"] || "") + "' placeholder='index' type='text' title='Room index, e.g. 1, 22, 303, ...'>" +
+			"</div></div>" + 
+			"<div class='start-hidden' style='display:none;'><label>State type:</label>" + "<select class='shi-property smarthome-item-state-type' data-shi-property='" + SEPIA_TAG_STATE_TYPE + "'>" +
+					buildSmartHomeStateTypeOptions(shi["state-type"]) +
+			"</select></div>" + 
+			"<div class='start-hidden' style='display:none;'><label>Custom config:</label>" + 
+				"<input class='shi-property smarthome-item-set-cmds' data-shi-property='" + SEPIA_TAG_SET_CMDS + "' style='font-size: 11px;' "
+					+ "value='" + shiSetCmds + "' placeholder='e.g.: {\"enable\":\"on\", \"disable\":\"off\", \"number\":\"pct <val>\"}' type='text' title='For experts: Set custom commands used when writing a new state.'>" +
 			"</select></div>" + 
 		"</div>" +
-	"</div>";
+		"<div class='smarthome-extend-body-btn'><div class='smarthome-extend-body-icon'>&#8250;</div></div>"
+	;
+	$(shiObj).append(shiObjContent);
+	//is type guessed?
+	if (shi.meta && shi.meta.typeGuessed){
+		$(shiObj).find('.smarthome-item-type-confirm').show().on('click', function(){
+			$(shiObj).find('.smarthome-item-type').trigger('change');
+			$(this).hide();
+		});
+	}
+	//extend button
+	$(shiObj).find('.smarthome-extend-body-btn').on('click', function(){
+		$(this).find('.smarthome-extend-body-icon').toggleClass('up');
+		$(shiObj).find('.start-hidden').toggle();
+	});
+	//title
+	$(shiObj).find('.smarthome-item-name').on('click', function(){
+		$(shiObj).find('.smarthome-item-id').toggle();
+	});
+	$(shiObj).find('.shi-control-name').on('click', function(){
+		if (refreshDelayTimer) clearTimeout(refreshDelayTimer);
+		var newName = prompt("New name:", shi.name);
+		if (newName){
+			$(shiObj).find('.smarthome-item-name')
+				.html(newName.replace("<", "&lt;").replace(">", "&gt;"))
+				.attr("data-shi-value", newName)
+				.trigger('change');
+		}
+	});
+	//toggle button
+	$(shiObj).find('.shi-control-toggle').on('click', function(){
+		setSmartHomeItemState(shi);
+	});
 	return shiObj;
 }
-function buildSmartHomeTypeOptions(selected){
+function buildSmartHomeTypeOptions(selected, addAllOption){
 	var options = {
 		"light" : "Light",
 		"heater" : "Heater",
-		"device" : "Device"
-		/* ---tbd---
 		"tv" : "TV",
 		"music_player" : "Music Player",
+		"roller_shutter" : "Roller Shutter",
+		"power_outlet" : "Power Outlet",
+		"sensor" : "Sensor",
 		"fridge" : "Fridge",
-		"oven" : " "Oven",
+		"oven" : "Oven",
 		"coffee_maker" : "Coffee Maker",
-		*/
+		"device" : "Device",
+		"other" : "Other",
+		"hidden" : "Hidden"
 	}
 	var optionsObj = "";
 	foundSelected = false;
@@ -181,9 +528,17 @@ function buildSmartHomeTypeOptions(selected){
 		}
 	}
 	if (foundSelected){
-		return ("<option value='' disabled>- Choose -</option>" + optionsObj);
+		if (addAllOption){
+			return ("<option value='' disabled>- Choose -</option><option value=''>All</option>" + optionsObj);
+		}else{
+			return ("<option value='' disabled>- Choose -</option>" + optionsObj);
+		}
 	}else{
-		return ("<option value='' disabled selected>- Choose -</option>" + optionsObj);
+		if (addAllOption){
+			return ("<option value='' disabled selected>- Choose -</option><option value=''>All</option>" + optionsObj);
+		}else{
+			return ("<option value='' disabled selected>- Choose -</option>" + optionsObj);
+		}
 	}
 }
 function buildSmartHomeRoomOptions(selected){
@@ -195,8 +550,14 @@ function buildSmartHomeRoomOptions(selected){
 		"bath" : "Bath",
 		"office" : "Office",
 		"study" : "Study room",
+		"childsroom" : "Child's room",
 		"garage" : "Garage",
-		"shack" : "Shack"
+		"basement" : "Basement",
+		"garden" : "Garden",
+		"hallway" : "Hallway",
+		"shack" : "Shack",
+		"other" : "Other",
+		"unassigned" : "Not assigned"
 	}
 	var optionsObj = "";
 	var foundSelected = false;
@@ -215,104 +576,33 @@ function buildSmartHomeRoomOptions(selected){
 		return ("<option value='' disabled selected>- Choose -</option>" + optionsObj);
 	}
 }
-
-//------ openHAB ------
-
-function openHabCheckConnection(host, successCallback, errorCallback){
-	if (!endsWith(host, "/"))	host += "/";
-	httpRequest(host + "rest/", successCallback, function(){
-		showMessage('Result: error <br>'
-			+ 'If you see a CORS/CORB warning you might need to add<br>'
-			+ '"org.eclipse.smarthome.cors:enable=true" to /etc/openhab2/services/runtime.cfg'
-		, true);
-		if (errorCallback) errorCallback();
-	}, "GET", "", "");
-}
-
-function openHabGetItems(host, successCallback, errorCallback){
-	//TODO
-	if (!endsWith(host, "/"))	host += "/";
-	httpRequest(host + "rest/items?recursive=false", function(data){
-		var items = [];
-		//console.log(data);
-		if (data && data.length > 0){
-			data.forEach(function(item){
-				//console.log(item);
-				var name = item.name;
-				var type = openHabGetFromSepiaTags("type", item.tags);
-				var room = openHabGetFromSepiaTags("room", item.tags);
-				var groups = item.groupNames;
-				console.log("Smart home item - Name: " + name + ", type: " + type + ", room: " + room);
-				var shi = new SmartHomeItem(
-					name, 
-					type,
-					room,
-					groups,
-					item.link
-				);
-				items.push(shi);
-			});
-		}
-		successCallback(items);
-	}, errorCallback);
-}
-function openHabGetFromSepiaTags(key, tags){
-	for (var i=0; i<tags.length; i++){
-		var thisTag = tags[i];
-		if (thisTag.indexOf("sepia-" + key) == 0){
-			var returnTag = thisTag.replace(/.*?=/, "");
-			return returnTag;
+function buildSmartHomeStateTypeOptions(selected){
+	var options = {
+		"text_binary" : "Binary (ON, OPEN, ...)",
+		"number_plain" : "Number (plain)",
+		"number_percent" : "Number (percent)",
+		"number_temperature_c" : "Temperature °C",
+		"number_temperature_f" : "Temperature °F",
+		"text_raw" : "Raw text"
+	}
+	var optionsObj = "";
+	var foundSelected = false;
+	for (o in options){
+		var oName = options[o];
+		if (o == selected){
+			optionsObj += "<option value='" + o + "' selected>" + oName + "</option>";
+			foundSelected = true;
+		}else{
+			optionsObj += "<option value='" + o + "'>" + oName + "</option>";
 		}
 	}
-	return "";
-}
-function openHabPutItemTag(shi, tag, value, successCallback, errorCallback){
-	if (!shi.link){
-		if (errorCallback) errorCallback("No link to smart home item REST API found!");
-		return;
+	if (foundSelected){
+		return ("<option value='' disabled>- Choose -</option><option value=''>Automatic</option>" + optionsObj);
+	}else{
+		return ("<option value='' disabled selected>- Choose -</option><option value=''>Automatic</option>" + optionsObj);
 	}
-	//clean up tags first
-	openHabDeleteItemTag(shi, tag, function(res){
-		var fullTag = "sepia-" + tag + "=" + value;
-		var itemLink = shi.link;
-		if (!endsWith(itemLink, "/"))	itemLink += "/";
-		httpRequest(itemLink + "tags/" + fullTag, successCallback, errorCallback, "PUT");
-	}, errorCallback);
 }
-function openHabDeleteItemTag(shi, tag, successCallback, errorCallback){
-	if (!shi.link){
-		if (errorCallback) errorCallback("No link to smart home item REST API found!");
-		return;
-	}
-	//Get all tags and delete all "sepia-[tag]=..." ones
-	httpRequest(shi.link, function(data){
-		var tags = data.tags;
-		//console.log(tags);
-		if (tags && tags.length > 0){
-			var hits = [];
-			tags.forEach(function(t){
-				if (t.indexOf("sepia-" + tag + "=") == 0){
-					hits.push(t);
-				}
-			});
-			var n = 0;
-			var itemLink = shi.link;
-			if (!endsWith(itemLink, "/"))	itemLink += "/";
-			hits.forEach(function(t){
-				httpRequest(itemLink + "tags/" + t, function(res){
-						console.log("Smart home item: " + shi.name + ", removed: " + t);
-						n++;
-						if (n == hits.length){
-							if (successCallback) successCallback();
-						}
-				}, function(e){
-						console.log("Smart home item: " + shi.name + ", FAILED to remove: " + t);
-						n++;
-						if (n == hits.length){
-							if (errorCallback) errorCallback();
-						}
-				}, "DELETE");
-			});
-		}
-	}, errorCallback);
-}
+
+//------- build some stuff for DOM --------
+
+loadSmartHomeGetDevicesFilter();

@@ -1,6 +1,6 @@
 //---------App:
 
-var controlHubVersion = "1.2.2";
+var controlHubVersion = "1.3.0";
 
 //---------Pages:
 
@@ -232,7 +232,7 @@ function beforeLoginRestore(){
 	}
 	var serverViaUrl = getURLParameter('server');
 	var storedAccountUrl = ByteMind.data.get('account-api-url');
-	var customServer = sessionStorage.getItem('customServer');
+	var customServer = appStorage.getItem('customServer');
 	//choose:	
 	var customHost = customServer || serverViaUrl || storedAccountUrl || locationHost;
 	if (customHost){
@@ -241,13 +241,14 @@ function beforeLoginRestore(){
 		updateHostServer(customHost);
 	}
 
-	/* var server = sessionStorage.getItem('server');
+	/* var server = appStorage.getItem('server');
 	if (server){
 		server_select.value = server;
 	} */
-	var customClient = sessionStorage.getItem('customClient');
+	var customClient = appStorage.getItem('customClient');
 	if (customClient){
 		$('#custom-client').val(customClient);
+		ByteMind.config.clientInfo = customClient;
 	}
 
 	//Store host and build all other API URLs as good as we can
@@ -257,7 +258,7 @@ function beforeLoginRestore(){
 			host = handleCommonHosts(host);
 			ByteMind.data.set('account-api-url', host);
 			$('#server').val(host);
-			sessionStorage.setItem('customServer', host); 	//do it?
+			appStorage.setItem('customServer', host); 	//do it?
 			updateHostServer(host);
 		}
 	});
@@ -281,7 +282,7 @@ function beforeLoginRestore(){
 		$('#bytemind-login-box').hide();
 		//clean up custom server
 		$('#server').val("");
-		sessionStorage.setItem('customServer', "");
+		appStorage.setItem('customServer', "");
 		//TODO: remove more data like host?
 		
 		//reload pop-up
@@ -299,38 +300,26 @@ function onStart(){
 
 	//--- session variables ---
 
-	var assistServer = sessionStorage.getItem('assistServer');
+	var assistServer = appStorage.getItem('assistServer');
 	if (assistServer){
 		$('#assist-server').val(assistServer);
 	}
-	var teachServer = sessionStorage.getItem('teachServer');
+	var teachServer = appStorage.getItem('teachServer');
 	if (teachServer){
 		$('#teach-server').val(teachServer);
 	}
-	var chatServer = sessionStorage.getItem('chatServer');
+	var chatServer = appStorage.getItem('chatServer');
 	if (chatServer){
 		$('#chat-server').val(chatServer);
 	}
-	var meshNodeServer = sessionStorage.getItem('meshNodeServer');
+	var meshNodeServer = appStorage.getItem('meshNodeServer');
 	if (meshNodeServer){
 		$('#mesh-node-server').val(meshNodeServer);
 	}
 
-	smartHomeSystem = sessionStorage.getItem('smartHomeSystem');
-	if (smartHomeSystem){
-		$('#smarthome_system_select').val(smartHomeSystem);
-	}
-	smartHomeServer = sessionStorage.getItem('smartHomeServer');
-	if (smartHomeServer){
-		$('#smarthome-server').val(smartHomeServer);
-	}else{
-		var serverViaUrl = getURLParameter('smarthome-server');
-		if (serverViaUrl){
-			$('#smarthome-server').val(serverViaUrl);
-		}
-	}
+	smartHomeOnStart();
 
-	sttServer = sessionStorage.getItem('sttServer');
+	sttServer = appStorage.getItem('sttServer');
 	if (sttServer){
 		$('#stt-server').val(sttServer);
 	}else{
@@ -348,11 +337,75 @@ function onStart(){
 	
 	//build answer-manager stuff
 	$('#answer-manager-lang-sel').html(buildLanguageSelectorOptions());
+	
+	//build speech-recognition stuff
+	//$('#stt-language-select').html(buildLanguageSelectorOptions());	//we just use DE and EN for now
 
 	//--- global elements ---
 
 	//make results view draggable
 	makeDraggable('result-container', 'result-drag-btn');
+	
+	//activate postMessage interface
+	sepiaPostMessageInterfaceReady = true;
+	releaseBufferedSepiaPostMessages();
+}
+
+//------ Post-Message Interface ------
+
+var sepiaPostMessageInterfaceReady = false;
+var sepiaPostMessageInterfaceBuffer = [];
+var sepiaPostMessageHandlers = {
+	"test": 	console.log,
+	"login": 	accountPostMessageHandlerLogin 	//authentication.js
+}
+function addPostMessageHandler(handlerName, handlerFun){
+	sepiaPostMessageHandlers[handlerName] = handlerFun;
+}
+function releaseBufferedSepiaPostMessages(){
+	sepiaPostMessageInterfaceBuffer.forEach(function(data){
+		var handler = sepiaPostMessageHandlers[data.fun];
+		if (handler && typeof handler == "function"){
+			handler(data.ev);
+		}else{
+			console.error('SEPIA - sendInputEvent of ' + data.source + ': Message handler not available!');
+		}
+	});
+}
+window.addEventListener('message', function(message){
+	if (message.data && message.data.type){
+		if (message.data.type == "sepia-common-interface-event"){
+			//console.log(message);
+			console.log("SEPIA Control HUB received message for handler: " + message.data.fun);
+			if (sepiaPostMessageInterfaceReady){
+				var handler = sepiaPostMessageHandlers[message.data.fun];
+				if (handler && typeof handler == "function"){
+					handler(message.data.ev);
+				}else{
+					console.error('SEPIA - sendInputEvent of ' + message.source + ': Message handler not available!');
+				}
+			}else{
+				sepiaPostMessageInterfaceBuffer.push({
+					fun: message.data.fun,
+					ev: message.data.ev,
+					source: message.source
+				});
+			}
+		}
+	}
+});
+//Example: iframe.contentWindow.postMessage({type: "sepia-common-interface-event", fun:"test", ev: "Hello"}, "*");
+//postMessage to parent window
+/*
+function parentPostMsg(msg){
+	//post only if really a child
+	if (window !== parent){
+		parent.postMessage(msg, "*");
+	}
+}
+*/
+if (window !== parent){
+	console.log("SEPIA Control HUB loaded inside frame. PostMessage interface available.");
 }
 
 //------ more globals ------
@@ -372,7 +425,7 @@ function handleCommonHosts(customHost){
 	return customHost;
 }
 
-//update host ander servers
+//update host and servers
 function updateHostServer(customHost){
 	customHost = customHost.replace(/\/$/,"").trim();
 	ByteMind.debug.info("Set custom host: " + customHost);
