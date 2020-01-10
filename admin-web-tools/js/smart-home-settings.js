@@ -554,6 +554,7 @@ function buildSmartHomeRoomOptions(selected){
 		"garage" : "Garage",
 		"basement" : "Basement",
 		"garden" : "Garden",
+		"sunroom" : "Winter garden",
 		"hallway" : "Hallway",
 		"shack" : "Shack",
 		"other" : "Other",
