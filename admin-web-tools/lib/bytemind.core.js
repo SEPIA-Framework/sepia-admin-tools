@@ -239,6 +239,7 @@ function bytemind_build_page(){
 		btn.className = 'bytemind-nav-bar-button bytemind-button';
 		btn.innerHTML = uiName;
 		btn.href = window.location.host + "/" + SECTION_PREFIX + data.sectionName;
+		btn.draggable = false;
 		ByteMind.ui.onclick(btn, function(event){
 		//$(btn).on('click', function(event){
 			event.preventDefault();

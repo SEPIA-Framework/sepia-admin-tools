@@ -446,6 +446,51 @@
 						<div class="group"><a href="https://github.com/SEPIA-Framework/sepia-stt-server" target=_blank>SEPIA STT-Server @ GitHub</a></div>
 					</section>
 				</div>
+				
+				<!-- Text-to-speech -->
+				<div id="text-to-speech" class="bytemind-view">
+					<section class="group">
+						<h3>Text-To-Speech (TTS)</h3>
+						<p class="info-text">Here you can test the integrated TTS module of SEPIA.<br>
+						The priority of settings is 'mood - gender - language - voice' meaning for example<br>
+						voice will always overwrite other selections.</p>
+						<div class="interface_button_box">
+							<button onclick="ttsGetInfo()" class="interface_button">GET INFO</button>
+						</div>
+						<br>
+						<div class="group2">
+							<div class="group">
+								<label>Text: </label><input id="tts-text" type="text">
+							</div>
+							<div class="group"><label>Voice: </label><select id="tts-voice" name="tts_voice"> 
+								<!-- added via info button -->
+								<option value="" disabled selected>-- get info first --</option>
+							</select></div>
+							<div class="group"><label>Language: </label><select id="tts-language" name="tts_lang"> 
+								<!-- added via info button -->
+								<option value="" disabled selected>-- get info first --</option>
+							</select></div>
+							<div class="group"><label>Gender: </label><select id="tts-gender" name="tts_gen"> 
+								<!-- added via info button -->
+								<option value="" disabled selected>-- get info first --</option>
+							</select></div>
+							<div class="group"><label>Mood Lvl.: </label><select id="tts-mood" name="tts_mood"> 
+								<!-- added via info button -->
+								<option value="" disabled selected>-- get info first --</option>
+							</select></div>
+						</div>
+						<div class="interface_button_box">
+							<button onclick="ttsSpeak()" class="interface_button">SPEAK</button>
+						</div>
+						<br>
+						<div class="group2">
+							<audio id="tts-audio-player" controls autoplay>
+								<source id="tts-audio-source" src="">
+								Your browser does not support the audio tag.
+							</audio>
+						</div>
+					</section>
+				</div>
 
 				<!-- CHAT SERVER -->
 				<div id="chat-server-settings" class="bytemind-view">
@@ -557,8 +602,8 @@
 <script src="lib/bytemind.ui.js"></script>
 <script src="lib/bytemind.webservice.js"></script>
 <script src="lib/bytemind.account.js"></script>
-<script src="lib/bytemind.ui.carousel-1.1.0.js"></script>
-<script src="lib/bytemind.ui.sidemenu-1.1.0.js"></script>
+<script src="lib/bytemind.ui.carousel-1.1.1.js"></script>
+<script src="lib/bytemind.ui.sidemenu-1.1.1.js"></script>
 <!--APP -->
 <link rel="stylesheet" href="css/server-config.css" title='main'>
 <link rel="stylesheet" href="css/smart-home.css" title='main'>
@@ -571,6 +616,7 @@
 <script type="text/javascript" src="js/server-config.js" charset="UTF-8"></script>
 <script type="text/javascript" src="js/smart-home-settings.js" charset="UTF-8"></script>
 <script type="text/javascript" src="js/stt-server-interface.js" charset="UTF-8"></script>
+<script type="text/javascript" src="js/text-to-speech.js" charset="UTF-8"></script>
 <script src="js/index.js"></script>
 <script src="js/app.js"></script>
 </body>

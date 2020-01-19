@@ -100,6 +100,15 @@ function buildPages(sideMenuEle){
 		headerTitle : "Speech Recognition",
 		description : "Manage your SEPIA STT-Server for speech recogniton."
 	}, sideMenuEle);
+	
+	//Text-to-speech
+	ByteMind.page.registerSectionWithNavButton("Speech Synthesis", {
+		sectionName : "speech-synthesis",
+		viewId : "text-to-speech",
+		title : "SEPIA TTS Manager",
+		headerTitle : "Speech Synthesis",
+		description : "Manage your SEPIA TTS module for speech synthesis."
+	}, sideMenuEle);
 
 	//Chat Server Settings
 	ByteMind.page.registerSectionWithNavButton("Chat Settings", {
