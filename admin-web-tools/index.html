@@ -484,10 +484,16 @@
 						</div>
 						<br>
 						<div class="group2">
-							<audio id="tts-audio-player" controls autoplay>
+							<audio id="tts-audio-player" controls autoplay style="display: none;">
 								<source id="tts-audio-source" src="">
 								Your browser does not support the audio tag.
 							</audio>
+							<div id="tts-audio-player-controls"> 
+								<button onclick="ttsPlayer('play');"><i class="material-icons md-24">play_arrow</i></button> 
+								<button onclick="ttsPlayer('pause');"><i class="material-icons md-24">pause</i></button> 
+								<button onclick="ttsPlayer('vol-up');"><i class="material-icons md-24">volume_up</i></button> 
+								<button onclick="ttsPlayer('vol-down');"><i class="material-icons md-24">volume_down</i></button> 
+							</div>
 						</div>
 					</section>
 				</div>

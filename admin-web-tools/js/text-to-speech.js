@@ -83,3 +83,16 @@ function ttsGetInfo(){
 		}
 	);
 }
+
+function ttsPlayer(action){
+	var player = document.getElementById('tts-audio-player');
+	if (action == "play"){
+		player.play();
+	}else if (action == "pause"){
+		player.pause();
+	}else if (action == "vol-up"){
+		player.volume = ((player.volume < 0.9)? (player.volume + 0.1) : 1.0);
+	}else if (action == "vol-down"){
+		player.volume = ((player.volume > 0.1)? (player.volume - 0.1) : 0.0);
+	}
+}
