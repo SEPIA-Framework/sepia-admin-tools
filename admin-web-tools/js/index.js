@@ -118,6 +118,15 @@ function buildPages(sideMenuEle){
 		headerTitle : "SEPIA Chat Settings",
 		description : "Manage your SEPIA Chat-Server."
 	}, sideMenuEle);
+	
+	//Client Connections
+	ByteMind.page.registerSectionWithNavButton("Client Connections", {
+		sectionName : "client-connections",
+		viewId : "client-connections",
+		title : "SEPIA Client Connections",
+		headerTitle : "Client Connections",
+		description : "Connect to your SEPIA clients, e.g. via CLEXI server."
+	}, sideMenuEle);
 
 	//Performance Tests
 	ByteMind.page.registerSectionWithNavButton("Performance Tests", {
@@ -337,6 +346,8 @@ function onStart(){
 			$('#stt-server').val(serverViaUrl);
 		}
 	}
+	
+	clientConnectionsOnStart();
 
 	//--- Page: assistant, answer-manager ---
 
