@@ -453,6 +453,7 @@ input[type="button"] {
 	padding: 4px 8px;
 	border: 2px solid #222222;
 	overflow: auto;
+	resize: vertical;
 }
 .server-terminal-input {
 	background: #191919;

@@ -1,5 +1,7 @@
 //Client connections via CLEXI (and other servers?)
 
+var lastClientClexiInput = "";
+
 function clientConnectionsOnStart(){
 	if ('sessionStorage' in window){
 		$('#client-clexi-host').val(sessionStorage.getItem('clientClexiHost') || "ws://raspberrypi.local:9090/clexi");
@@ -9,7 +11,14 @@ function clientConnectionsOnStart(){
 	}
 	$('#client-clexi-msg').off().on('keypress', function (e){
 		if (e.key === 'Enter'){
+			lastClientClexiInput = $('#client-clexi-msg').val();
 			clientClexiSend();
+		}
+	}).on('keyup', function (e){
+		if (e.key === 'ArrowUp'){
+			$('#client-clexi-msg').val(lastClientClexiInput);
+		}else if (e.key === 'ArrowDown'){
+			$('#client-clexi-msg').val("");
 		}
 	});
 }
@@ -68,14 +77,76 @@ function clientClexiDisconnect(){
 	$('#clexi-server-indicator').removeClass('secure');
 }
 
+function clientClexiHelp(){
+	showMessage("Commands to try for message type 'SEPIA Client':\n\n"
+		+ "- ping all\n\n"
+		+ "- get help\n\n"
+		+ "- get user\n\n"
+		//+ "- set useGamepads true\n\n"
+		+ "- call logout\n\n"
+		+ "- call login user [id] password [pwd]\n\n"
+		+ "- call reload\n\n"
+	+ "\nCommands to try for type 'Remote Button'\n\n"
+		+ "- deviceId [id] button [mic, back, ao, next, prev]\n\n"
+		+ "NOTE: To use remote buttons you currently need to enable 'useGamepads' in client settings."
+	);
+}
+
+function clientClexiEventsClear(){
+	clexiLogOut.innerHTML = "";
+}
+
+var clientClexiTerminalCommands = {
+	clear: clientClexiEventsClear,
+	help: clientClexiHelp
+}
+
 function clientClexiSend(msg, msgType){
 	if (!msg) msg = $('#client-clexi-msg').val();
 	if (!msgType) msgType = $('#client-clexi-msg-type').val();
 	msg = msg.trim();
+	if (clientClexiTerminalCommands[msg]){
+		clientClexiTerminalCommands[msg]();
+		lastClientClexiInput = msg;
+		$('#client-clexi-msg').val("");
+		return;
+	}
 	if (msgType == "broadcast"){
 		//Broadcast
 		clexiBroadcast(msg);
 		$('#client-clexi-msg').val("");
+		
+	}else if (msgType == "sepia-client"){
+		var deviceId = $('#client-clexi-device-id').val();
+		if (!deviceId && msg.indexOf("deviceId ") < 0 && msg != "ping all"){
+			clexiEventError("Please enter a device ID first or use 'ping all' to ask all clients to report their IDs.");
+			return;
+		}else if (msg == "ping all"){
+			clexiBroadcast({
+				name: "sepia-client",
+				data: {
+					ping: "all"
+				}
+			});
+			$('#client-clexi-msg').val("");
+		}else{
+			var ev = {
+				name: "sepia-client",
+				data: {
+					deviceId: deviceId
+				}
+			};
+			var dataArray = msg.split(" ");
+			if (dataArray.length >= 2 && dataArray.length % 2 == 0){
+				for (var i=0; i<dataArray.length; i+=2){
+					ev.data[dataArray[i].replace(/^[-]+/,"")] = dataArray[i+1];
+				}
+				clexiBroadcast(ev);
+				$('#client-clexi-msg').val("");
+			}else{
+				clexiEventError("Wrong message input format! Should be: '[parameter1] [val1] [parameter2] ...' (no spaces allowed in parameters).");
+			}
+		}
 		
 	}else if (msgType == "http-event"){
 		//Http event
@@ -86,13 +157,13 @@ function clientClexiSend(msg, msgType){
 				name: name,
 				data: {}
 			};
-			for (var i=0; i<dataArray; i+=2){
-				ev.data[dataArray[i]] = dataArray[i+1];
+			for (var i=0; i<dataArray.length; i+=2){
+				ev.data[dataArray[i].replace(/^[-]+/,"")] = dataArray[i+1];
 			}
 			clexiHttpEvent(ev);
 			$('#client-clexi-msg').val("");
 		}else{
-			clexiEventError("Wrong message input format! Should be, e.g. 'remote-button deviceId o1 button mic' (no spaces allowed in parameters).");
+			clexiEventError("Wrong message input format! Should be: '[event-name] [parameter1] [val1] [parameter2] ...' (no spaces allowed in parameters).");
 		}
 		
 	}else if (msgType == "remote-button"){
@@ -121,13 +192,37 @@ function clexiBroadcast(msg){
 function clexiHttpEvent(ev, successCallback, errorCallback){
 	var clexiHost = $('#client-clexi-host').val();
 	var hostURL = clexiHost.replace(/^wss/, 'https').replace(/^ws/, 'http');
-	var headers = undefined; 		//use e.g. for 'Basic Auth.'
-	var method = "POST";
-	var maxwait = 5000;
+	var headers = {
+		"Content-Type": "application/json"
+		//TODO: add Basic Auth. data here ...
+		//"Authorization": ("Basic " + btoa($('#client-clexi-auth-user').val() + ":" + $('#client-clexi-auth-pwd').val()))
+	};
 	if (!successCallback) successCallback = console.log;	//clexiEventLog;
 	if (!errorCallback) errorCallback = console.error; 		//clexiEventError;
 	if (clexiHost && ev && ev.name && ev.data){
-		httpRequest(hostURL + "/event/" + ev.name, successCallback, errorCallback, method, ev.data, headers, maxwait);
+		showMessage("Loading ...");
+		var config = {
+			url: (hostURL + "/event/" + ev.name),
+			timeout: 5000,
+			type: "POST",
+			data: ((typeof ev.data == "object")? JSON.stringify(ev.data) : ev.data),
+			headers: {
+				"Content-Type": "application/json"
+				//TODO: add Basic Auth. data here ...
+			},
+			success: function(data) {
+				closeMessage();
+				if (successCallback) successCallback(data);
+			},
+			error: function(xhr, status, error) {
+				showMessage("Result: error");
+				console.log(xhr);
+				if (errorCallback) errorCallback(xhr, status, error);
+			}
+		};
+		console.log(config.type + ' request to: ' + config.url + " - with data: ");
+		console.log(ev);
+		$.ajax(config);
 	}
 	/*
 	//HTTP GET via ClexiJS (useful for very simple clients)

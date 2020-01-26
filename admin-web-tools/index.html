@@ -489,10 +489,10 @@
 								Your browser does not support the audio tag.
 							</audio>
 							<div id="tts-audio-player-controls"> 
-								<button onclick="ttsPlayer('play');"><i class="material-icons md-24">play_arrow</i></button> 
-								<button onclick="ttsPlayer('pause');"><i class="material-icons md-24">pause</i></button> 
-								<button onclick="ttsPlayer('vol-up');"><i class="material-icons md-24">volume_up</i></button> 
-								<button onclick="ttsPlayer('vol-down');"><i class="material-icons md-24">volume_down</i></button> 
+								<button onclick="ttsPlayer('play');"><i class="material-icons md-24">play_arrow</i></button>
+								<button onclick="ttsPlayer('pause');"><i class="material-icons md-24">pause</i></button>
+								<button onclick="ttsPlayer('vol-up');"><i class="material-icons md-24">volume_up</i></button>
+								<button onclick="ttsPlayer('vol-down');"><i class="material-icons md-24">volume_down</i></button>
 							</div>
 						</div>
 					</section>
@@ -540,12 +540,12 @@
 							<div class="group">
 								<label>CLEXI ID: </label><input id="client-clexi-id" type="text" spellcheck=false placeholder="clexi-123">
 							</div>
-							<div class="group">
+							<!--<div class="group">
 								<label>Auth. user: </label><input id="client-clexi-auth-user" type="text" spellcheck=false placeholder="">
 							</div>
 							<div class="group">
 								<label>Auth. passw.: </label><input id="client-clexi-auth-pwd" type="password" spellcheck=false placeholder="">
-							</div>
+							</div>-->
 						</div>
 						<div class="interface_button_box">
 							<button onclick="clientClexiConnect()" class="interface_button">CONNECT</button>
@@ -553,17 +553,26 @@
 						</div>
 					</section>
 					<div class="group"><label>Message type: </label><select id="client-clexi-msg-type" name="clexi_msg_type"> 
-						<option value="broadcast" selected>Broadcast</option>
+						<option value="sepia-client" selected>SEPIA Client</option>
+						<option value="broadcast">Broadcast Free</option>
 						<option value="http-event">HTTP Event</option>
 						<option value="remote-button">Remote Button</option>
 					</select></div>
+					<div class="group">
+						<label>Device ID: </label><input id="client-clexi-device-id" type="text" spellcheck=false placeholder="o1" value="">
+					</div>
 					<div class="server-terminal-input">
 						<label style="min-width: auto; margin: 8px;">Message:</label>
 						<input id="client-clexi-msg" type="text" placeholder=">_" spellcheck=false>
+						<button onclick="clientClexiHelp()" style="background: transparent; color: inherit; padding: 0"><i class="material-icons md-24">help</i></button>
 						<button onclick="clientClexiSend()" class="interface_button">SEND</button>
 					</div>
 					<br>
 					<div id="client-clexi-events" class="server-event-messages">EVENT MESSAGES<br></div>
+					<br>
+					<div class="interface_button_box">
+						<button onclick="clientClexiEventsClear()" class="interface_button">CLEAR</button>
+					</div>
 				</div>
 
 				<!-- PERFORMANCE TESTS -->
