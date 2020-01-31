@@ -28,14 +28,21 @@ function clientConnectionsOnStart(){
 var clexiLogOut = document.getElementById('client-clexi-events');
 var numOfClexiSendRetries = 10;
 
-function clexiEventLog(msg){
-	clexiLogOut.innerHTML = (msg + "<br>" + clexiLogOut.innerHTML);
+function clexiEventLog(msg, color){
+	if (color){
+		clexiLogOut.innerHTML = ("<span style='color: " + color + ";'>" + msg + "</span><br>" + clexiLogOut.innerHTML);
+	}else{
+		clexiLogOut.innerHTML = ("<span>" + msg + "</span><br>" + clexiLogOut.innerHTML);
+	}
 	//clexiLogOut.scrollTop = clexiLogOut.scrollHeight;
 }
 function clexiEventError(msg){
 	clexiLogOut.innerHTML = ("<span style='color: #f00;'>" + msg + "</span><br>" + clexiLogOut.innerHTML);
 	//clexiLogOut.scrollTop = clexiLogOut.scrollHeight;
 }
+var clexiDebugEventColor = "#888";
+var clexiBleBeaconColor = "#2196F3";
+var clexiHttpEventColor = "#009688";
 		
 ClexiJS.onLog = clexiEventLog;
 //ClexiJS.onDebug = clexiEventLog;
@@ -83,6 +90,7 @@ function clientClexiHelp(){
 		+ "- call logout\n\n"
 		+ "- call login user [id] password [pwd]\n\n"
 		+ "- call reload\n\n"
+		+ "- call ping / call ping adr [URL]\n\n"
 		+ "- get help\n\n"
 		+ "- get user\n\n"
 		+ "- get wakeword\n\n"
@@ -240,29 +248,29 @@ function clexiHttpEvent(ev, successCallback, errorCallback){
 
 function subscribeToClexiBeaconScanner(){
 	ClexiJS.subscribeTo('ble-beacon-scanner', function(e){
-		clexiEventLog('BLE Beacon event: ' + JSON.stringify(e));
+		clexiEventLog('BLE Beacon event: ' + JSON.stringify(e), clexiBleBeaconColor);
 	}, function(e){
-		clexiEventLog('BLE Beacon response: ' + JSON.stringify(e));
+		clexiEventLog('BLE Beacon response: ' + JSON.stringify(e), clexiDebugEventColor);
 	}, function(e){
-		clexiEventLog('BLE Beacon error: ' + JSON.stringify(e));
+		clexiEventError('BLE Beacon error: ' + JSON.stringify(e));
 	});
 }
 function subscribeToClexiBroadcaster(){
 	ClexiJS.subscribeTo('clexi-broadcaster', function(e){
 		clexiEventLog('Broadcaster event: ' + JSON.stringify(e));
 	}, function(e){
-		clexiEventLog('Broadcaster response: ' + JSON.stringify(e));
+		clexiEventLog('Broadcaster response: ' + JSON.stringify(e), clexiDebugEventColor);
 	}, function(e){
-		clexiEventLog('Broadcaster error: ' + JSON.stringify(e));
+		clexiEventError('Broadcaster error: ' + JSON.stringify(e));
 	});
 }
 function subscribeToClexiHttpEvents(){
 	ClexiJS.subscribeTo('clexi-http-events', function(e){
-		clexiEventLog('HTTP event: ' + JSON.stringify(e));
+		clexiEventLog('HTTP event: ' + JSON.stringify(e), clexiHttpEventColor);
 	}, function(e){
-		clexiEventLog('HTTP response: ' + JSON.stringify(e));
+		clexiEventLog('HTTP response: ' + JSON.stringify(e), clexiDebugEventColor);
 	}, function(e){
-		clexiEventLog('HTTP error: ' + JSON.stringify(e));
+		clexiEventError('HTTP error: ' + JSON.stringify(e));
 	});
 }
 function clexiSubscribe(){
