@@ -390,7 +390,7 @@ function genericFormPostRequest(apiName, apiPath, parameters, successCallback, e
 			postSuccess(data, successCallback, errorCallback);
 		},
 		error: function(data) {
-			console.log(data);
+			console.error(data);
 			showMessage("ERROR in HTTP FORM POST request.");
 			postError(data, errorCallback);
 		}
@@ -405,7 +405,7 @@ function postSuccess(data, successCallback, errorCallback){
 	}
 }
 function postError(data, errorCallback){
-	console.log("POST error");
+	console.error("POST error");
 	var jsonData = convertData(data);
 	if (errorCallback) errorCallback(jsonData);
 }
