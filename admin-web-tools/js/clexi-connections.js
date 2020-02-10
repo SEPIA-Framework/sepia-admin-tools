@@ -91,6 +91,7 @@ function clientClexiHelp(){
 		+ "- call login user [id] password [pwd]\n\n"
 		+ "- call reload\n\n"
 		+ "- call ping / call ping adr [URL]\n\n"
+		+ "- call test\n\n"
 		+ "- get help\n\n"
 		+ "- get user\n\n"
 		+ "- get wakeword\n\n"
