@@ -201,9 +201,11 @@ function clexiBroadcast(msg){
 
 function clexiHttpEvent(ev, successCallback, errorCallback){
 	var clexiHost = $('#client-clexi-host').val();
+	ClexiJS.serverId = $('#client-clexi-id').val();
 	var hostURL = clexiHost.replace(/^wss/, 'https').replace(/^ws/, 'http');
 	var headers = {
-		"Content-Type": "application/json"
+		"Content-Type": "application/json",
+		"clexi-id": ClexiJS.serverId
 		//TODO: add Basic Auth. data here ...
 		//"Authorization": ("Basic " + btoa($('#client-clexi-auth-user').val() + ":" + $('#client-clexi-auth-pwd').val()))
 	};
@@ -216,10 +218,7 @@ function clexiHttpEvent(ev, successCallback, errorCallback){
 			timeout: 5000,
 			type: "POST",
 			data: ((typeof ev.data == "object")? JSON.stringify(ev.data) : ev.data),
-			headers: {
-				"Content-Type": "application/json"
-				//TODO: add Basic Auth. data here ...
-			},
+			headers: headers,
 			success: function(data) {
 				closeMessage();
 				if (successCallback) successCallback(data);
