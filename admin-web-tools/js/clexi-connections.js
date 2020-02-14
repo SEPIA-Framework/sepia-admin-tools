@@ -101,6 +101,23 @@ function clientClexiHelp(){
 		+ "NOTE: To use remote buttons you currently need to enable 'useGamepads' in client settings."
 	);
 }
+function clientClexiShortcutPingAll(){
+	clientClexiSend("ping all", "sepia-client");
+}
+function clientClexiShortcutReload(){
+	clientClexiSend("call reload", "sepia-client");
+}
+function clientClexiShortcutTest(){
+	clientClexiSend("call test", "sepia-client");
+}
+function clientClexiShortcutTrigger(){
+	var deviceId = $('#client-clexi-device-id').val();
+	if (!deviceId){
+		clexiEventError("Please enter a device ID first.");
+		return;
+	}
+	clientClexiSend("deviceId " + deviceId + " button mic", "remote-button");
+}
 
 function clientClexiEventsClear(){
 	clexiLogOut.innerHTML = "";

@@ -552,6 +552,7 @@
 							<button onclick="clientClexiDisconnect()" class="interface_button">DISCONNECT</button>
 						</div>
 					</section>
+					<h3>Remote Terminal</h3>
 					<div class="group"><label>Message type: </label><select id="client-clexi-msg-type" name="clexi_msg_type"> 
 						<option value="sepia-client" selected>SEPIA Client</option>
 						<option value="broadcast">Broadcast Free</option>
@@ -561,17 +562,22 @@
 					<div class="group">
 						<label>Device ID: </label><input id="client-clexi-device-id" type="text" spellcheck=false placeholder="o1" value="">
 					</div>
+					<div class="interface_button_box server-terminal-shortcuts">
+						<button onclick="clientClexiShortcutPingAll();" title="Shortcut: ping all"><i class="material-icons md-24">rss_feed</i></button>
+						<button onclick="clientClexiShortcutReload();" title="Shortcut: reload client (device ID)"><i class="material-icons md-24">refresh</i></button>
+						<button onclick="clientClexiShortcutTest();" title="Shortcut: test client (device ID)"><i class="material-icons md-24">tap_and_play</i></button>
+						<button onclick="clientClexiShortcutTrigger();" title="Shortcut: trigger mic (device ID)"><i class="material-icons md-24">touch_app</i></button>
+						<button onclick="clientClexiHelp();" title="Help"><i class="material-icons md-24">help</i></button>
+					</div>
 					<div class="server-terminal-input">
 						<label style="min-width: auto; margin: 8px;">Message:</label>
 						<input id="client-clexi-msg" type="text" placeholder=">_" spellcheck=false>
-						<button onclick="clientClexiHelp()" style="background: transparent; color: inherit; padding: 0"><i class="material-icons md-24">help</i></button>
 						<button onclick="clientClexiSend()" class="interface_button">SEND</button>
 					</div>
 					<br>
-					<div id="client-clexi-events" class="server-event-messages">EVENT MESSAGES<br></div>
-					<br>
-					<div class="interface_button_box">
-						<button onclick="clientClexiEventsClear()" class="interface_button">CLEAR</button>
+					<div style="width: 100%; position: relative;">
+						<div id="client-clexi-events" class="server-event-messages">- REMOTE MESSAGES -<br></div>
+						<button onclick="clientClexiEventsClear()" class="server-terminal-clear-input" title="clear history"><i class="material-icons md-18">delete</i></button>
 					</div>
 				</div>
 
