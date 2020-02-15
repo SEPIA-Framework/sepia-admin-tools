@@ -246,7 +246,11 @@ function beforeLoginRestore(){
 	var locationHost;
 	if (location.host.indexOf(":") > 0){
 		//local server [IP]:[PORT]
-		locationHost = location.origin;
+		if (location.pathname.indexOf("/sepia/") >= 0){
+			locationHost = location.origin + location.pathname.replace(/\/sepia\/.*/, "/sepia");
+		}else{
+			locationHost = location.origin;
+		}
 	}
 	var serverViaUrl = getURLParameter('server');
 	var storedAccountUrl = ByteMind.data.get('account-api-url');
