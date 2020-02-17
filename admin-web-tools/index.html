@@ -417,7 +417,7 @@
 							<label>Access token: </label><input id="stt-access-token" type="text">
 						</div>
 					</section>
-					<section class="group">
+					<section class="group" style="width: 368px;">
 						<h3>Actions</h3>
 						<p>Model: </p>
 						<div class="group">
@@ -444,6 +444,57 @@
 					<section class="group">
 						<h3>Info</h3>
 						<div class="group"><a href="https://github.com/SEPIA-Framework/sepia-stt-server" target=_blank>SEPIA STT-Server @ GitHub</a></div>
+					</section>
+				</div>
+				
+				<!-- TEXT-TO-SPEECH -->
+				<div id="text-to-speech" class="bytemind-view">
+					<section class="group">
+						<h3>Text-To-Speech (TTS)</h3>
+						<p class="info-text">Here you can test the integrated TTS module of SEPIA.<br>
+						The priority of settings is 'mood - gender - language - voice' meaning for example<br>
+						voice will always overwrite other selections.</p>
+						<div class="interface_button_box">
+							<button onclick="ttsGetInfo()" class="interface_button">GET INFO</button>
+						</div>
+						<br>
+						<div class="group2">
+							<div class="group">
+								<label>Text: </label><input id="tts-text" type="text">
+							</div>
+							<div class="group"><label>Voice: </label><select id="tts-voice" name="tts_voice"> 
+								<!-- added via info button -->
+								<option value="" disabled selected>-- get info first --</option>
+							</select></div>
+							<div class="group"><label>Language: </label><select id="tts-language" name="tts_lang"> 
+								<!-- added via info button -->
+								<option value="" disabled selected>-- get info first --</option>
+							</select></div>
+							<div class="group"><label>Gender: </label><select id="tts-gender" name="tts_gen"> 
+								<!-- added via info button -->
+								<option value="" disabled selected>-- get info first --</option>
+							</select></div>
+							<div class="group"><label>Mood Lvl.: </label><select id="tts-mood" name="tts_mood"> 
+								<!-- added via info button -->
+								<option value="" disabled selected>-- get info first --</option>
+							</select></div>
+						</div>
+						<div class="interface_button_box">
+							<button onclick="ttsSpeak()" class="interface_button">SPEAK</button>
+						</div>
+						<br>
+						<div class="group2">
+							<audio id="tts-audio-player" controls autoplay style="display: none;">
+								<source id="tts-audio-source" src="">
+								Your browser does not support the audio tag.
+							</audio>
+							<div id="tts-audio-player-controls"> 
+								<button onclick="ttsPlayer('play');"><i class="material-icons md-24">play_arrow</i></button>
+								<button onclick="ttsPlayer('pause');"><i class="material-icons md-24">pause</i></button>
+								<button onclick="ttsPlayer('vol-up');"><i class="material-icons md-24">volume_up</i></button>
+								<button onclick="ttsPlayer('vol-down');"><i class="material-icons md-24">volume_down</i></button>
+							</div>
+						</div>
 					</section>
 				</div>
 
@@ -473,6 +524,61 @@
 							<button onclick="removeOutdatedChannelMessages()" class="interface_button">REMOVE OLD MESSAGES</button>
 						</div>
 					</section>
+				</div>
+				
+				<!-- CLIENT CONNECTIONS -->
+				<div id="client-connections" class="bytemind-view">
+					<section class="group">
+						<h3>Client Connections</h3>
+						<p class="info-text">Use this page to communicate with clients that are connected to a <a href='https://github.com/bytemind-de/nodejs-client-extension-interface#readme' target=_blank>CLEXI</a> server.</p>
+						<div class="group2">
+							<div class="group">
+								<label style="position: relative;">CLEXI URL: 
+									<span id="clexi-server-indicator" class="input-inline-indicator inactive" title="Red: server not found, Green: connection established"></span>
+								</label><input id="client-clexi-host" type="text" spellcheck=false placeholder="ws://[IP]:9090/clexi">
+							</div>
+							<div class="group">
+								<label>CLEXI ID: </label><input id="client-clexi-id" type="text" spellcheck=false placeholder="clexi-123">
+							</div>
+							<!--<div class="group">
+								<label>Auth. user: </label><input id="client-clexi-auth-user" type="text" spellcheck=false placeholder="">
+							</div>
+							<div class="group">
+								<label>Auth. passw.: </label><input id="client-clexi-auth-pwd" type="password" spellcheck=false placeholder="">
+							</div>-->
+						</div>
+						<div class="interface_button_box">
+							<button onclick="clientClexiConnect()" class="interface_button">CONNECT</button>
+							<button onclick="clientClexiDisconnect()" class="interface_button">DISCONNECT</button>
+						</div>
+					</section>
+					<h3>Remote Terminal</h3>
+					<div class="group"><label>Message type: </label><select id="client-clexi-msg-type" name="clexi_msg_type"> 
+						<option value="sepia-client" selected>SEPIA Client</option>
+						<option value="broadcast">Broadcast Free</option>
+						<option value="http-event">HTTP Event</option>
+						<option value="remote-button">Remote Button</option>
+					</select></div>
+					<div class="group">
+						<label>Device ID: </label><input id="client-clexi-device-id" type="text" spellcheck=false placeholder="o1" value="">
+					</div>
+					<div class="interface_button_box server-terminal-shortcuts">
+						<button onclick="clientClexiShortcutPingAll();" title="Shortcut: ping all"><i class="material-icons md-24">rss_feed</i></button>
+						<button onclick="clientClexiShortcutReload();" title="Shortcut: reload client (device ID)"><i class="material-icons md-24">refresh</i></button>
+						<button onclick="clientClexiShortcutTest();" title="Shortcut: test client (device ID)"><i class="material-icons md-24">tap_and_play</i></button>
+						<button onclick="clientClexiShortcutTrigger();" title="Shortcut: trigger mic (device ID)"><i class="material-icons md-24">touch_app</i></button>
+						<button onclick="clientClexiHelp();" title="Help"><i class="material-icons md-24">help</i></button>
+					</div>
+					<div class="server-terminal-input">
+						<label style="min-width: auto; margin: 8px;">Message:</label>
+						<input id="client-clexi-msg" type="text" placeholder=">_" spellcheck=false>
+						<button onclick="clientClexiSend()" class="interface_button">SEND</button>
+					</div>
+					<br>
+					<div style="width: 100%; position: relative;">
+						<div id="client-clexi-events" class="server-event-messages">- REMOTE MESSAGES -<br></div>
+						<button onclick="clientClexiEventsClear()" class="server-terminal-clear-input" title="clear history"><i class="material-icons md-18">delete</i></button>
+					</div>
 				</div>
 
 				<!-- PERFORMANCE TESTS -->
@@ -552,13 +658,14 @@
 <script src="lib/hammer.min.js"></script>
 <script src="lib/hammer-time.min.js"></script>
 <script src="lib/sjcl.js"></script>
+<script src="lib/clexi-0.8.1.js"></script>
 <script src="lib/bytemind.core.js"></script>
 <script src="lib/bytemind.local.js"></script>
 <script src="lib/bytemind.ui.js"></script>
 <script src="lib/bytemind.webservice.js"></script>
 <script src="lib/bytemind.account.js"></script>
-<script src="lib/bytemind.ui.carousel-1.1.0.js"></script>
-<script src="lib/bytemind.ui.sidemenu-1.1.0.js"></script>
+<script src="lib/bytemind.ui.carousel-1.1.1.js"></script>
+<script src="lib/bytemind.ui.sidemenu-1.1.1.js"></script>
 <!--APP -->
 <link rel="stylesheet" href="css/server-config.css" title='main'>
 <link rel="stylesheet" href="css/smart-home.css" title='main'>
@@ -571,6 +678,8 @@
 <script type="text/javascript" src="js/server-config.js" charset="UTF-8"></script>
 <script type="text/javascript" src="js/smart-home-settings.js" charset="UTF-8"></script>
 <script type="text/javascript" src="js/stt-server-interface.js" charset="UTF-8"></script>
+<script type="text/javascript" src="js/text-to-speech.js" charset="UTF-8"></script>
+<script type="text/javascript" src="js/clexi-connections.js" charset="UTF-8"></script>
 <script src="js/index.js"></script>
 <script src="js/app.js"></script>
 </body>

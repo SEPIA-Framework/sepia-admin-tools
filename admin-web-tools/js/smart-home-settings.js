@@ -364,7 +364,13 @@ function setSmartHomeItemState(shi){
 			newVal = ((shiSetCmds.enable != undefined)? shiSetCmds.enable : "open");
 			break;
 		default:
-			if (!!oldVal.match(/^[\d,.]+$/)){
+			//set cmds used?
+			if (shiSetCmds.enable != undefined && shiSetCmds.disable != undefined && oldVal == shiSetCmds.disable){
+				newVal = shiSetCmds.enable;
+			}else if (shiSetCmds.enable != undefined && shiSetCmds.disable != undefined && oldVal == shiSetCmds.enable){
+				newVal = shiSetCmds.disable;
+			//a number?
+			}else if (!!oldVal.match(/^[\d,.]+$/)){
 				if (shiSetCmds.enable != undefined && shiSetCmds.disable != undefined){
 					newVal = shiSetCmds.disable;
 					if (oldVal == 0){
@@ -382,6 +388,12 @@ function setSmartHomeItemState(shi){
 						newVal = "off";
 					}
 				}
+			//set cmds again
+			}else if (shiSetCmds.disable != undefined){
+				newVal = shiSetCmds.disable;
+			//no idea
+			}else{
+				//TODO
 			}
 	}
 	if (newVal == undefined){
@@ -554,6 +566,7 @@ function buildSmartHomeRoomOptions(selected){
 		"garage" : "Garage",
 		"basement" : "Basement",
 		"garden" : "Garden",
+		"sunroom" : "Winter garden",
 		"hallway" : "Hallway",
 		"shack" : "Shack",
 		"other" : "Other",

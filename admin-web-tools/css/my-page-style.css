@@ -184,7 +184,8 @@ input[type="button"] {
 .bytemind-view input[type="password"],
 .bytemind-view select {
 	display: inline-block;
-    min-width: 192px;
+    min-width: 240px;
+	max-width: 100%;
 	border: 0;
 	background: #121212;
 	color: #eee;
@@ -193,6 +194,12 @@ input[type="button"] {
     margin: 8px 0px;
 	flex-grow: 1;
     flex-shrink: 1;
+}
+.bytemind-view table input[type="text"],
+.bytemind-view table input[type="url"],
+.bytemind-view table input[type="password"],
+.bytemind-view table select {
+	min-width: 192px;
 }
 .bytemind-view .server-card input {
 	flex-grow: 0;
@@ -432,6 +439,55 @@ input[type="button"] {
 #stt-model {
 	width: 320px;
     max-width: 100%;
+}
+
+/*--- CLIENT CONNECTIONS ---*/
+
+.server-event-messages {
+	background: #191919;
+	color: #ddd;
+    font-size: 14px;
+	width: 100%;
+	height: 100px;
+	min-height: 85px;
+	padding: 4px 8px;
+	border: 2px solid #222222;
+	overflow: auto;
+	resize: vertical;
+}
+.server-terminal-input {
+	background: #191919;
+	display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    width: 100%;
+	border-radius: 0px;
+	border: 2px solid #222222;
+}
+.server-terminal-input label {
+	color: #beff1a !important;
+}
+.server-terminal-input input {
+	background: #191919 !important;
+	color: #ddd !important;
+	border-bottom: 0 !important;
+}
+.server-terminal-clear-input {
+	position: absolute;
+    bottom: 12px;
+    right: 12px;
+    margin: 0;
+    padding: 2px;
+    border-radius: 50%;
+    background: #191919;
+	color: #beff1a;
+}
+.server-terminal-shortcuts button {
+	background: #191919;
+    color: #eee;
+    margin: 0px;
+    padding: 5px;
 }
 
 /*------ HELP ------*/

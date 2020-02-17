@@ -227,6 +227,9 @@ function bytemind_build_ui_sidemenu(){
 		}
 		
 		function handlePan(e) {
+			if (self.isOpen && Math.abs(lastDeltaX - e.deltaX) > 50){
+				return;
+			}
 			switch (e.type) {
 				case 'panleft':
 				case 'panright':

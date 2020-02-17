@@ -1,6 +1,6 @@
 //---------App:
 
-var controlHubVersion = "1.3.0";
+var controlHubVersion = "1.3.1";
 
 //---------Pages:
 
@@ -100,6 +100,15 @@ function buildPages(sideMenuEle){
 		headerTitle : "Speech Recognition",
 		description : "Manage your SEPIA STT-Server for speech recogniton."
 	}, sideMenuEle);
+	
+	//Text-to-speech
+	ByteMind.page.registerSectionWithNavButton("Speech Synthesis", {
+		sectionName : "speech-synthesis",
+		viewId : "text-to-speech",
+		title : "SEPIA TTS Manager",
+		headerTitle : "Speech Synthesis",
+		description : "Manage your SEPIA TTS module for speech synthesis."
+	}, sideMenuEle);
 
 	//Chat Server Settings
 	ByteMind.page.registerSectionWithNavButton("Chat Settings", {
@@ -108,6 +117,15 @@ function buildPages(sideMenuEle){
 		title : "SEPIA Chat Server Manager",
 		headerTitle : "SEPIA Chat Settings",
 		description : "Manage your SEPIA Chat-Server."
+	}, sideMenuEle);
+	
+	//Client Connections
+	ByteMind.page.registerSectionWithNavButton("Client Connections", {
+		sectionName : "client-connections",
+		viewId : "client-connections",
+		title : "SEPIA Client Connections",
+		headerTitle : "Client Connections",
+		description : "Connect to your SEPIA clients, e.g. via CLEXI server."
 	}, sideMenuEle);
 
 	//Performance Tests
@@ -228,7 +246,11 @@ function beforeLoginRestore(){
 	var locationHost;
 	if (location.host.indexOf(":") > 0){
 		//local server [IP]:[PORT]
-		locationHost = location.origin;
+		if (location.pathname.indexOf("/sepia/") >= 0){
+			locationHost = location.origin + location.pathname.replace(/\/sepia\/.*/, "/sepia");
+		}else{
+			locationHost = location.origin;
+		}
 	}
 	var serverViaUrl = getURLParameter('server');
 	var storedAccountUrl = ByteMind.data.get('account-api-url');
@@ -328,6 +350,8 @@ function onStart(){
 			$('#stt-server').val(serverViaUrl);
 		}
 	}
+	
+	clientConnectionsOnStart();
 
 	//--- Page: assistant, answer-manager ---
 
