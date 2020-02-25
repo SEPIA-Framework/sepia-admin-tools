@@ -442,10 +442,15 @@ function buildSmartHomeItem(shi){
 	var itemName = shi.name;
 	var itemId = shi.meta.id;
 	var shiSetCmds = getItemMetaData(shi, "setCmds", false);
+	var namedBySepia = shi.meta["namedBySepia"];
+	var shiNameClasses = "shi-property smarthome-item-name";
+	if (!namedBySepia){
+		shiNameClasses += " unconfirmed";
+	}
 	var shiObjContent = "" +
 		"<div class='smarthome-item-title'>" + 
 			"<div style='overflow:hidden;'>" +
-				"<span class='shi-property smarthome-item-name' data-shi-property='" + SEPIA_TAG_NAME + "' data-shi-value='" + itemName + "'>" + itemName.replace("<", "&lt;").replace(">", "&gt;") + "</span>" +
+				"<span class='" + shiNameClasses + "' data-shi-property='" + SEPIA_TAG_NAME + "' data-shi-value='" + itemName + "'>" + itemName.replace("<", "&lt;").replace(">", "&gt;") + "</span>" +
 				"<span class='smarthome-item-id'> - " + itemId.replace("<", "&lt;").replace(">", "&gt;") + "</span>" +
 			"</div>" +
 			"<div style='display:flex;'>" +

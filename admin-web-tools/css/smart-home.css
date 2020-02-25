@@ -82,6 +82,9 @@
 .smarthome-item-title .smarthome-item-name {
 	cursor: pointer;
 }
+.smarthome-item-title .smarthome-item-name.unconfirmed {
+	color: #17acc3;
+}
 
 .smarthome-item-body {
 	padding: 12px 16px;
