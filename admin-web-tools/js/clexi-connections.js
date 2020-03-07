@@ -27,8 +27,35 @@ function clientConnectionsOnStart(){
 
 var clexiLogOut = document.getElementById('client-clexi-events');
 var numOfClexiSendRetries = 10;
+var clexiLogFilter = {
+	ble_beacon: true,
+	broadcast: true,
+	http: true
+}
 
 function clexiEventLog(msg, color){
+	if (msg.indexOf("Broadcast") == 0){
+		if (clexiLogFilter.broadcast == false){
+			return;
+		}
+		if (!color){
+			if (msg.indexOf("_error") > 0){
+				color = "#f00";
+			}else if (msg.indexOf("sepia-state") > 0){
+				color = "#b9efcf";
+			}else if (msg.indexOf("sepia-speech") > 0){
+				color = "#f1a508";
+			}
+		}
+	}else if (msg.indexOf("BLE") == 0){
+		if (clexiLogFilter.ble_beacon == false){
+			return;
+		}
+	}else if (msg.indexOf("HTTP") == 0){
+		if (clexiLogFilter.http == false){
+			return;
+		}
+	}
 	if (color){
 		clexiLogOut.innerHTML = ("<span style='color: " + color + ";'>" + msg + "</span><br>" + clexiLogOut.innerHTML);
 	}else{
