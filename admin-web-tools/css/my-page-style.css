@@ -473,15 +473,21 @@ input[type="button"] {
 	color: #ddd !important;
 	border-bottom: 0 !important;
 }
-.server-terminal-clear-input {
+.server-terminal-button {
 	position: absolute;
-    bottom: 12px;
-    right: 12px;
     margin: 0;
     padding: 2px;
     border-radius: 50%;
     background: #191919;
 	color: #beff1a;
+}
+.server-terminal-clear-input {
+	bottom: 12px;
+    right: 12px;
+}
+.server-terminal-event-filters {
+	bottom: 36px;
+    right: 12px;
 }
 .server-terminal-shortcuts button {
 	background: #191919;

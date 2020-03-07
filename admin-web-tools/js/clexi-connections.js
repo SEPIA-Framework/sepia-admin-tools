@@ -32,6 +32,20 @@ var clexiLogFilter = {
 	broadcast: true,
 	http: true
 }
+function clientClexiSetEventFilters(){
+	showMessage("<div>" +
+		"<p>Setup Remote Terminal</p>" +
+		"<div>Log Broadcasts: <input type='checkbox' " 
+			+ "onchange='(function(){ clexiLogFilter.broadcast = !clexiLogFilter.broadcast; console.log(clexiLogFilter); })();' " 
+			+ (clexiLogFilter.broadcast? "checked" : "") + "></div>" +
+		"<div>Log BLE Beacon data: <input type='checkbox' "
+			+ "onchange='(function(){ clexiLogFilter.ble_beacon = !clexiLogFilter.ble_beacon; console.log(clexiLogFilter); })();' " 
+			+ (clexiLogFilter.ble_beacon? "checked" : "") + "></div>" +
+		"<div>Log HTTP Events: <input type='checkbox' " 
+			+ "onchange='(function(){ clexiLogFilter.http = !clexiLogFilter.http; console.log(clexiLogFilter); })();' " 
+			+ (clexiLogFilter.http? "checked" : "") + "></div>" +
+	"</div>", true);
+}
 
 function clexiEventLog(msg, color){
 	if (msg.indexOf("Broadcast") == 0){
