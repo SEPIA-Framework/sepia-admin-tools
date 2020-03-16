@@ -302,10 +302,10 @@ function putSmartHomeItemProperty(shi, property, value, successCallback, errorCa
 					shi.room = value;
 					break;
 				case SEPIA_TAG_ROOM_INDEX:
-					shi["room-index"] = value;
+					shi.roomIndex = value;
 					break;
 				case SEPIA_TAG_STATE_TYPE:
-					shi["state-type"] = value;
+					shi.stateType = value;
 					break;
 				case SEPIA_TAG_SET_CMDS:
 					shi.meta["setCmds"] = value;
@@ -348,7 +348,7 @@ function setSmartHomeItemState(shi){
 	var newVal;
 	var oldVal = shi.state.toLowerCase();
 	var deviceType = shi.type;
-	var stateType = "text_binary";	//shi["state-type"]
+	var stateType = "text_binary";	//shi.stateType
 	var shiSetCmds = getItemMetaData(shi, "setCmds", true) || {};
 	switch (oldVal) {
 		case "off":
@@ -472,10 +472,10 @@ function buildSmartHomeItem(shi){
 				"</select>" + 
 				"<input style='width: calc(30% - 4px); min-width: auto; text-align: center;' class='shi-property smarthome-item-room-index' " 
 					+ "data-shi-property='" + SEPIA_TAG_ROOM_INDEX + "' " 
-					+ "value='" + (shi["room-index"] || "") + "' placeholder='index' type='text' title='Room index, e.g. 1, 22, 303, ...'>" +
+					+ "value='" + (shi.roomIndex || "") + "' placeholder='index' type='text' title='Room index, e.g. 1, 22, 303, ...'>" +
 			"</div></div>" + 
 			"<div class='start-hidden' style='display:none;'><label>State type:</label>" + "<select class='shi-property smarthome-item-state-type' data-shi-property='" + SEPIA_TAG_STATE_TYPE + "'>" +
-					buildSmartHomeStateTypeOptions(shi["state-type"]) +
+					buildSmartHomeStateTypeOptions(shi.stateType) +
 			"</select></div>" + 
 			"<div class='start-hidden' style='display:none;'><label>Custom config:</label>" + 
 				"<input class='shi-property smarthome-item-set-cmds' data-shi-property='" + SEPIA_TAG_SET_CMDS + "' style='font-size: 11px;' "
