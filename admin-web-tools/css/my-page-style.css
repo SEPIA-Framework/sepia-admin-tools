@@ -232,6 +232,9 @@ input[type="button"] {
 #bytemind-webapp-main .input-inline-indicator.secure {
 	background: #0f0;
 }
+#bytemind-webapp-main .input-inline-indicator.yellow {
+	background: #ff0;
+}
 #bytemind-webapp-main .input-inline-indicator.inactive {
 	background: #fff;
 }
