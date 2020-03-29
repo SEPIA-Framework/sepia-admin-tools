@@ -148,7 +148,7 @@ function clientClexiDisconnect(){
 }
 
 function clientClexiHelp(){
-	showMessage("Commands to try for message type 'SEPIA Client':\n\n"
+	showMessage("<u>Commands to try for message type 'SEPIA Client':</u>\n\n"
 		+ "- ping all\n\n"
 		+ "- call logout\n\n"
 		+ "- call login user [id] password [pwd]\n\n"
@@ -159,17 +159,17 @@ function clientClexiHelp(){
 		+ "- get user\n\n"
 		+ "- get wakeword\n\n"
 		//+ "- set useGamepads true\n\n"
-	+ "\nCommands to try for type 'Remote Button'\n\n"
+	+ "\n<u>Commands to try for type 'Remote Button'</u>\n\n"
 		+ "- deviceId [id] button [mic, back, ao, next, prev]\n\n"
-		+ "NOTE: To use remote buttons you currently need to enable 'useGamepads' in client settings.\n\n"
-	+ "\nCommands to try for type 'Runtime Command'\n\n"
-		+ "- reboot\n\n"
-		+ "- shutdown delay 15000\n\n"
+		+ "<b>NOTE:</b> To use remote buttons you currently need to enable 'useGamepads' in client settings.\n\n"
+	+ "\n<u>Commands to try for type 'Runtime Command'</u>\n\n"
+		+ "- osReboot\n\n"
+		+ "- osShutdown delay 15000\n\n"
 		+ "- removeScheduled cmdId [cmd-ID]\n\n"
 		+ "- freeMemory\n\n"
 		+ "- callCustom delay 5000 file echo TEXT Hello-World\n\n"
-		+ "NOTE: To use runtime commands make sure CLEXI has them installed and activated.\n\n"
-	);
+		+ "<b>NOTE:</b> To use runtime commands make sure CLEXI has them installed and activated.\n\n"
+	, true);
 }
 function clientClexiShortcutPingAll(){
 	clientClexiSend("ping all", "sepia-client");
@@ -284,17 +284,27 @@ function clientClexiSend(msg, msgType){
 		//Runtime Command
 		var dataArray = msg.split(" ");
 		var cmd = dataArray.shift();
-		var arguments = {};
+		var args = {};
+		//shortcuts
+		if (cmd == "osShutdown" || cmd == "os_shutdown"){
+			cmd = "callCustom";
+			dataArray.push("file");
+			dataArray.push("os_shutdown");
+		}else if (cmd == "osReboot" || cmd == "os_reboot"){
+			cmd = "callCustom";
+			dataArray.push("file");
+			dataArray.push("os_reboot");
+		}
 		if (dataArray.length >= 2 && dataArray.length % 2 == 0){
 			for (var i=0; i<dataArray.length; i+=2){
-				arguments[dataArray[i].replace(/^[-]+/,"")] = dataArray[i+1];
+				args[dataArray[i].replace(/^[-]+/,"")] = dataArray[i+1];
 			}
 		}else if (dataArray.length > 0){
 			clexiEventError("Wrong message input format! Should be: '[command] [parameter1] [val1] [parameter2] ...' (no spaces allowed in parameters).");
 			return;
 		}
 		$('#client-clexi-msg').val("");
-		clexiRuntimeCommand(cmd, arguments);
+		clexiRuntimeCommand(cmd, args);
 	}
 }
 
@@ -302,11 +312,11 @@ function clexiBroadcast(msg){
 	ClexiJS.send('clexi-broadcaster', msg, numOfClexiSendRetries);
 }
 
-function clexiRuntimeCommand(cmd, arguments){
+function clexiRuntimeCommand(cmd, args){
 	ClexiJS.send('runtime-commands', {
 		id: getNewClexiRuntimeCmdId(),
 		cmd: cmd,
-		args: arguments
+		args: args
 	}, numOfClexiSendRetries);
 }
 function getNewClexiRuntimeCmdId(){
