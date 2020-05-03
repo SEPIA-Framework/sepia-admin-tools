@@ -7,6 +7,7 @@
 		local('MaterialIcons-Regular'),
 		url(googleMaterialIcons-2018-09-19.woff2) format('woff2'),
 		url(googleMaterialIcons-2018-09-19.woff) format('woff');
+  font-display: block;
 }
 
 .material-icons {

@@ -20,10 +20,12 @@ function smartHomeOnStart(){
 	if (smartHomeSystem){
 		if (hasSelectedKnownSmartHomeSystem(smartHomeSystem)){
 			$('#smarthome_system_select').val(smartHomeSystem);
+			$('#smarthome-server').addClass("disabled");
 		}else{
 			$('#smarthome_system_select').val('custom');
 			$('#smarthome_system_custom_select').val(smartHomeSystem);
 			$('#smarthome_system_custom').show();
+			$('#smarthome-server').removeClass("disabled");
 		}
 	}
 	smartHomeServer = appStorage.getItem('smartHomeServer');
@@ -41,8 +43,10 @@ function smartHomeOnStart(){
 		$('#smarthome-server-indicator').removeClass('inactive');
 		if (this.value == "custom"){
 			$('#smarthome_system_custom').show();
+			$('#smarthome-server').removeClass("disabled");
 		}else{
 			$('#smarthome_system_custom').hide();
+			$('#smarthome-server').addClass("disabled");
 		}
 	});
 }
