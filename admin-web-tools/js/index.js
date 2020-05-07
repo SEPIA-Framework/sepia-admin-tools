@@ -251,6 +251,8 @@ function beforeLoginRestore(){
 		}else{
 			locationHost = location.origin;
 		}
+	}else if (location.pathname.indexOf("/sepia/assist/tools/") >= 0){
+		locationHost = location.origin + location.pathname.replace(/\/assist\/tools\/.*/, "");
 	}
 	var serverViaUrl = getURLParameter('server');
 	var storedAccountUrl = ByteMind.data.get('account-api-url');

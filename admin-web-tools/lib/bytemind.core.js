@@ -62,22 +62,6 @@ function bytemind_build_debug(){
 	Debug.doError = true;
 	Debug.doInfo = true;
 	
-	Debug.log = function(msg){
-		if (Debug.doLog){
-			console.log('ByteMind - ' + Debug.getLocalDateTime() + ' - LOG - ' + msg);
-		}
-	}
-	Debug.err = function(msg){
-		if (Debug.doError){
-			console.error('ByteMind - ' + Debug.getLocalDateTime() + ' - ERROR - ' + msg);
-		}
-	}
-	Debug.info = function(msg){
-		if (Debug.doInfo){
-			console.log('ByteMind - ' + Debug.getLocalDateTime() + ' - INFO - ' + msg);
-		}
-	}
-	
 	//get default local date/timeout for debugger
 	Debug.getLocalDateTime = function(){
 		var d = new Date();
@@ -92,6 +76,40 @@ function bytemind_build_debug(){
 	function addZero(i) {
 		return (i < 10)? "0" + i : i;
 	}
+	
+	Debug.setLog = function(doLog){
+		if (doLog){
+			Debug.doLog = true;
+			Debug.log = Function.prototype.bind.call(console.log, console, 'Bytemind - LOG -');
+		}else{
+			Debug.doLog = false;
+			Debug.log = Function.prototype.bind.call(function(){}, console);
+		}
+	}
+	Debug.setLog(Debug.doLog);
+	
+	Debug.setError = function(doError){
+		if (doError){
+			Debug.doError = true;
+			Debug.err = Function.prototype.bind.call(console.error, console, 'Bytemind - ERROR -');
+		}else{
+			Debug.doError = false;
+			Debug.err = Function.prototype.bind.call(function(){}, console);
+		}
+		Debug.error = Debug.err;
+	}
+	Debug.setError(Debug.doError);
+	
+	Debug.setInfo = function(doInfo){
+		if (doInfo){
+			Debug.doInfo = true;
+			Debug.info = Function.prototype.bind.call(console.log, console, 'Bytemind - INFO -');
+		}else{
+			Debug.doInfo = false;
+			Debug.info = Function.prototype.bind.call(function(){}, console);
+		}
+	}
+	Debug.setInfo(Debug.doInfo);
 	
 	return Debug;
 }
