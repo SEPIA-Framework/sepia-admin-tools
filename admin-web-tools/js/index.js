@@ -248,7 +248,7 @@ function beforeLoginRestore(){
 		//local server [IP]:[PORT]
 		if (location.pathname.indexOf("/sepia/") >= 0){
 			locationHost = location.origin + location.pathname.replace(/\/sepia\/.*/, "/sepia");
-		}else{
+		}else if (location.pathname.indexOf("/tools/") >= 0){
 			locationHost = location.origin;
 		}
 	}else if (location.pathname.indexOf("/sepia/assist/tools/") >= 0){
