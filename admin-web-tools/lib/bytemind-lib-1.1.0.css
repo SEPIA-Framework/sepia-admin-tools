@@ -168,9 +168,9 @@
 	border-radius: 0px;
 	min-height: 72px;
 	width:80%;
-	max-width: 300px;
+	max-width: 320px;
 	padding: 16px;
-	top: 50%;
+	top: 47%;
 	left:50%;
 	transform: translate(-50%, -50%);
 	text-align: center;
@@ -178,12 +178,14 @@
 }
 #bytemind-popup-message-content {
 	margin: 10px 0 10px 0;
+	max-height: 75vh;
+    overflow-y: auto;
 }
 #bytemind-popup-message button {
 	cursor: pointer;
 	border: 0px;
 	min-width: 72px;
-	margin: 10px 0px 9px 0px;
+	margin: 10px 4px 9px 4px;
 	padding: 7px 10px;
 	background-color: #44c8be;
 	color: #2f3035;
