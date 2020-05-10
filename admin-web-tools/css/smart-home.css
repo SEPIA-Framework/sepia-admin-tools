@@ -1,5 +1,5 @@
 #smarthome-server.disabled {
-	pointer-events:none;
+	/*pointer-events:none;*/
 	border-bottom: 0;
 }
 
@@ -41,6 +41,10 @@
     margin: 8px;
     flex: 1 1 calc(50% - 16px);
 }
+.smarthome-item.unsaved {
+	background: #17acc3;
+    color: #fff;
+}
 @media only screen and (max-width: 420px) {
 	.smarthome-item {
 		margin: 8px 0;
@@ -75,6 +79,12 @@
     color: #beff1a;
     padding: 0;
     margin: 0 8px;
+}
+.smarthome-item-title .shi-control-save {
+	color: #f00;
+}
+.smarthome-item-title .shi-control-delete {
+	color: #17acc3;
 }
 .smarthome-item-title span {
 	overflow-wrap: break-word;

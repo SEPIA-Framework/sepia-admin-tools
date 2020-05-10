@@ -169,7 +169,7 @@
 	min-height: 72px;
 	width:80%;
 	max-width: 320px;
-	padding: 16px;
+	padding: 16px 4px;
 	top: 47%;
 	left:50%;
 	transform: translate(-50%, -50%);
@@ -179,6 +179,7 @@
 #bytemind-popup-message-content {
 	margin: 10px 0 10px 0;
 	max-height: 75vh;
+	padding: 0 12px;
     overflow-y: auto;
 }
 #bytemind-popup-message button {
@@ -189,11 +190,35 @@
 	padding: 7px 10px;
 	background-color: #44c8be;
 	color: #2f3035;
-	font-size: 15px;
+	font-size: 13px;
 }
 .bytemind-notouch-device #bytemind-popup-message button:hover {
 	background-color: #fff;
 	color: #222;
+}
+#bytemind-popup-message-close-small {
+	position: absolute;
+    top: 0;
+    right: 0;
+    height: 35px;
+    width: 35px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+#bytemind-popup-message input,
+#bytemind-popup-message select,
+#bytemind-popup-message label {
+	margin: 4px;
+	padding: 4px 8px;
+	border: 0;
+    height: 29px;
+    border-radius: 3px;
+}
+#bytemind-popup-message h3 {
+	font-weight: normal;
+    margin: 4px 0 16px 0;
 }
 
 /* --- SIDE MENU --- */

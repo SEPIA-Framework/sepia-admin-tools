@@ -200,6 +200,7 @@ function bytemind_build_ui(){
 			var box = document.createElement('div');
 			box.id = 'bytemind-popup-message';
 			box.innerHTML = "<div id='bytemind-popup-message-content'></div>" +
+							"<span id='bytemind-popup-message-close-small'>x</span>" +
 							"<button id='bytemind-popup-message-btn-one'>OK</button>" +
 							"<button id='bytemind-popup-message-btn-two'>ABORT</button>";
 			parent.append(box);
@@ -208,7 +209,9 @@ function bytemind_build_ui(){
 		//handle
 		var buttonOneName, buttonOneAction, buttonTwoName, buttonTwoAction;
 		var primaryColor, secondaryColor;
+		var useSmallCloseButton = false;
 		if (config){
+			useSmallCloseButton = config.useSmallCloseButton;
 			buttonOneName = config.buttonOneName;
 			buttonOneAction = config.buttonOneAction;
 			buttonTwoName = config.buttonTwoName;
@@ -216,11 +219,18 @@ function bytemind_build_ui(){
 			primaryColor = config.primaryColor;
 			secondaryColor = config.secondaryColor;
 		}
+		if (useSmallCloseButton){
+			$('#bytemind-popup-message-close-small').off().on('click', function(){ UI.hidePopup(); });
+		}else{
+			$('#bytemind-popup-message-close-small').off().hide();
+		}
 		if (buttonOneName && buttonOneAction){
 			var btn1 = $('#bytemind-popup-message-btn-one');
 			btn1.html(buttonOneName);	
 			btn1.off();		
 			btn1.on('click', buttonOneAction);
+		}else if (useSmallCloseButton){
+			$('#bytemind-popup-message-btn-one').off().hide();
 		}else{
 			var btn1 = $('#bytemind-popup-message-btn-one');
 			btn1.html('OK');			
@@ -238,9 +248,12 @@ function bytemind_build_ui(){
 		$('#bytemind-popup-message-content').html(content);
 		UI.showBackgroundCoverLayer(parent);
 		$box.fadeIn(300);
+		return $box[0];
 	}
 	UI.hidePopup = function(){
-		$('#bytemind-popup-message').fadeOut(300);
+		$('#bytemind-popup-message').fadeOut(300, function(){
+			$('#bytemind-popup-message-content').html("");
+		});
 		UI.hideBackgroundCoverLayer(parent);
 	}
 	

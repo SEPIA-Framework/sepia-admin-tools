@@ -286,6 +286,7 @@
 								<option value="" disabled selected>-Select-</option>
 								<option value="openhab">openHAB</option>
 								<option value="fhem">FHEM</option>
+								<!--<option value="internal">Internal (SEPIA)</option>-->
 								<option value="test">Test HUB</option>
 								<option value="custom">Custom</option>
 							</select>
@@ -298,13 +299,17 @@
 							<label style="position: relative;">Server: 
 								<span id="smarthome-server-indicator" class="input-inline-indicator inactive" title="Red: server not found, Green: connection established"></span>
 							</label>
-							<input id="smarthome-server" class="disabled" type="text" placeholder="e.g.: http://localhost:8080">
+							<input id="smarthome-server" type="text" placeholder="e.g.: http://localhost:8080">
+						</div>
+						<div class="interface_button_box">
+							<button onclick="getSmartHomeHubDataFromServer()" class="interface_button">LOAD HUB INFO</button>
+							<button onclick="writeSmartHomeHubDataToServer()" class="interface_button">WRITE HUB INFO</button>
 						</div>
 					</section>
 					<section class="group">
 						<div class="interface_button_box">
-							<button onclick="getSmartHomeHubDataFromServer()" class="interface_button">LOAD HUB INFO</button>
 							<button onclick="registerSepiaInsideSmartHomeHub()" class="interface_button">REGISTER SEPIA</button>
+							<button id="smarthome-devices-create" onclick="createSmartHomeItem()" class="interface_button" style="display: none;">CREATE DEVICE</button>
 							<div>
 								<label>GET DEVICES:</label><select id="smarthome-devices-filter" style="min-width: unset;"></select>
 								<!--<button onclick="getSmartHomeDevices()" class="interface_button">GET DEVICES</button>-->
@@ -314,8 +319,8 @@
 					<section class="group">
 						<h3>Devices <span id="smarthome-devices-last-refresh"></span></h3>
 						<div id="smarthome-devices-list">
-							<ul>
-								<li>Load <a href="https://github.com/SEPIA-Framework/sepia-docs/wiki/Smart-Home-Controls" target="_blank">smart home HUB info</a> from server (set via core-settings)</li>
+							<ul class="smarthome-devices-list-info">
+								<li>Load <a href="https://github.com/SEPIA-Framework/sepia-docs/wiki/Smart-Home-Controls" target="_blank">smart home HUB info</a> from server or write new data (same as 'Core Settings')</li>
 								<li>Register SEPIA Framework (required once for some HUBs)</li>
 								<li>Get the list of smart devices from HUB</li>
 								<li>Configure devices for SEPIA as needed</li>
@@ -408,7 +413,7 @@
 				<!-- SPEECH RECOGNITION -->
 				<div id="speech-recognition" class="bytemind-view">
 					<section class="group">
-						<h3>Connect</h3>
+						<h3>Speech-To-Text Server</h3>
 						<div class="group">
 							<label style="position: relative;">Server: 
 								<span id="stt-server-indicator" class="input-inline-indicator inactive" title="Red: server not found, Green: connection established"></span>
@@ -419,28 +424,37 @@
 							<label>Access token: </label><input id="stt-access-token" type="text">
 						</div>
 					</section>
-					<section class="group" style="width: 368px;">
-						<h3>Actions</h3>
-						<p>Model: </p>
-						<div class="group">
-							<input id="stt-model" type="text" placeholder="/opt/kaldi/model/kaldi-generic-de-tdnn_sp" value="/apps/share/kaldi_models/kaldi-generic-de-tdnn_sp_sepia_v03" spellcheck="false">
+					<section class="group">
+						<p class="info-text">You can modify the speech model of your STT server with the settings below. The path is relative to the server file system (or Docker container).</p>
+						<div class="group center">
+							<label>Full Model Path: </label>
+							<input id="stt-model" type="text" style="max-width: 386px;" placeholder="/apps/share/kaldi_models/kaldi-generic-de-tdnn_sp_sepia_v02" value="" spellcheck="false">
 						</div>
 						<div class="interface_button_box">
-							<button onclick="setSttModel()" class="interface_button">SET MODEL PATH</button>
 							<button onclick="getSttModel()" class="interface_button">GET MODEL PATH</button>
+							<button onclick="setSttModel()" class="interface_button">SET MODEL PATH</button>
 						</div>
 					</section>
 					<section class="group">
-						<div class="group">
-							<label>Version tag: </label><input id="stt-model-version" type="text" placeholder="04">
+						<p class="info-text">Language model (LM) adaptation is not documented yet but feel free to experiment ;-)</p>
+						<div class="interface_button_box">
+							<button onclick="sttGetTrainingDataFromTeachServer()" class="interface_button">Get Adapt Data</button>
+						</div>
+						<div class="group3 spacy">
+							<div>
+								<label style="min-width: 100px;">Version tag:</label>
+								<input id="stt-model-version" type="text" placeholder="02" style="height: 27px; min-width: 70px; width: 85px;">
+							</div>
+							<div>
+								<label style="min-width: 100px;">Language:</label>
+								<select id="stt-language-select" name="stt-lang" style="min-width: 70px; width: 85px;"> 
+									<option value="en">EN</option>
+									<option value="de">DE</option>
+								</select>
+							</div>
 						</div>
 						<div class="interface_button_box">
-							<select id="stt-language-select" name="stt-lang" style="min-width: 70px; margin-right: 8px;"> 
-								<option value="en">EN</option>
-								<option value="de">DE</option>
-							</select>
 							<button onclick="sttAdaptLm()" class="interface_button">Adapt LM</button>
-							<button onclick="sttGetTrainingDataFromTeachServer()" class="interface_button">Get Adapt Data</button>
 						</div>
 					</section>
 					<section class="group">
