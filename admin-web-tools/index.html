@@ -286,14 +286,14 @@
 								<option value="" disabled selected>-Select-</option>
 								<option value="openhab">openHAB</option>
 								<option value="fhem">FHEM</option>
-								<!--<option value="internal">Internal (SEPIA)</option>-->
+								<option value="internal">Internal (SEPIA)</option>
 								<option value="test">Test HUB</option>
 								<option value="custom">Custom</option>
 							</select>
 						</div>
 						<div id="smarthome_system_custom" class="group" style="display: none;">
 							<label style="position: relative;">Custom: </label>
-							<input id="smarthome_system_custom_select" type="text" placeholder="e.g.: MyHUB or class name" title="Class name sample: net.b07z.sepia.sdk.services.uid1007.MyService$MyHub">
+							<input id="smarthome_system_custom_select" type="text" placeholder="e.g.: HUB or class name" title="Class name sample: net.b07z.sepia.sdk.services.uid1007.MyService$MyHub">
 						</div>
 						<div class="group">
 							<label style="position: relative;">Server: 
@@ -308,7 +308,7 @@
 					</section>
 					<section class="group">
 						<div class="interface_button_box">
-							<button onclick="registerSepiaInsideSmartHomeHub()" class="interface_button">REGISTER SEPIA</button>
+							<button id="smarthome-hub-register" onclick="registerSepiaInsideSmartHomeHub()" class="interface_button" style="display: none;">REGISTER SEPIA</button>
 							<button id="smarthome-devices-create" onclick="createSmartHomeItem()" class="interface_button" style="display: none;">CREATE DEVICE</button>
 							<div>
 								<label>GET DEVICES:</label><select id="smarthome-devices-filter" style="min-width: unset;"></select>
@@ -319,11 +319,13 @@
 					<section class="group">
 						<h3>Devices <span id="smarthome-devices-last-refresh"></span></h3>
 						<div id="smarthome-devices-list">
+							<h3 style="width: 100%; margin-bottom: 0;">Quick start</h3>
 							<ul class="smarthome-devices-list-info">
-								<li>Load <a href="https://github.com/SEPIA-Framework/sepia-docs/wiki/Smart-Home-Controls" target="_blank">smart home HUB info</a> from server or write new data (same as 'Core Settings')</li>
-								<li>Register SEPIA Framework (required once for some HUBs)</li>
-								<li>Get the list of smart devices from HUB</li>
+								<li>Load HUB info from server or write new settings (more at: <a href='#!core-settings'>Core Settings</a>)</li>
+								<li>Register SEPIA Framework once if required (currently only: FHEM)</li>
+								<li>Get the list of devices from smart home HUB</li>
 								<li>Configure devices for SEPIA as needed</li>
+								<li>See the <a href="https://github.com/SEPIA-Framework/sepia-docs/wiki/Smart-Home-Controls" target="_blank">INFO PAGE</a> for detailed instructions
 							</ul>
 						</div>
 					</section>
