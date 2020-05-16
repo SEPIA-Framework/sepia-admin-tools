@@ -220,28 +220,30 @@ function bytemind_build_ui(){
 			secondaryColor = config.secondaryColor;
 		}
 		if (useSmallCloseButton){
-			$('#bytemind-popup-message-close-small').off().on('click', function(){ UI.hidePopup(); });
+			$('#bytemind-popup-message-close-small').off().show().on('click', function(){ UI.hidePopup(); });
 		}else{
 			$('#bytemind-popup-message-close-small').off().hide();
 		}
 		if (buttonOneName && buttonOneAction){
 			var btn1 = $('#bytemind-popup-message-btn-one');
 			btn1.html(buttonOneName);	
-			btn1.off();		
-			btn1.on('click', buttonOneAction);
+			btn1.off().show().on('click', buttonOneAction);
 		}else if (useSmallCloseButton){
 			$('#bytemind-popup-message-btn-one').off().hide();
 		}else{
 			var btn1 = $('#bytemind-popup-message-btn-one');
 			btn1.html('OK');			
-			btn1.off();
-			btn1.on('click', function(){	UI.hidePopup();		});
+			btn1.off().show().on('click', function(){ 
+				UI.hidePopup(); 
+			});
 		}
 		if (buttonTwoName && buttonTwoAction){
 			var btn2 = $('#bytemind-popup-message-btn-two');
 			btn2.html(buttonTwoName).show();	
-			btn2.off();		
-			btn2.on('click', function(){	buttonTwoAction(this); 	UI.hidePopup();		});
+			btn2.off().show().on('click', function(){	
+				buttonTwoAction(this); 	
+				UI.hidePopup();		
+			});
 		}else{
 			$('#bytemind-popup-message-btn-two').off().hide();
 		}
