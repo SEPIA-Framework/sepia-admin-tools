@@ -367,7 +367,7 @@ function genericPostRequest(apiName, apiPath, parameters, successCallback, error
 	showMessage("Loading ...");
 	$.ajax({
 		url: apiUrl,
-		timeout: 10000,
+		timeout: 12500,
 		type: "POST",
 		data: JSON.stringify(parameters),
 		headers: {

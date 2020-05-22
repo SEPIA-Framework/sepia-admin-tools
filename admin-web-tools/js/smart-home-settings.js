@@ -711,6 +711,9 @@ function addSmartHomeItemListeners(itemObj){
 		var property = $(this).attr('data-shi-property');
 		//console.log(property);
 		var newVal = $(this).attr('data-shi-value') || $(this).val();
+		if (this.tagName.toLowerCase() == "select"){
+			this.title = newVal;
+		}
 		var shiString = $item.attr('data-shi');
 		if (shiString && newVal != undefined){
 			var shi = JSON.parse(shiString);
@@ -823,7 +826,8 @@ function buildSmartHomeItem(shi){
 			"<div class='start-hidden internal-card-only' style='display:none;'><label>Int. Device Id:</label>" + 
 				"<input class='shi-property smarthome-item-interface-device-id' data-shi-property='" + SEPIA_TAG_INTERFACE_DEVICE_ID + "' spellcheck='false' " +
 					"value='" + (interfaceDeviceId || "") + "' " +
-					"placeholder='ID, URL, channel, etc.' type='text' title='A unique identifier of the device defined by the used interface, e.g. a ID or part of an URL.'>" +
+					"placeholder='ID, URL, topic (w/o prefix), etc.' type='text' " + 
+					"title='A unique identifier of the device defined by the used interface, e.g. an ID, MQTT topic or part of an URL. NOTE: A prefix for MQTT topics is set automatically, e.g.: sepia/smart-devices/[your-topic].'>" +
 			"</div>" + 
 			"<div class='start-hidden' style='display:none;'><label>State type:</label>" + "<select class='shi-property smarthome-item-state-type' data-shi-property='" + SEPIA_TAG_STATE_TYPE + "'>" +
 					buildSmartHomeStateTypeOptions(shi.stateType) +
@@ -839,6 +843,10 @@ function buildSmartHomeItem(shi){
 	;
 	var $shiObj = $(shiObj);
 	$shiObj.append(shiObjContent);
+	//set all selector titles to selected value (helpful tooltip for manual device configurations)
+	$shiObj.find("select.shi-property").each(function(i, item){
+		item.title = item.value;
+	});
 	//is type guessed?
 	if (shi.meta && shi.meta.typeGuessed){
 		$shiObj.find('.smarthome-item-type-confirm').show().on('click', function(){
@@ -1090,6 +1098,8 @@ function buildSmartHomeRoomOptions(selected){
 		"basement" : "Basement",
 		"garden" : "Garden",
 		"sunroom" : "Winter garden",
+		"terrace" : "Terrace",
+		"balcony" : "Balcony",
 		"hallway" : "Hallway",
 		"shack" : "Shack",
 		"other" : "Other",
