@@ -795,10 +795,10 @@ function buildSmartHomeItem(shi){
 				"<span class='smarthome-item-id'> - " + itemId.replace("<", "&lt;").replace(">", "&gt;") + "</span>" +
 			"</div>" +
 			"<div style='display:flex;'>" +
-				"<button class='shi-control-name'><i class='material-icons md-18'>edit</i></button>" +
-				"<button class='shi-control-toggle'><i class='material-icons md-18'>power_settings_new</i></button>" +
-				"<button class='shi-control-delete internal-card-only' style='display: none;'><i class='material-icons md-18'>delete</i></button>" +
-				"<button class='shi-control-save internal-card-only' style='display: none;'><i class='material-icons md-18'>save</i></button>" +
+				"<button class='shi-control-name' title='Edit device name'><i class='material-icons md-18'>edit</i></button>" +
+				"<button class='shi-control-toggle' title='Toggle device on/off (for testing)'><i class='material-icons md-18'>power_settings_new</i></button>" +
+				"<button class='shi-control-delete internal-card-only' title='Remove custom device' style='display: none;'><i class='material-icons md-18'>delete</i></button>" +
+				"<button class='shi-control-save internal-card-only' title='Store new device. NOTE: will turn red again if device communication showed errors!' style='display: none;'><i class='material-icons md-18'>save</i></button>" +
 			"</div>" +
 		"</div>" +
 		"<div class='smarthome-item-body'>" + 
