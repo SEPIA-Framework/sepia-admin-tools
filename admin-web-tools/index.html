@@ -258,8 +258,8 @@
 						<h3>Edit user</h3>
 						<p class="info-text">As admin you can change user roles and delete ANY user (but the core admin). Other users can delete ONLY themselves.</p>
 						<div class="group2">
-							<div class="group"><label>UserID: </label><input id="edit-user-id" type="text" placeholder="User to edit"></div>
-							<div class="group"><label>Roles: </label><input id="new-user-roles" type="text" placeholder="e.g.: developer, smarthomeguest, tinkerer" title="More roles: smarthomeguest, seniordev, chiefdev, tester, inviter"></div>
+							<div class="group"><label>UserID: </label><input id="edit-user-id" type="text" placeholder="UID of user to edit (e.g. uid1007)" spellcheck="false"></div>
+							<div class="group"><label>Roles: </label><input id="new-user-roles" type="text" placeholder="e.g.: developer, smarthomeguest, tinkerer" title="More roles: smarthomeguest, seniordev, chiefdev, tester, inviter" spellcheck="false"></div>
 						</div>
 					</section>
 					<section class="group">
@@ -293,13 +293,13 @@
 						</div>
 						<div id="smarthome_system_custom" class="group" style="display: none;">
 							<label style="position: relative;">Custom: </label>
-							<input id="smarthome_system_custom_select" type="text" placeholder="e.g.: HUB or class name" title="Class name sample: net.b07z.sepia.sdk.services.uid1007.MyService$MyHub">
+							<input id="smarthome_system_custom_select" type="text" placeholder="e.g.: HUB or class name" title="Class name sample: net.b07z.sepia.sdk.services.uid1007.MyService$MyHub" spellcheck="false">
 						</div>
 						<div class="group">
 							<label style="position: relative;">Server: 
 								<span id="smarthome-server-indicator" class="input-inline-indicator inactive" title="Red: server not found, Green: connection established"></span>
 							</label>
-							<input id="smarthome-server" type="text" placeholder="e.g.: http://localhost:8080">
+							<input id="smarthome-server" type="text" placeholder="e.g.: http://localhost:8080" spellcheck="false">
 						</div>
 						<div class="interface_button_box">
 							<button onclick="getSmartHomeHubDataFromServer()" class="interface_button">LOAD HUB INFO</button>
@@ -358,13 +358,13 @@
 							<select id="remote-action-type-sel" name="remote-action-types" style="min-width: 100px;">
 								<!-- generated dynamically on start -->
 							</select>
-							<!--<label>Action: </label>--><input id="remote-action" placeholder="Action" type="text">
+							<!--<label>Action: </label>--><input id="remote-action" placeholder="Action" type="text" spellcheck="false">
 						</div>
 						<div class="group">
-							<label style="min-width:100px; padding:0 6px; margin:0 8px;">device ID: </label><input id="remote-action-device-id" placeholder="b1" type="text">
+							<label style="min-width:100px; padding:0 6px; margin:0 8px;">device ID: </label><input id="remote-action-device-id" placeholder="b1" type="text" spellcheck="false">
 						</div>
 						<div class="group">
-							<label style="min-width:100px; padding:0 6px; margin:0 8px;">channel ID: </label><input id="remote-action-channel-id" placeholder="openWorld" type="text">
+							<label style="min-width:100px; padding:0 6px; margin:0 8px;">channel ID: </label><input id="remote-action-channel-id" placeholder="openWorld" type="text" spellcheck="false">
 						</div>
 					</section>
 					<section class="group">
@@ -385,7 +385,7 @@
 									<!-- generated dynamically on start -->
 								</select>
 							</td></tr>
-							<tr><td>Type:</td><td><input type="text" name="answer-type" required></td></tr>
+							<tr><td>Type:</td><td><input type="text" name="answer-type" spellcheck="false" required></td></tr>
 							<tr><td>Text:</td><td><input type="text" name="answer-text" required></td></tr>
 							<tr><td>Repetition:</td><td><input type="text" name="answer-repetition" value="0" required></td></tr>
 							<tr><td>Mood:</td><td><input type="text" name="answer-mood" value="5" required></td></tr>
@@ -398,9 +398,9 @@
 							<tr><td>Public?</td><td><input type="checkbox" name="answer-public" checked></td></tr>
 							<tr><td>Local?</td><td><input type="checkbox" name="answer-local"></td></tr>
 							<tr><td>Explicit?</td><td><input type="checkbox" name="answer-explicit"></td></tr>
-							<tr><td>Tags</td><td><input type="text" name="answer-tags" placeholder="tag1, tag2, ..."></td></tr>
+							<tr><td>Tags</td><td><input type="text" name="answer-tags" placeholder="tag1, tag2, ..." spellcheck="false"></td></tr>
 							<tr><td>System default?</td><td><input type="checkbox" name="answer-systemdefault"></td></tr>
-							<tr><td>ID:</td><td><input type="text" name="answer-id" value="" placeholder="will be loaded automatically" disabled></td></tr>
+							<tr><td>ID:</td><td><input type="text" name="answer-id" value="" placeholder="will be loaded automatically" spellcheck="false" disabled></td></tr>
 							<tr><td><br></td></tr>
 							<tr><td colspan="2" style="text-align:center;">
 								<input type="submit" value="SAVE" class="interface_button"><!--
@@ -423,7 +423,7 @@
 							<input id="stt-server" type="url" onchange="checkSttServer()" placeholder="e.g.: http://localhost:3080/stt" onkeypress="checkSttServerKeyPress()">
 						</div>
 						<div class="group" style="position: relative;">
-							<label>Access token: </label><input id="stt-access-token" type="text">
+							<label>Access token: </label><input id="stt-access-token" type="text" spellcheck="false">
 						</div>
 					</section>
 					<section class="group">
@@ -445,7 +445,7 @@
 						<div class="group3 spacy">
 							<div>
 								<label style="min-width: 100px;">Version tag:</label>
-								<input id="stt-model-version" type="text" placeholder="02" style="height: 27px; min-width: 70px; width: 85px;">
+								<input id="stt-model-version" type="text" placeholder="02" style="height: 27px; min-width: 70px; width: 85px;" spellcheck="false">
 							</div>
 							<div>
 								<label style="min-width: 100px;">Language:</label>
@@ -523,8 +523,8 @@
 						<p class="info-text">NOTE: When you create a channel as admin he will initially be a member of the channel. This might not be desired.</p>
 						<div class="group2">
 							<form id="chat-server-settings-form" onsubmit="return createMessengerChannel()" action="">
-								<div class="group"><label>Channel name: </label><input id="msg-channel-name" type="text" required></div>
-								<div class="group"><label>Members: </label><input id="msg-channel-members" type="text"></div>
+								<div class="group"><label>Channel name: </label><input id="msg-channel-name" type="text" required spellcheck="false"></div>
+								<div class="group"><label>Members: </label><input id="msg-channel-members" type="text" spellcheck="false"></div>
 								<div class="group"><label>Public? </label><input type="checkbox" id="msg-channel-public" style="min-width: 100px;"></div>
 								<div class="group"><label>Add assistant? </label><input type="checkbox" id="msg-channel-assist" style="min-width: 100px;" checked></div>
 								<br>
