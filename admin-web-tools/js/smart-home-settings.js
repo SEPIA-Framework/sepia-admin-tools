@@ -273,7 +273,7 @@ function getSmartHomeDevices(successCallback, errorCallback){
 			if (devices && devices.length > 0){
 				//build DOM objects
 				$('#smarthome-devices-list').html("");
-				devices.forEach(function(item){
+				devices.forEach(function(item){					//TODO: can we sort them before?
 					var domObj = buildSmartHomeItem(item);
 					if (domObj){
 						var isHidden = item.type == "hidden";
@@ -986,7 +986,7 @@ function buildSmartHomeInterfaceEditor(shInterface){
 				"<input class='smarthome-interface-host' spellcheck='false' placeholder='http://localhost:8083/myHub' value='" + shInterface.host + "'>" +
 			//"<button class='smarthome-interface-reg-btn'>REGISTER</button>" +
 			"<label>Auth. Type (opt.)</label>" +
-				"<input class='smarthome-interface-authType' spellcheck='false' placeholder='Basic' value='" + shInterface.authType + "'>" + 
+				"<input class='smarthome-interface-authType' spellcheck='false' placeholder='Basic or Plain (if supported)' value='" + shInterface.authType + "'>" + 
 			"<label>Auth. Data (opt.)</label>" + 
 				"<input class='smarthome-interface-authData' spellcheck='false' placeholder='dXNlcjp0ZXN0MTIzNDU=' value='" + shInterface.authData + "'>" + 
 			"<label>Description</label>" + 
