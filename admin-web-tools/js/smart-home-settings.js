@@ -1135,7 +1135,7 @@ function buildSmartHomeInterfaceOptions(selected){
 		});
 	}
 	return buildOptionsSelector(options, selected, function(optionsObj){
-		return ("<option value='' disabled>- Choose -</option>" + optionsObj);
+		return ("<option value='' disabled>- Choose -</option><option value=''>- New -</option>" + optionsObj);
 	}, function(optionsObj){
 		return ("<option value='' disabled selected>- Choose -</option>" + optionsObj);
 	});

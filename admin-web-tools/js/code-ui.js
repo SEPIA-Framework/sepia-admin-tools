@@ -23,18 +23,36 @@ function codeUiOnReady(){
 	window.addEventListener('resize', function(){
 		codeEditor.setSize(codeContainer.offsetWidth, codeContainer.offsetHeight);
 	});
+	
+	//Listen to paste event
+	$(codeContainer).find("textarea").each(function(i, ta){
+		ta.addEventListener("paste", function(event){
+			var paste = (event.clipboardData || window.clipboardData).getData('text');
+			if (paste){
+				var cName = paste.match(/public class (.*) implements ServiceInterface/g);
+				if (cName && cName.length == 1){
+					$('#code-ui-source-class-name').val(cName[0].replace(/.*public class (.*?) implements ServiceInterface.*/, "$1").trim());
+				}
+			}
+		});
+	});
 
 	//Fill id/pwd/server form
 	codeUiUpdateFormData();
+	
+	console.log("Code-UI - CodeMirror editor is ready");
 }
 
 //Get submit URL
 function codeUiBuildSubmitURL(){
-	codeUiUpdateFormData();
 	codeEditor.save();
-	if (!codeEditor.getValue()){
+	var code = codeEditor.getValue();
+	if (!code){
 		alert("Please add some code first! ;-)");
 		return false;
+	}else{
+		//codeUiUpdateFormData();
+		codeUiValidateAndSetSourceCode(code);
 	}
 	var server;
 	var serverType = "";
@@ -243,5 +261,24 @@ function codeUiValidateAndSetSourceCode(code){
 			code = code.replace(/(^package .*\.)(.*?)(;)/mi, "$1" + ($('#code-ui-id').val() || "[your_user_ID]") + "$3");
 		}
 		codeEditor.setValue(code);
+	}
+}
+
+//Download as text-file
+function codeUiTriggerScriptDownload(){
+	if (codeEditor){
+		var code = codeEditor.getValue();
+		var fileName = $('#code-ui-source-class-name').val() || "NewClass";
+		fileName = fileName + ".java";
+		var textFileAsBlob = new Blob([code], {type:'text/plain'}); 
+		if (window.navigator && window.navigator.msSaveOrOpenBlob){
+			//IE11 support
+			window.navigator.msSaveOrOpenBlob(textFileAsBlob, fileName);
+		}else{
+			var downloadLink = document.createElement("a");
+			downloadLink.download = fileName;
+			downloadLink.href = window.webkitURL.createObjectURL(textFileAsBlob);
+			downloadLink.click();
+		}
 	}
 }
