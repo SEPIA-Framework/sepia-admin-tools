@@ -168,9 +168,9 @@
 	border-radius: 0px;
 	min-height: 72px;
 	width:80%;
-	max-width: 300px;
-	padding: 16px;
-	top: 50%;
+	max-width: 320px;
+	padding: 16px 4px;
+	top: 47%;
 	left:50%;
 	transform: translate(-50%, -50%);
 	text-align: center;
@@ -178,20 +178,55 @@
 }
 #bytemind-popup-message-content {
 	margin: 10px 0 10px 0;
+	max-height: 75vh;
+	padding: 0 12px;
+    overflow-y: auto;
 }
 #bytemind-popup-message button {
 	cursor: pointer;
 	border: 0px;
 	min-width: 72px;
-	margin: 10px 0px 9px 0px;
+	margin: 10px 4px 9px 4px;
 	padding: 7px 10px;
 	background-color: #44c8be;
 	color: #2f3035;
-	font-size: 15px;
+	font-size: 13px;
 }
 .bytemind-notouch-device #bytemind-popup-message button:hover {
 	background-color: #fff;
 	color: #222;
+}
+#bytemind-popup-message-close-small {
+	position: absolute;
+    top: 0;
+    right: 0;
+    height: 35px;
+    width: 35px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+#bytemind-popup-message input,
+#bytemind-popup-message select,
+#bytemind-popup-message label {
+	margin: 4px;
+	padding: 4px 8px;
+	border: 0;
+    height: 29px;
+    border-radius: 3px;
+}
+#bytemind-popup-message h3 {
+	font-weight: normal;
+    margin: 4px 0 16px 0;
+}
+#bytemind-popup-message textarea {
+	width: calc(100% - 8px);
+    margin: 4px;
+    padding: 4px 8px;
+    background: #222;
+    color: #eee;
+    border-color: #333;
 }
 
 /* --- SIDE MENU --- */
@@ -293,16 +328,19 @@
 	top: 10%;
 	left: 50%;
 	margin-left: -145px;
-	padding: 10px 35px 20px 35px;
+	padding: 10px 32px 8px 32px;
 	color: #fff;
 	text-align: center;
 	z-index: 90;
 }
 #bytemind-login-box h2 {
 	font-weight: normal;
+	font-family: sans-serif;
+	font-size: 23px;
 }
 #bytemind-login-box input {
 	border: 0px;
+	border-radius: 3px;
 	background-color: #fff;
 	color: #2f3035;
 	width: 100%;

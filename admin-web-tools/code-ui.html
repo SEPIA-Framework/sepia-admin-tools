@@ -85,13 +85,14 @@
 					</select>
 				</div>
 				<div class="group">
-					<button id="code-ui-load-repo-btn" class='interface_button' onclick="codeUiLoadExtensionConfigFromServer()" style="display:none;">Online repository</button>
+					<button id="code-ui-load-repo-btn" class='interface_button' onclick="codeUiLoadExtensionConfigFromServer()" style="display:none; margin: 5px 8px;">Online repository</button>
 					<label id="code-ui-file-label" class="fileContainer" onchange="codeUiOpenSourceFile(event)">
 						Load file<input id="code-ui-file-input" type='file' accept='.java,.sservice,.yaml'>
 					</label>
 				</div>
 				<div class="group">
-					<button id="code-ui-upload-btn" class='interface_button' form='code-ui-upload-form' type='submit' style="display:none;">UPLOAD</button>
+					<button id="code-ui-download-btn" class='interface_button' style='margin: 5px 8px;' onclick='codeUiTriggerScriptDownload();'>Save file</button>
+					<button id="code-ui-upload-btn" class='interface_button' form='code-ui-upload-form' type='submit' style="display:none; margin: 5px 8px; background: #44c8be;">Upload</button>
 					<!--<input type='file' form='code-ui-upload-form' name='upload_file' accept='.java,.sservice,.yaml'>-->
 				</div>
 			</div>

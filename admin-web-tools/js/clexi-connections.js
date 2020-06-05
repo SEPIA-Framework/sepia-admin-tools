@@ -27,8 +27,58 @@ function clientConnectionsOnStart(){
 
 var clexiLogOut = document.getElementById('client-clexi-events');
 var numOfClexiSendRetries = 10;
+var clexiLogFilter = {
+	ble_beacon: true,
+	broadcast: true,
+	http: true,
+	runtime_cmd: true
+}
+function clientClexiSetEventFilters(){
+	showMessage("<div>" +
+		"<p>Setup Remote Terminal</p>" +
+		"<div>Log Broadcasts: <input type='checkbox' " 
+			+ "onchange='(function(){ clexiLogFilter.broadcast = !clexiLogFilter.broadcast; console.log(clexiLogFilter); })();' " 
+			+ (clexiLogFilter.broadcast? "checked" : "") + "></div>" +
+		"<div>Log BLE Beacon data: <input type='checkbox' "
+			+ "onchange='(function(){ clexiLogFilter.ble_beacon = !clexiLogFilter.ble_beacon; console.log(clexiLogFilter); })();' " 
+			+ (clexiLogFilter.ble_beacon? "checked" : "") + "></div>" +
+		"<div>Log HTTP Events: <input type='checkbox' " 
+			+ "onchange='(function(){ clexiLogFilter.http = !clexiLogFilter.http; console.log(clexiLogFilter); })();' " 
+			+ (clexiLogFilter.http? "checked" : "") + "></div>" +
+		"<div>Log Runtime CMD Events: <input type='checkbox' " 
+			+ "onchange='(function(){ clexiLogFilter.runtime_cmd = !clexiLogFilter.runtime_cmd; console.log(clexiLogFilter); })();' " 
+			+ (clexiLogFilter.runtime_cmd? "checked" : "") + "></div>" +
+	"</div>", true);
+}
 
 function clexiEventLog(msg, color){
+	if (msg.indexOf("Broadcast") == 0){
+		if (clexiLogFilter.broadcast == false){
+			return;
+		}
+		if (!color){
+			if (msg.indexOf("_error") > 0){
+				color = "#f00";
+			}else if (msg.indexOf("sepia-state") > 0){
+				color = "#b9efcf";
+			}else if (msg.indexOf("sepia-speech") > 0){
+				color = "#f1a508";
+			}
+		}
+	}else if (msg.indexOf("BLE") == 0){
+		if (clexiLogFilter.ble_beacon == false){
+			return;
+		}
+	}else if (msg.indexOf("HTTP") == 0){
+		if (clexiLogFilter.http == false){
+			return;
+		}
+	}
+	else if (msg.indexOf("Runtime") == 0){
+		if (clexiLogFilter.runtime_cmd == false){
+			return;
+		}
+	}
 	if (color){
 		clexiLogOut.innerHTML = ("<span style='color: " + color + ";'>" + msg + "</span><br>" + clexiLogOut.innerHTML);
 	}else{
@@ -43,6 +93,7 @@ function clexiEventError(msg){
 var clexiDebugEventColor = "#888";
 var clexiBleBeaconColor = "#2196F3";
 var clexiHttpEventColor = "#009688";
+var clexiRuntimeCommandsColor = "#cce";
 		
 ClexiJS.onLog = clexiEventLog;
 //ClexiJS.onDebug = clexiEventLog;
@@ -60,21 +111,33 @@ function clientClexiConnect(){
 	ClexiJS.connect(clexiHost, function(e){
 		//log("CLEXI - ready.");
 		$('#clexi-server-indicator').removeClass('inactive');
+		$('#clexi-server-indicator').removeClass('yellow');
 		$('#clexi-server-indicator').addClass('secure');
-		//listen to events:
-		clexiSubscribe();
 		
 	}, function(e){
 		//log("CLEXI - lost connection.");
 		$('#clexi-server-indicator').removeClass('inactive');
 		$('#clexi-server-indicator').removeClass('secure');
+		$('#clexi-server-indicator').removeClass('yellow');
 		clexiRemoveSubscriptions();
 		
 	}, function(err){
 		//log("CLEXI - something went wrong.");
 		$('#clexi-server-indicator').removeClass('inactive');
 		$('#clexi-server-indicator').removeClass('secure');
+		$('#clexi-server-indicator').removeClass('yellow');
 		clexiRemoveSubscriptions();
+	
+	}, function(){
+		//log("CLEXI - connecting.");
+		$('#clexi-server-indicator').removeClass('inactive');
+		$('#clexi-server-indicator').removeClass('secure');
+		$('#clexi-server-indicator').addClass('yellow');
+	
+	}, function(welcomeInfo){
+		//log("CLEXI - welcome event.");
+		//listen to events:
+		clexiSubscribe();
 	});
 	//log("Connecting to CLEXI...");
 }
@@ -85,7 +148,7 @@ function clientClexiDisconnect(){
 }
 
 function clientClexiHelp(){
-	showMessage("Commands to try for message type 'SEPIA Client':\n\n"
+	showMessage("<u>Commands to try for message type 'SEPIA Client':</u>\n\n"
 		+ "- ping all\n\n"
 		+ "- call logout\n\n"
 		+ "- call login user [id] password [pwd]\n\n"
@@ -96,10 +159,17 @@ function clientClexiHelp(){
 		+ "- get user\n\n"
 		+ "- get wakeword\n\n"
 		//+ "- set useGamepads true\n\n"
-	+ "\nCommands to try for type 'Remote Button'\n\n"
+	+ "\n<u>Commands to try for type 'Remote Button'</u>\n\n"
 		+ "- deviceId [id] button [mic, back, ao, next, prev]\n\n"
-		+ "NOTE: To use remote buttons you currently need to enable 'useGamepads' in client settings."
-	);
+		+ "<b>NOTE:</b> To use remote buttons you currently need to enable 'useGamepads' in client settings.\n\n"
+	+ "\n<u>Commands to try for type 'Runtime Command'</u>\n\n"
+		+ "- osReboot\n\n"
+		+ "- osShutdown delay 15000\n\n"
+		+ "- removeScheduled cmdId [cmd-ID]\n\n"
+		+ "- freeMemory\n\n"
+		+ "- callCustom delay 5000 file echo TEXT Hello-World\n\n"
+		+ "<b>NOTE:</b> To use runtime commands make sure CLEXI has them installed and activated.\n\n"
+	, true);
 }
 function clientClexiShortcutPingAll(){
 	clientClexiSend("ping all", "sepia-client");
@@ -209,12 +279,51 @@ function clientClexiSend(msg, msgType){
 		}else{
 			clexiEventError("Wrong message input format! Should be, e.g. 'deviceId o1 button mic' (no spaces allowed in parameters).");
 		}
+	
+	}else if (msgType == "runtime-command"){
+		//Runtime Command
+		var dataArray = msg.split(" ");
+		var cmd = dataArray.shift();
+		var args = {};
+		//shortcuts
+		if (cmd == "osShutdown" || cmd == "os_shutdown"){
+			cmd = "callCustom";
+			dataArray.push("file");
+			dataArray.push("os_shutdown");
+		}else if (cmd == "osReboot" || cmd == "os_reboot"){
+			cmd = "callCustom";
+			dataArray.push("file");
+			dataArray.push("os_reboot");
+		}
+		if (dataArray.length >= 2 && dataArray.length % 2 == 0){
+			for (var i=0; i<dataArray.length; i+=2){
+				args[dataArray[i].replace(/^[-]+/,"")] = dataArray[i+1];
+			}
+		}else if (dataArray.length > 0){
+			clexiEventError("Wrong message input format! Should be: '[command] [parameter1] [val1] [parameter2] ...' (no spaces allowed in parameters).");
+			return;
+		}
+		$('#client-clexi-msg').val("");
+		clexiRuntimeCommand(cmd, args);
 	}
 }
 
 function clexiBroadcast(msg){
 	ClexiJS.send('clexi-broadcaster', msg, numOfClexiSendRetries);
 }
+
+function clexiRuntimeCommand(cmd, args){
+	ClexiJS.send('runtime-commands', {
+		id: getNewClexiRuntimeCmdId(),
+		cmd: cmd,
+		args: args
+	}, numOfClexiSendRetries);
+}
+function getNewClexiRuntimeCmdId(){
+	return (clexiRuntimeCommandBaseId + "-" + ++clexiRuntimeCommandLastIdIndex);
+}
+var clexiRuntimeCommandBaseId = "SEPIA-HUB-" + Math.abs(sjcl.random.randomWords(1));
+var clexiRuntimeCommandLastIdIndex = 0;
 
 function clexiHttpEvent(ev, successCallback, errorCallback){
 	var clexiHost = $('#client-clexi-host').val();
@@ -290,13 +399,35 @@ function subscribeToClexiHttpEvents(){
 		clexiEventError('HTTP error: ' + JSON.stringify(e));
 	});
 }
+function subscribeToRuntimeCommands(){
+	ClexiJS.subscribeTo('runtime-commands', function(e){
+		clexiEventLog('Runtime CMD event: ' + JSON.stringify(e), clexiRuntimeCommandsColor);
+	}, function(e){
+		clexiEventLog('Runtime CMD response: ' + JSON.stringify(e), clexiDebugEventColor);
+	}, function(e){
+		clexiEventError('Runtime CMD error: ' + JSON.stringify(e));
+	});
+}
+function subscribeToUndefined(){
+	ClexiJS.subscribeTo('undefined', function(e){
+		clexiEventLog('Server event: ' + JSON.stringify(e), clexiDebugEventColor);
+	}, function(e){
+		clexiEventLog('Server event: ' + JSON.stringify(e), clexiDebugEventColor);
+	}, function(e){
+		clexiEventError('Server event: ' + JSON.stringify(e));
+	});
+}
 function clexiSubscribe(){
 	subscribeToClexiBeaconScanner();
 	subscribeToClexiBroadcaster();
 	subscribeToClexiHttpEvents();
+	subscribeToRuntimeCommands();
+	subscribeToUndefined();
 }
 function clexiRemoveSubscriptions(){
 	ClexiJS.removeSubscription('clexi-broadcaster');
 	ClexiJS.removeSubscription('clexi-http-events');
 	ClexiJS.removeSubscription('ble-beacon-scanner');
+	ClexiJS.removeSubscription('runtime-commands');
+	ClexiJS.removeSubscription('undefined');
 }

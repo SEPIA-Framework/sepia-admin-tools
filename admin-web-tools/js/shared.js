@@ -215,6 +215,25 @@ function buildLanguageSelectorOptions(){
 			+ '<option value="pt">Portuguese</option><option value="ru">Russian</option>';
 	return html;
 }
+function buildOptionsSelector(options, selected, onFoundSelected, onNothingSelected){
+	var optionsObj = "";
+	var foundSelected = false;
+	for (o in options){
+		var oName = options[o];
+		if (o == selected){
+			optionsObj += "<option value='" + o + "' selected>" + oName + "</option>";
+			foundSelected = true;
+		}else{
+			optionsObj += "<option value='" + o + "'>" + oName + "</option>";
+		}
+	}
+	if (foundSelected){
+		optionsObj = onFoundSelected(optionsObj);
+	}else{
+		optionsObj = onNothingSelected(optionsObj);
+	}
+	return optionsObj;
+}
 
 function makeDraggable(eleId, dragButtonId){
 	var dragButton; 
@@ -348,7 +367,7 @@ function genericPostRequest(apiName, apiPath, parameters, successCallback, error
 	showMessage("Loading ...");
 	$.ajax({
 		url: apiUrl,
-		timeout: 10000,
+		timeout: 12500,
 		type: "POST",
 		data: JSON.stringify(parameters),
 		headers: {

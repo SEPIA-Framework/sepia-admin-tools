@@ -204,7 +204,7 @@
 						<div class="interface_button_box">
 							<button onclick="getSpecificServerConfig()" class="interface_button">Read this key</button>
 							<button onclick="writeKeyValueToServerConfig()" class="interface_button">Write to config</button>
-							<button onclick="softRestartServer()" class="interface_button">Reload Server</button>
+							<button onclick="softRestartServer()" class="interface_button" style="background: #44c8be;">Reload Server</button>
 						</div>
 					</section>
 					<section class="group">
@@ -251,14 +251,15 @@
 						<div class="interface_button_box">
 							<button onclick="whitelistEmail()" class="interface_button">PUT ON WHITELIST</button>
 							<button onclick="createUser()" class="interface_button">CREATE</button>
+							<button onclick="getUserList()" class="interface_button">GET USER LIST</button>
 						</div>
 					</section>
 					<section class="group">
 						<h3>Edit user</h3>
 						<p class="info-text">As admin you can change user roles and delete ANY user (but the core admin). Other users can delete ONLY themselves.</p>
 						<div class="group2">
-							<div class="group"><label>UserID: </label><input id="edit-user-id" type="text" placeholder="User to edit"></div>
-							<div class="group"><label>Roles: </label><input id="new-user-roles" type="text" placeholder="e.g.: developer, smarthomeguest, tinkerer" title="More roles: smarthomeguest, seniordev, chiefdev, tester, inviter"></div>
+							<div class="group"><label>UserID: </label><input id="edit-user-id" type="text" placeholder="UID of user to edit (e.g. uid1007)" spellcheck="false"></div>
+							<div class="group"><label>Roles: </label><input id="new-user-roles" type="text" placeholder="e.g.: developer, smarthomeguest, tinkerer" title="More roles: smarthomeguest, seniordev, chiefdev, tester, inviter" spellcheck="false"></div>
 						</div>
 					</section>
 					<section class="group">
@@ -285,25 +286,30 @@
 								<option value="" disabled selected>-Select-</option>
 								<option value="openhab">openHAB</option>
 								<option value="fhem">FHEM</option>
+								<option value="internal">Internal (SEPIA)</option>
 								<option value="test">Test HUB</option>
 								<option value="custom">Custom</option>
 							</select>
 						</div>
 						<div id="smarthome_system_custom" class="group" style="display: none;">
 							<label style="position: relative;">Custom: </label>
-							<input id="smarthome_system_custom_select" type="text" placeholder="e.g.: MyHUB or class name" title="Class name sample: net.b07z.sepia.sdk.services.uid1007.MyService$MyHub">
+							<input id="smarthome_system_custom_select" type="text" placeholder="e.g.: HUB or class name" title="Class name sample: net.b07z.sepia.sdk.services.uid1007.MyService$MyHub" spellcheck="false">
 						</div>
 						<div class="group">
 							<label style="position: relative;">Server: 
 								<span id="smarthome-server-indicator" class="input-inline-indicator inactive" title="Red: server not found, Green: connection established"></span>
 							</label>
-							<input id="smarthome-server" type="text" placeholder="e.g.: http://localhost:8080">
+							<input id="smarthome-server" type="text" placeholder="e.g.: http://localhost:8080" spellcheck="false">
+						</div>
+						<div class="interface_button_box">
+							<button onclick="getSmartHomeHubDataFromServer()" class="interface_button">LOAD HUB INFO</button>
+							<button onclick="writeSmartHomeHubDataToServer()" class="interface_button">WRITE HUB INFO</button>
 						</div>
 					</section>
 					<section class="group">
 						<div class="interface_button_box">
-							<button onclick="getSmartHomeHubDataFromServer()" class="interface_button">LOAD HUB INFO</button>
-							<button onclick="registerSepiaInsideSmartHomeHub()" class="interface_button">REGISTER SEPIA</button>
+							<button id="smarthome-hub-register" onclick="registerSepiaInsideSmartHomeHub()" class="interface_button" style="display: none;">REGISTER SEPIA</button>
+							<button id="smarthome-devices-create" onclick="createSmartHomeItem()" class="interface_button" style="display: none;">CREATE DEVICE</button>
 							<div>
 								<label>GET DEVICES:</label><select id="smarthome-devices-filter" style="min-width: unset;"></select>
 								<!--<button onclick="getSmartHomeDevices()" class="interface_button">GET DEVICES</button>-->
@@ -313,11 +319,13 @@
 					<section class="group">
 						<h3>Devices <span id="smarthome-devices-last-refresh"></span></h3>
 						<div id="smarthome-devices-list">
-							<ul>
-								<li>Set or load <a href="https://github.com/SEPIA-Framework/sepia-docs/wiki/Smart-Home-Controls" target="_blank">smart home HUB info</a> from server</li>
-								<li>Register SEPIA Framework (required once for some HUBs)</li>
-								<li>Get the list of smart devices from HUB</li>
+							<h3 style="width: 100%; margin-bottom: 0;">Quick start</h3>
+							<ul class="smarthome-devices-list-info">
+								<li>Load HUB info from server or write new settings (more at: <a href='#!core-settings'>Core Settings</a>)</li>
+								<li>Register SEPIA Framework once if required (currently only: FHEM)</li>
+								<li>Get the list of devices from smart home HUB</li>
 								<li>Configure devices for SEPIA as needed</li>
+								<li>See the <a href="https://github.com/SEPIA-Framework/sepia-docs/wiki/Smart-Home-Controls" target="_blank">INFO PAGE</a> for detailed instructions
 							</ul>
 						</div>
 					</section>
@@ -350,13 +358,13 @@
 							<select id="remote-action-type-sel" name="remote-action-types" style="min-width: 100px;">
 								<!-- generated dynamically on start -->
 							</select>
-							<!--<label>Action: </label>--><input id="remote-action" placeholder="Action" type="text">
+							<!--<label>Action: </label>--><input id="remote-action" placeholder="Action" type="text" spellcheck="false">
 						</div>
 						<div class="group">
-							<label style="min-width:100px; padding:0 6px; margin:0 8px;">device ID: </label><input id="remote-action-device-id" placeholder="b1" type="text">
+							<label style="min-width:100px; padding:0 6px; margin:0 8px;">device ID: </label><input id="remote-action-device-id" placeholder="b1" type="text" spellcheck="false">
 						</div>
 						<div class="group">
-							<label style="min-width:100px; padding:0 6px; margin:0 8px;">channel ID: </label><input id="remote-action-channel-id" placeholder="openWorld" type="text">
+							<label style="min-width:100px; padding:0 6px; margin:0 8px;">channel ID: </label><input id="remote-action-channel-id" placeholder="openWorld" type="text" spellcheck="false">
 						</div>
 					</section>
 					<section class="group">
@@ -377,7 +385,7 @@
 									<!-- generated dynamically on start -->
 								</select>
 							</td></tr>
-							<tr><td>Type:</td><td><input type="text" name="answer-type" required></td></tr>
+							<tr><td>Type:</td><td><input type="text" name="answer-type" spellcheck="false" required></td></tr>
 							<tr><td>Text:</td><td><input type="text" name="answer-text" required></td></tr>
 							<tr><td>Repetition:</td><td><input type="text" name="answer-repetition" value="0" required></td></tr>
 							<tr><td>Mood:</td><td><input type="text" name="answer-mood" value="5" required></td></tr>
@@ -390,9 +398,9 @@
 							<tr><td>Public?</td><td><input type="checkbox" name="answer-public" checked></td></tr>
 							<tr><td>Local?</td><td><input type="checkbox" name="answer-local"></td></tr>
 							<tr><td>Explicit?</td><td><input type="checkbox" name="answer-explicit"></td></tr>
-							<tr><td>Tags</td><td><input type="text" name="answer-tags" placeholder="tag1, tag2, ..."></td></tr>
+							<tr><td>Tags</td><td><input type="text" name="answer-tags" placeholder="tag1, tag2, ..." spellcheck="false"></td></tr>
 							<tr><td>System default?</td><td><input type="checkbox" name="answer-systemdefault"></td></tr>
-							<tr><td>ID:</td><td><input type="text" name="answer-id" value="" placeholder="will be loaded automatically" disabled></td></tr>
+							<tr><td>ID:</td><td><input type="text" name="answer-id" value="" placeholder="will be loaded automatically" spellcheck="false" disabled></td></tr>
 							<tr><td><br></td></tr>
 							<tr><td colspan="2" style="text-align:center;">
 								<input type="submit" value="SAVE" class="interface_button"><!--
@@ -407,7 +415,7 @@
 				<!-- SPEECH RECOGNITION -->
 				<div id="speech-recognition" class="bytemind-view">
 					<section class="group">
-						<h3>Connect</h3>
+						<h3>Speech-To-Text Server</h3>
 						<div class="group">
 							<label style="position: relative;">Server: 
 								<span id="stt-server-indicator" class="input-inline-indicator inactive" title="Red: server not found, Green: connection established"></span>
@@ -415,31 +423,40 @@
 							<input id="stt-server" type="url" onchange="checkSttServer()" placeholder="e.g.: http://localhost:3080/stt" onkeypress="checkSttServerKeyPress()">
 						</div>
 						<div class="group" style="position: relative;">
-							<label>Access token: </label><input id="stt-access-token" type="text">
-						</div>
-					</section>
-					<section class="group" style="width: 368px;">
-						<h3>Actions</h3>
-						<p>Model: </p>
-						<div class="group">
-							<input id="stt-model" type="text" placeholder="/opt/kaldi/model/kaldi-generic-de-tdnn_sp" value="/apps/share/kaldi_models/kaldi-generic-de-tdnn_sp_sepia_v03" spellcheck="false">
-						</div>
-						<div class="interface_button_box">
-							<button onclick="setSttModel()" class="interface_button">SET MODEL PATH</button>
-							<button onclick="getSttModel()" class="interface_button">GET MODEL PATH</button>
+							<label>Access token: </label><input id="stt-access-token" type="text" spellcheck="false">
 						</div>
 					</section>
 					<section class="group">
-						<div class="group">
-							<label>Version tag: </label><input id="stt-model-version" type="text" placeholder="04">
+						<p class="info-text">You can modify the speech model of your STT server with the settings below. The path is relative to the server file system (or Docker container).</p>
+						<div class="group center">
+							<label>Full Model Path: </label>
+							<input id="stt-model" type="text" style="max-width: 386px;" placeholder="/apps/share/kaldi_models/kaldi-generic-de-tdnn_sp_sepia_v02" value="" spellcheck="false">
 						</div>
 						<div class="interface_button_box">
-							<select id="stt-language-select" name="stt-lang" style="min-width: 70px; margin-right: 8px;"> 
-								<option value="en">EN</option>
-								<option value="de">DE</option>
-							</select>
-							<button onclick="sttAdaptLm()" class="interface_button">Adapt LM</button>
+							<button onclick="getSttModel()" class="interface_button">GET MODEL PATH</button>
+							<button onclick="setSttModel()" class="interface_button">SET MODEL PATH</button>
+						</div>
+					</section>
+					<section class="group">
+						<p class="info-text">Language model (LM) adaptation is not documented yet but feel free to experiment ;-)</p>
+						<div class="interface_button_box">
 							<button onclick="sttGetTrainingDataFromTeachServer()" class="interface_button">Get Adapt Data</button>
+						</div>
+						<div class="group3 spacy">
+							<div>
+								<label style="min-width: 100px;">Version tag:</label>
+								<input id="stt-model-version" type="text" placeholder="02" style="height: 27px; min-width: 70px; width: 85px;" spellcheck="false">
+							</div>
+							<div>
+								<label style="min-width: 100px;">Language:</label>
+								<select id="stt-language-select" name="stt-lang" style="min-width: 70px; width: 85px;"> 
+									<option value="en">EN</option>
+									<option value="de">DE</option>
+								</select>
+							</div>
+						</div>
+						<div class="interface_button_box">
+							<button onclick="sttAdaptLm()" class="interface_button">Adapt LM</button>
 						</div>
 					</section>
 					<section class="group">
@@ -506,8 +523,8 @@
 						<p class="info-text">NOTE: When you create a channel as admin he will initially be a member of the channel. This might not be desired.</p>
 						<div class="group2">
 							<form id="chat-server-settings-form" onsubmit="return createMessengerChannel()" action="">
-								<div class="group"><label>Channel name: </label><input id="msg-channel-name" type="text" required></div>
-								<div class="group"><label>Members: </label><input id="msg-channel-members" type="text"></div>
+								<div class="group"><label>Channel name: </label><input id="msg-channel-name" type="text" required spellcheck="false"></div>
+								<div class="group"><label>Members: </label><input id="msg-channel-members" type="text" spellcheck="false"></div>
 								<div class="group"><label>Public? </label><input type="checkbox" id="msg-channel-public" style="min-width: 100px;"></div>
 								<div class="group"><label>Add assistant? </label><input type="checkbox" id="msg-channel-assist" style="min-width: 100px;" checked></div>
 								<br>
@@ -559,6 +576,7 @@
 						<option value="broadcast">Broadcast Free</option>
 						<option value="http-event">HTTP Event</option>
 						<option value="remote-button">Remote Button</option>
+						<option value="runtime-command">Runtime Command</option>
 					</select></div>
 					<div class="group">
 						<label>Device ID: </label><input id="client-clexi-device-id" type="text" spellcheck=false placeholder="o1" value="">
@@ -578,7 +596,8 @@
 					<br>
 					<div style="width: 100%; position: relative;">
 						<div id="client-clexi-events" class="server-event-messages">- REMOTE MESSAGES -<br></div>
-						<button onclick="clientClexiEventsClear()" class="server-terminal-clear-input" title="clear history"><i class="material-icons md-18">delete</i></button>
+						<button onclick="clientClexiSetEventFilters()" class="server-terminal-button server-terminal-event-filters" title="set filters"><i class="material-icons md-18">filter_list</i></button>
+						<button onclick="clientClexiEventsClear()" class="server-terminal-button server-terminal-clear-input" title="clear history"><i class="material-icons md-18">delete</i></button>
 					</div>
 				</div>
 
@@ -659,7 +678,7 @@
 <script src="lib/hammer.min.js"></script>
 <script src="lib/hammer-time.min.js"></script>
 <script src="lib/sjcl.js"></script>
-<script src="lib/clexi-0.8.1.js"></script>
+<script src="lib/clexi-0.8.2.js"></script>
 <script src="lib/bytemind.core.js"></script>
 <script src="lib/bytemind.local.js"></script>
 <script src="lib/bytemind.ui.js"></script>

@@ -1,6 +1,6 @@
 //---------App:
 
-var controlHubVersion = "1.3.1";
+var controlHubVersion = "1.3.2";
 
 //---------Pages:
 
@@ -248,9 +248,11 @@ function beforeLoginRestore(){
 		//local server [IP]:[PORT]
 		if (location.pathname.indexOf("/sepia/") >= 0){
 			locationHost = location.origin + location.pathname.replace(/\/sepia\/.*/, "/sepia");
-		}else{
+		}else if (location.pathname.indexOf("/tools/") >= 0){
 			locationHost = location.origin;
 		}
+	}else if (location.pathname.indexOf("/sepia/assist/tools/") >= 0){
+		locationHost = location.origin + location.pathname.replace(/\/assist\/tools\/.*/, "");
 	}
 	var serverViaUrl = getURLParameter('server');
 	var storedAccountUrl = ByteMind.data.get('account-api-url');

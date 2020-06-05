@@ -53,6 +53,34 @@ function whitelistEmail(){
 	});
 }
 
+//Get all users
+function getUserList(from, size, keys){
+	if (from == undefined) from = 0;
+	if (size == undefined) size = 50;
+	if (!keys || !keys.length) keys = ["Guuid", "Email"]; //["Guuid", "Email", "uroles", "statistics"];
+	var reqBody = {
+		service: "users",
+		action: "list",
+		data: {
+			keys: keys,
+			from: from,
+			size: size
+		}
+	}
+	userServicesPostRequest(reqBody, function(data){
+		if (data.N && data.N >= size){
+			showMessage(JSON.stringify(data, null, 2) 
+				+ "\n\n---END---\n\n" 
+				+ "NOTE: There might be more results! Run manually: getUserList(" + (from + size) + ", 50);"
+			);
+		}else{
+			showMessage(JSON.stringify(data, null, 2));
+		}
+	}, function(data){
+		showMessage(JSON.stringify(data, null, 2));
+	});
+}
+
 //Edit user-roles
 function getUserRoles(){
 	var userId = getUserToEdit();
