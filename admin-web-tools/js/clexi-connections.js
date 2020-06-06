@@ -158,6 +158,7 @@ function clientClexiHelp(){
 		+ "- get help\n\n"
 		+ "- get user\n\n"
 		+ "- get wakeword\n\n"
+		+ "- set wakeword state on/off\n\n"
 		//+ "- set useGamepads true\n\n"
 	+ "\n<u>Commands to try for type 'Remote Button'</u>\n\n"
 		+ "- deviceId [id] button [mic, back, ao, next, prev]\n\n"
