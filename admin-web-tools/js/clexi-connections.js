@@ -61,7 +61,7 @@ function clexiEventLog(msg, color){
 				color = "#f00";
 			}else if (msg.indexOf("sepia-state") > 0){
 				color = "#b9efcf";
-			}else if (msg.indexOf("sepia-speech") > 0){
+			}else if (msg.indexOf("sepia-speech") > 0 || msg.indexOf("sepia-wake-word") > 0){
 				color = "#f1a508";
 			}
 		}
@@ -158,6 +158,7 @@ function clientClexiHelp(){
 		+ "- get help\n\n"
 		+ "- get user\n\n"
 		+ "- get wakeword\n\n"
+		+ "- set wakeword state on/off\n\n"
 		//+ "- set useGamepads true\n\n"
 	+ "\n<u>Commands to try for type 'Remote Button'</u>\n\n"
 		+ "- deviceId [id] button [mic, back, ao, next, prev]\n\n"
