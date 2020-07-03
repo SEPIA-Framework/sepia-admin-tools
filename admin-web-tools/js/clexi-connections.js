@@ -107,8 +107,21 @@ function clientClexiConnect(){
 		sessionStorage.setItem('clientClexiId', ClexiJS.serverId);
 	}
 	
+	//set 'try' status
+	$('#clexi-server-indicator').removeClass('inactive');
+	$('#clexi-server-indicator').removeClass('secure');
+	$('#clexi-server-indicator').addClass('yellow');
+	
 	//NOTE: something to try as well: ClexiJS.pingAndConnect(host, onPingOrIdError, onOpen, onClose, onError, onConnecting);
-	ClexiJS.connect(clexiHost, function(e){
+	ClexiJS.pingAndConnect(clexiHost, function(err){
+		//log("CLEXI - ping failed.");
+		$('#clexi-server-indicator').removeClass('inactive');
+		$('#clexi-server-indicator').removeClass('secure');
+		$('#clexi-server-indicator').removeClass('yellow');
+		clexiEventError(err.msg);
+		clexiRemoveSubscriptions();
+	
+	}, function(e){
 		//log("CLEXI - ready.");
 		$('#clexi-server-indicator').removeClass('inactive');
 		$('#clexi-server-indicator').removeClass('yellow');
