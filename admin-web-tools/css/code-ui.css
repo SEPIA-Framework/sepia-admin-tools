@@ -99,3 +99,15 @@
 	text-align: right;
 	top: 0;
 }
+
+.custom-service-item {
+	display: flex;
+}
+.custom-service-open-btn {
+	flex-grow: 1;
+}
+.custom-service-delete-btn {
+	min-width: 44px !important;
+    width: 44px;
+    flex-grow: 0;
+}

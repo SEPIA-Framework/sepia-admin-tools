@@ -186,7 +186,7 @@ function bytemind_build_ui(){
 	UI.hideBackgroundCoverLayer = function(){
 		backgroundCoverLayers--;
 		if (backgroundCoverLayers < 1){
-			$('#bytemind-background-cover-layer').fadeOut(300);
+			$('#bytemind-background-cover-layer').fadeOut(300).off();
 			backgroundCoverLayers = 0;
 		}
 	}
@@ -249,6 +249,9 @@ function bytemind_build_ui(){
 		}
 		$('#bytemind-popup-message-content').html(content);
 		UI.showBackgroundCoverLayer(parent);
+		$('#bytemind-background-cover-layer').off().on('click', function(){
+			UI.hidePopup();
+		});
 		$box.fadeIn(300);
 		return $box[0];
 	}

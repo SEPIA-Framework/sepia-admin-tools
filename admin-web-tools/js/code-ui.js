@@ -282,3 +282,99 @@ function codeUiTriggerScriptDownload(){
 		}
 	}
 }
+
+//Custom services manager
+function buildCustomServicesManager(){
+	var config = {
+		useSmallCloseButton: true
+	}
+	var serviceManager = document.createElement("div");
+	serviceManager.innerHTML = "<h3>User Commands and Services</h3>";
+	ByteMind.ui.showPopup(serviceManager, config);
+	//fill manager with content
+	genericPostRequest("assist", "get-services", {}, function(res){
+		//Success
+		if (!res || res.result != "success" || !res.commandsAndServices){
+			//Unexpected fail
+			var msg = document.createElement("p");
+			msg.innerHTML = "- Failed to load custom services -";
+			$(serviceManager).append(msg);
+			console.error("buildCustomServicesManager - ERROR", res);
+			
+		}else if (res.commandsAndServices.length == 0){
+			//Empty
+			var msg = document.createElement("p");
+			msg.innerHTML = "- User has no custom services -";
+			$(serviceManager).append(msg);
+			
+		}else{
+			var $serviceManager = $(serviceManager);
+			res.commandsAndServices.forEach(function(item){
+				var cmd = item.command;
+				var services = item.services;
+				if (cmd && services && services.length > 0){
+					var itemEle = document.createElement("div");
+					itemEle.className = "custom-service-item";
+					var openBtn = document.createElement("button");
+					openBtn.className = "custom-service-open-btn";
+					var name = cmd.replace(/.*\./, "").replace(/_/, " ").replace(/\s+/, " ").trim().toUpperCase();
+					var primaryService = services[0].replace(/.*\./, "").trim();
+					openBtn.innerHTML = "Command: " + name + "<br>Service: <b>" + primaryService + "</b>";
+					//btn.title = "Connected services: " + JSON.stringify(services);
+					//TODO: add open method
+					$(openBtn).on('click', function(){
+						alert("Coming soon");
+					});
+					
+					var delBtn = document.createElement("button");
+					delBtn.className = "custom-service-delete-btn";
+					delBtn.innerHTML = '<i class="material-icons md-24">delete</i>';
+					//delete
+					$(delBtn).on('click', function(){
+						removeCustomServiceForUser(cmd, function(){
+							//remove item
+							$(itemEle).fadeOut(300, function(){
+								$(this).remove();
+							});
+						}, function(){
+							//show error
+							ByteMind.ui.hidePopup();
+						});
+					});
+					
+					$serviceManager.append(itemEle);
+					$(itemEle).append(openBtn).append(delBtn);
+				}else{
+					console.error("buildCustomServicesManager - item ERROR", item);
+				}
+			});
+		}
+	}, function(err){
+		//Fail
+		var msg = document.createElement("p");
+		msg.innerHTML = "- Failed to load custom services -";
+		$(serviceManager).append(msg);
+	});
+}
+
+function removeCustomServiceForUser(commandName, successCallback, errorCallback){
+	var cmds = [commandName];
+	genericPostRequest("assist", "delete-service", {
+		commands: cmds
+	}, function(res){
+		if (!res || res.result != "success"){
+			//Unexpected fail
+			console.error("removeCustomServiceForUser - ERROR", res);
+			showMessage(JSON.stringify(res, null, 2));
+			if (errorCallback) errorCallback(res);
+		}else{
+			//Success
+			showMessage(JSON.stringify(res, null, 2));
+			if (successCallback) successCallback(res);
+		}
+	}, function(err){
+		//Fail
+		showMessage(JSON.stringify(err, null, 2));
+		if (errorCallback) errorCallback(err);
+	});
+}
