@@ -113,6 +113,10 @@ function codeUiExtensionTypeChange(){
 		codeUiBuildExtensionNameOptions(meshPluginsDataArray);
 	}
 }
+function codeUiSetExtensionType(newType){
+	$('#code-ui-extension-type').val("smart-service");
+	codeUiExtensionTypeChange();
+}
 
 //Update extension select and class name
 function codeUiUpdateExtension(){
@@ -195,6 +199,7 @@ function codeUiOpenSourceFile(event){
 }
 //Load a configuration file from online repository
 function codeUiLoadExtensionConfigFromServer(){
+	$('#code-ui-online-extensions-list').show(300);
 	var link;
 	if (extensionType == "smart-service"){
 		link = onlineRepository + "/smart-services/smart-services.json";
@@ -315,15 +320,27 @@ function buildCustomServicesManager(){
 				if (cmd && services && services.length > 0){
 					var itemEle = document.createElement("div");
 					itemEle.className = "custom-service-item";
+					
 					var openBtn = document.createElement("button");
 					openBtn.className = "custom-service-open-btn";
 					var name = cmd.replace(/.*\./, "").replace(/_/, " ").replace(/\s+/, " ").trim().toUpperCase();
 					var primaryService = services[0].replace(/.*\./, "").trim();
 					openBtn.innerHTML = "Command: " + name + "<br>Service: <b>" + primaryService + "</b>";
 					//btn.title = "Connected services: " + JSON.stringify(services);
-					//TODO: add open method
+					//load source code
 					$(openBtn).on('click', function(){
-						alert("Coming soon");
+						getCustomServiceSourceCode(primaryService, function(sourceRes){
+							//load source code to editor
+							codeUiValidateAndSetSourceCode(sourceRes.sourceCode);
+							$('#code-ui-source-class-name').val(primaryService);
+							codeUiSetExtensionType("smart-service");
+							console.log("Service loaded: " + primaryService);
+							ByteMind.ui.hidePopup();
+							
+						}, function(sourceErr){
+							//show source code error
+							ByteMind.ui.hidePopup();
+						});
 					});
 					
 					var delBtn = document.createElement("button");
@@ -331,7 +348,7 @@ function buildCustomServicesManager(){
 					delBtn.innerHTML = '<i class="material-icons md-24">delete</i>';
 					//delete
 					$(delBtn).on('click', function(){
-						removeCustomServiceForUser(cmd, function(){
+						removeCustomServiceForUser(cmd, primaryService, function(){
 							//remove item
 							$(itemEle).fadeOut(300, function(){
 								$(this).remove();
@@ -357,10 +374,33 @@ function buildCustomServicesManager(){
 	});
 }
 
-function removeCustomServiceForUser(commandName, successCallback, errorCallback){
+function getCustomServiceSourceCode(serviceName, successCallback, errorCallback){
+	genericPostRequest("assist", "get-service-source", {
+		service: serviceName
+	}, function(res){
+		if (!res || res.result != "success" || !res.sourceCode){
+			//Unexpected fail
+			console.error("getCustomServiceSourceCode - ERROR", res);
+			showMessage(JSON.stringify(res, null, 2));
+			if (errorCallback) errorCallback(res);
+		}else{
+			//Success
+			//showMessage(JSON.stringify(res, null, 2));
+			console.log("getCustomServiceSourceCode - SUCCESS, code length:", res.sourceCode.length);
+			if (successCallback) successCallback(res);
+		}
+	}, function(err){
+		//Fail
+		showMessage(JSON.stringify(err, null, 2));
+		if (errorCallback) errorCallback(err);
+	});
+}
+function removeCustomServiceForUser(commandName, primaryServiceName, successCallback, errorCallback){
 	var cmds = [commandName];
+	var services = [primaryServiceName];
 	genericPostRequest("assist", "delete-service", {
-		commands: cmds
+		commands: cmds,
+		services: services
 	}, function(res){
 		if (!res || res.result != "success"){
 			//Unexpected fail
