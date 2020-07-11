@@ -210,6 +210,7 @@ function bytemind_build_ui(){
 		var buttonOneName, buttonOneAction, buttonTwoName, buttonTwoAction;
 		var primaryColor, secondaryColor;
 		var useSmallCloseButton = false;
+		var requireSelection;
 		if (config){
 			useSmallCloseButton = config.useSmallCloseButton;
 			buttonOneName = config.buttonOneName;
@@ -218,6 +219,9 @@ function bytemind_build_ui(){
 			buttonTwoAction = config.buttonTwoAction;
 			primaryColor = config.primaryColor;
 			secondaryColor = config.secondaryColor;
+			requireSelection = config.requireSelection;
+			if (requireSelection == undefined && useSmallCloseButton) requireSelection = false;
+			if (requireSelection == undefined && buttonTwoName && buttonTwoAction) requireSelection = true;
 		}
 		if (useSmallCloseButton){
 			$('#bytemind-popup-message-close-small').off().show().on('click', function(){ UI.hidePopup(); });
@@ -250,7 +254,9 @@ function bytemind_build_ui(){
 		$('#bytemind-popup-message-content').html(content);
 		UI.showBackgroundCoverLayer(parent);
 		$('#bytemind-background-cover-layer').off().on('click', function(){
-			UI.hidePopup();
+			if (!requireSelection){
+				UI.hidePopup();
+			}
 		});
 		$box.fadeIn(300);
 		return $box[0];
