@@ -57,12 +57,20 @@ function clexiEventLog(msg, color){
 			return;
 		}
 		if (!color){
-			if (msg.indexOf("_error") > 0){
+			if (msg.indexOf("_error") > 0 || msg.indexOf("-error") > 0 || msg.indexOf('"error"') > 0){
 				color = "#f00";
 			}else if (msg.indexOf("sepia-state") > 0){
 				color = "#b9efcf";
 			}else if (msg.indexOf("sepia-speech") > 0 || msg.indexOf("sepia-wake-word") > 0){
 				color = "#f1a508";
+			}else if (msg.indexOf("sepia-alarm-event") > 0){
+				if (msg.indexOf('"triggered"') > 0){
+					color = "#ceff1a";
+				}else{
+					color = "#ebff7b";
+				}
+			}else if (msg.indexOf("sepia-audio-player-event") > 0){
+				color = "#b964ce";
 			}
 		}
 	}else if (msg.indexOf("BLE") == 0){
@@ -172,9 +180,11 @@ function clientClexiHelp(){
 		+ "- get user\n\n"
 		+ "- get wakeword\n\n"
 		+ "- set wakeword state on/off\n\n"
+		+ "- set connections client on/off/connect/close\n\n"
+		+ "- set connections clexi off/close\n\n"
 		//+ "- set useGamepads true\n\n"
 	+ "\n<u>Commands to try for type 'Remote Button'</u>\n\n"
-		+ "- deviceId [id] button [mic, back, ao, next, prev]\n\n"
+		+ "- deviceId [id] button [mic, micReset, back, ao, next, prev, connect, disconnect]\n\n"
 		+ "<b>NOTE:</b> To use remote buttons you currently need to enable 'useGamepads' in client settings.\n\n"
 	+ "\n<u>Commands to try for type 'Runtime Command'</u>\n\n"
 		+ "- osReboot\n\n"
