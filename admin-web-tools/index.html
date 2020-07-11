@@ -259,13 +259,14 @@
 						<p class="info-text">As admin you can change user roles and delete ANY user (but the core admin). Other users can delete ONLY themselves.</p>
 						<div class="group2">
 							<div class="group"><label>UserID: </label><input id="edit-user-id" type="text" placeholder="UID of user to edit (e.g. uid1007)" spellcheck="false"></div>
-							<div class="group"><label>Roles: </label><input id="new-user-roles" type="text" placeholder="e.g.: developer, smarthomeguest, tinkerer" title="More roles: smarthomeguest, seniordev, chiefdev, tester, inviter" spellcheck="false"></div>
+							<div style="display: none;" class="group" id="user-roles-group"><label>Roles: </label><input id="new-user-roles" type="text" placeholder="e.g.: developer, smarthomeguest, tinkerer" title="More roles: smarthomeadmin, seniordev, chiefdev, tester, inviter" spellcheck="false"></div>
 						</div>
 					</section>
 					<section class="group">
 						<div class="interface_button_box">
-							<button onclick="getUserRoles()" class="interface_button">GET ROLES</button>
-							<button onclick="setUserRoles()" class="interface_button">SET ROLES</button>
+							<button style="display: none;" onclick="getUserRoles()" class="interface_button">GET ROLES</button>
+							<button style="display: none;" onclick="setUserRoles()" class="interface_button">SET ROLES</button>
+							<button onclick="manageUserRoles()" class="interface_button">USER ROLES EDITOR</button>
 							<button onclick="deleteUser()" class="interface_button dangerous-button">DELETE USER</button>
 						</div>
 					</section>

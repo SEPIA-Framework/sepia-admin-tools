@@ -419,6 +419,31 @@ select {
 #new-user-roles {
 	width: 100%;
 }
+/*.user-roles-editor {}*/
+.user-roles-item {
+	display: flex;
+	align-items: center;
+}
+.user-roles-item div,
+.user-roles-item select {
+	min-height: 30px !important;
+	flex-grow: 1;
+	margin: 4px !important;
+}
+.user-roles-item div {
+	background: #282828;
+    color: #eee;
+    border-radius: 3px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 15px;
+}
+.user-roles-item button {
+	min-width: auto !important;
+	flex-grow: 0;
+	margin: 4px !important;
+}
 
 /*------ CODE UI ------*/
 
