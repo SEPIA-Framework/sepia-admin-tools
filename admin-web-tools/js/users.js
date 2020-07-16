@@ -273,7 +273,7 @@ function manageUserRoles(){
 				var $children = $existingRolesBox.children();
 				var roleAlreadyExists = false;
 				$children.each(function(index, itm){
-					if (itm.firstChild.innerHTML == newRole){
+					if (itm.firstElementChild.innerHTML == newRole){
 						roleAlreadyExists = true;
 					}
 				});
@@ -304,7 +304,7 @@ function manageUserRoles(){
 			var rolesString = "";
 			var $children = $existingRolesBox.children();
 			$children.each(function(index, itm){
-				rolesString = rolesString + itm.firstChild.innerHTML + ", ";
+				rolesString = rolesString + itm.firstElementChild.innerHTML + ", ";
 			});
 			rolesString = rolesString.replace(/, $/, "");
 			if (rolesString){

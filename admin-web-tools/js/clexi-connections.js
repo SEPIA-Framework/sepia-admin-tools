@@ -22,6 +22,25 @@ function clientConnectionsOnStart(){
 		}
 	});
 }
+function getOwnClientConnections(successCallback, errorCallback){
+	genericPostRequest("chat", "getOwnClientConnections", {}, function(data){
+		if (successCallback){
+			successCallback(data.clients);
+		}else{
+			if (!data.clients || data.clients.length == 0){
+				showMessage("- no connected clients found -");
+			}else{
+				showMessage(JSON.stringify(data.clients, null, 2));
+			}
+		}
+	}, function(err){
+		if (errorCallback){
+			errorCallback(err);
+		}else{
+			showMessage(JSON.stringify(err, null, 2));
+		}
+	});
+}
 
 //CLEXI
 
