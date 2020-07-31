@@ -160,7 +160,7 @@ function codeUiBuildExtensionNameOptions(data){
 	if (data && Object.keys(data).length > 0){
 		html = '<option value="" selected disabled>Select</option>';
 		$.each(data, function(i, opt){
-			html += ('<option value="' + opt.name + '">' + opt.name + '</option>');
+			html += sanitizeHtml('<option value="' + opt.name + '">' + opt.name + '</option>');
 		});
 	}else{
 		html = '<option value="" selected disabled>Load please</option>';
