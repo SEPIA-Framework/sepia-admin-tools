@@ -791,8 +791,8 @@ function buildSmartHomeItem(shi){
 	var shiObjContent = sanitizeHtml("" +
 		"<div class='smarthome-item-title'>" + 
 			"<div style='overflow:hidden;'>" +
-				"<span class='" + shiNameClasses + "' data-shi-property='" + SEPIA_TAG_NAME + "' data-shi-value='" + itemName + "'>" + itemName.replace("<", "&lt;").replace(">", "&gt;") + "</span>" +
-				"<span class='smarthome-item-id'> - " + itemId.replace("<", "&lt;").replace(">", "&gt;") + "</span>" +
+				"<span class='" + shiNameClasses + "' data-shi-property='" + SEPIA_TAG_NAME + "' data-shi-value='" + itemName + "'>" + escapeHtml(itemName) + "</span>" +
+				"<span class='smarthome-item-id'> - " + escapeHtml(itemId) + "</span>" +
 			"</div>" +
 			"<div style='display:flex;'>" +
 				"<button class='shi-control-name' title='Edit device name'><i class='material-icons md-18'>edit</i></button>" +
@@ -875,7 +875,7 @@ function buildSmartHomeItem(shi){
 			shiObj.setAttribute("data-shi", JSON.stringify(shi));	//write shi first
 			//set and submit
 			$shiObj.find('.smarthome-item-name')
-				.html(newName.replace("<", "&lt;").replace(">", "&gt;"))
+				.html(escapeHtml(newName))
 				.attr("data-shi-value", newName)
 				.trigger('change');
 		}
