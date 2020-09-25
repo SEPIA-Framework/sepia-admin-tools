@@ -1101,7 +1101,9 @@ function buildSmartHomeRoomOptions(selected){
 		"terrace" : "Terrace",
 		"balcony" : "Balcony",
 		"hallway" : "Hallway",
+		"entrance" : "Entrance",
 		"shack" : "Shack",
+		"attic" : "Attic",
 		"other" : "Other",
 		"unassigned" : "Not assigned"
 	}
