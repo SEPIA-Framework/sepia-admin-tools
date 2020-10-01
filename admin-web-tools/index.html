@@ -3,7 +3,6 @@
 <head>
 	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
 	<!-- web app settings -->
-	<link rel="manifest" href="sepia-hub.webmanifest">
 	<meta name="apple-mobile-web-app-capable" content="yes">
 	<meta name="mobile-web-app-capable" content="yes">
 	<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=0">
@@ -33,6 +32,9 @@
 	<meta property="og:type" content="website"/>
 	<meta property="og:locale" content="en_GB"/>
 	<meta property="og:locale:alternate" content="en_US"/>
+	
+	<!-- PWA manifest -->
+	<link rel="manifest" href="sepia-hub.webmanifest">
 
 	<!-- imports -->
 	<link rel="stylesheet" href="lib/bytemind-lib-1.1.0.css" title='main'>
@@ -66,7 +68,7 @@
 			<a id="bytemind-login-policy-btn" href="https://sepia-framework.github.io/privacy-policy.html" target="_blank" data-bm-local-text="data_privacy">Data Privacy</a>
 		</div>
 		<!-- extend button -->
-		<div id="bytemind-login-extend-box"><button id="bytemind-login-extend-btn"><i class="material-icons md-btn2">arrow_drop_down</i></button></div>
+		<div id="bytemind-login-extend-box"><button id="bytemind-login-extend-btn"><i class="material-icons md-btn2">&#xE5C5;</i></button></div>
 	</div>
 	<!-- RESULT VIEW -->
 	<div id="result-container" style="display:none;">
@@ -503,10 +505,7 @@
 						</div>
 						<br>
 						<div class="group2">
-							<audio id="tts-audio-player" controls autoplay style="display: none;">
-								<source id="tts-audio-source" src="">
-								Your browser does not support the audio tag.
-							</audio>
+							<audio id="tts-audio-player" controls autoplay style="display: none;"></audio>
 							<div id="tts-audio-player-controls"> 
 								<button onclick="ttsPlayer('play');"><i class="material-icons md-24">play_arrow</i></button>
 								<button onclick="ttsPlayer('pause');"><i class="material-icons md-24">pause</i></button>
@@ -661,7 +660,7 @@
 <!-- LOW PRIO STYLESHEETS -->
 <link rel="stylesheet" href="lib/googleMaterialIcons.css">
 <!--<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">-->
-<link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500" rel="stylesheet">
+<!--<link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500" rel="stylesheet">-->
 <!-- Polyfills -->
 <script>
 (function () { 
