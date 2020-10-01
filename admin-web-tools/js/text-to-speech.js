@@ -13,7 +13,7 @@ function ttsSpeak(){
 			showMessage(JSON.stringify(data, null, 2));
 			if (data.url){
 				var fullUrl = getServer('assist').replace(/\/$/, "") + data.url;
-				$('#tts-audio-source')[0].src = fullUrl;
+				$('#tts-audio-player')[0].src = fullUrl;
 				$('#tts-audio-player')[0].load();
 			}
 		},

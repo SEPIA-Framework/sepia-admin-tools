@@ -10,10 +10,10 @@ $(document).ready(function(){
 			.then(function(){ 
 				console.log('SEPIA Control HUB - Service Worker: Registered');
 			}, function(err){
-				SepiaFW.debug.error('SEPIA Control HUB - Service Worker: Failed to register', err);
+				console.error('SEPIA Control HUB - Service Worker: Failed to register', err);
 			});
 	}else{
-		SepiaFW.debug.log('SEPIA Control HUB - Service Worker: Not available');
+		console.log('SEPIA Control HUB - Service Worker: Not available');
 	}
 	//handle PWA popup for home-screen installation
 	/*

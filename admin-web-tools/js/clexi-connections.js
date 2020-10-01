@@ -363,9 +363,12 @@ function clexiRuntimeCommand(cmd, args){
 	}, numOfClexiSendRetries);
 }
 function getNewClexiRuntimeCmdId(){
+	if (!clexiRuntimeCommandBaseId){
+		clexiRuntimeCommandBaseId = "SEPIA-HUB-" + Math.abs(sjcl.random.randomWords(1));
+	}
 	return (clexiRuntimeCommandBaseId + "-" + ++clexiRuntimeCommandLastIdIndex);
 }
-var clexiRuntimeCommandBaseId = "SEPIA-HUB-" + Math.abs(sjcl.random.randomWords(1));
+var clexiRuntimeCommandBaseId;
 var clexiRuntimeCommandLastIdIndex = 0;
 
 function clexiHttpEvent(ev, successCallback, errorCallback){
