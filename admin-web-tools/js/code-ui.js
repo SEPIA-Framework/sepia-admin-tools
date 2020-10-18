@@ -1,5 +1,5 @@
 var codeEditor;
-var extensionType;
+var extensionType;					//currently either "smart-service" or "mesh-plugin"
 var servicesDataArray = {}; 		//actually it is an object with arrays not an array ^^
 var meshPluginsDataArray = {};		//	""		""		""
 var onlineRepository = "https://raw.githubusercontent.com/SEPIA-Framework/sepia-extensions/master";
@@ -114,7 +114,7 @@ function codeUiExtensionTypeChange(){
 	}
 }
 function codeUiSetExtensionType(newType){
-	$('#code-ui-extension-type').val("smart-service");
+	$('#code-ui-extension-type').val(newType);
 	codeUiExtensionTypeChange();
 }
 
@@ -261,6 +261,10 @@ function codeUiLoadCodeFromServer(name, path, callback){
 function codeUiValidateAndSetSourceCode(code){
 	codeUiUpdateFormData();
 	if (code){
+		//choose correct extension type
+		if (code.indexOf("implements ServiceInterface") > 0){
+			codeUiSetExtensionType("smart-service");
+		}
 		//replace package?
 		if (extensionType == "smart-service"){
 			code = code.replace(/(^package .*\.)(.*?)(;)/mi, "$1" + ($('#code-ui-id').val() || "[your_user_ID]") + "$3");
