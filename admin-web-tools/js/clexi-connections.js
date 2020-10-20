@@ -22,6 +22,25 @@ function clientConnectionsOnStart(){
 		}
 	});
 }
+function getOwnClientConnections(successCallback, errorCallback){
+	genericPostRequest("chat", "getOwnClientConnections", {}, function(data){
+		if (successCallback){
+			successCallback(data.clients);
+		}else{
+			if (!data.clients || data.clients.length == 0){
+				showMessage("- no connected clients found -");
+			}else{
+				showMessage(JSON.stringify(data.clients, null, 2));
+			}
+		}
+	}, function(err){
+		if (errorCallback){
+			errorCallback(err);
+		}else{
+			showMessage(JSON.stringify(err, null, 2));
+		}
+	});
+}
 
 //CLEXI
 
@@ -57,12 +76,20 @@ function clexiEventLog(msg, color){
 			return;
 		}
 		if (!color){
-			if (msg.indexOf("_error") > 0){
+			if (msg.indexOf("_error") > 0 || msg.indexOf("-error") > 0 || msg.indexOf('"error"') > 0){
 				color = "#f00";
 			}else if (msg.indexOf("sepia-state") > 0){
 				color = "#b9efcf";
 			}else if (msg.indexOf("sepia-speech") > 0 || msg.indexOf("sepia-wake-word") > 0){
 				color = "#f1a508";
+			}else if (msg.indexOf("sepia-alarm-event") > 0){
+				if (msg.indexOf('"triggered"') > 0){
+					color = "#ceff1a";
+				}else{
+					color = "#ebff7b";
+				}
+			}else if (msg.indexOf("sepia-audio-player-event") > 0){
+				color = "#b964ce";
 			}
 		}
 	}else if (msg.indexOf("BLE") == 0){
@@ -107,8 +134,21 @@ function clientClexiConnect(){
 		sessionStorage.setItem('clientClexiId', ClexiJS.serverId);
 	}
 	
+	//set 'try' status
+	$('#clexi-server-indicator').removeClass('inactive');
+	$('#clexi-server-indicator').removeClass('secure');
+	$('#clexi-server-indicator').addClass('yellow');
+	
 	//NOTE: something to try as well: ClexiJS.pingAndConnect(host, onPingOrIdError, onOpen, onClose, onError, onConnecting);
-	ClexiJS.connect(clexiHost, function(e){
+	ClexiJS.pingAndConnect(clexiHost, function(err){
+		//log("CLEXI - ping failed.");
+		$('#clexi-server-indicator').removeClass('inactive');
+		$('#clexi-server-indicator').removeClass('secure');
+		$('#clexi-server-indicator').removeClass('yellow');
+		clexiEventError(err.msg);
+		clexiRemoveSubscriptions();
+	
+	}, function(e){
 		//log("CLEXI - ready.");
 		$('#clexi-server-indicator').removeClass('inactive');
 		$('#clexi-server-indicator').removeClass('yellow');
@@ -159,9 +199,11 @@ function clientClexiHelp(){
 		+ "- get user\n\n"
 		+ "- get wakeword\n\n"
 		+ "- set wakeword state on/off\n\n"
+		+ "- set connections client on/off/connect/close\n\n"
+		+ "- set connections clexi off/close\n\n"
 		//+ "- set useGamepads true\n\n"
 	+ "\n<u>Commands to try for type 'Remote Button'</u>\n\n"
-		+ "- deviceId [id] button [mic, back, ao, next, prev]\n\n"
+		+ "- deviceId [id] button [mic, micReset, back, ao, next, prev, connect, disconnect]\n\n"
 		+ "<b>NOTE:</b> To use remote buttons you currently need to enable 'useGamepads' in client settings.\n\n"
 	+ "\n<u>Commands to try for type 'Runtime Command'</u>\n\n"
 		+ "- osReboot\n\n"
@@ -321,9 +363,12 @@ function clexiRuntimeCommand(cmd, args){
 	}, numOfClexiSendRetries);
 }
 function getNewClexiRuntimeCmdId(){
+	if (!clexiRuntimeCommandBaseId){
+		clexiRuntimeCommandBaseId = "SEPIA-HUB-" + Math.abs(sjcl.random.randomWords(1));
+	}
 	return (clexiRuntimeCommandBaseId + "-" + ++clexiRuntimeCommandLastIdIndex);
 }
-var clexiRuntimeCommandBaseId = "SEPIA-HUB-" + Math.abs(sjcl.random.randomWords(1));
+var clexiRuntimeCommandBaseId;
 var clexiRuntimeCommandLastIdIndex = 0;
 
 function clexiHttpEvent(ev, successCallback, errorCallback){

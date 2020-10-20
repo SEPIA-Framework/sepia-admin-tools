@@ -51,6 +51,13 @@ function getSHA256(data){
 function escapeHtml(codeString){
     return codeString.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
+function sanitizeHtml(htmlString, options){
+	if (options){
+		return DOMPurify.sanitize(htmlString, options);
+	}else{
+		return DOMPurify.sanitize(htmlString, { ADD_ATTR: ['target'] });
+	}
+}
 
 //CONTROLS AND SETTINGS
 

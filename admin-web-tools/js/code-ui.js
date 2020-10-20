@@ -1,5 +1,5 @@
 var codeEditor;
-var extensionType;
+var extensionType;					//currently either "smart-service" or "mesh-plugin"
 var servicesDataArray = {}; 		//actually it is an object with arrays not an array ^^
 var meshPluginsDataArray = {};		//	""		""		""
 var onlineRepository = "https://raw.githubusercontent.com/SEPIA-Framework/sepia-extensions/master";
@@ -113,6 +113,10 @@ function codeUiExtensionTypeChange(){
 		codeUiBuildExtensionNameOptions(meshPluginsDataArray);
 	}
 }
+function codeUiSetExtensionType(newType){
+	$('#code-ui-extension-type').val(newType);
+	codeUiExtensionTypeChange();
+}
 
 //Update extension select and class name
 function codeUiUpdateExtension(){
@@ -156,7 +160,7 @@ function codeUiBuildExtensionNameOptions(data){
 	if (data && Object.keys(data).length > 0){
 		html = '<option value="" selected disabled>Select</option>';
 		$.each(data, function(i, opt){
-			html += ('<option value="' + opt.name + '">' + opt.name + '</option>');
+			html += sanitizeHtml('<option value="' + opt.name + '">' + opt.name + '</option>');
 		});
 	}else{
 		html = '<option value="" selected disabled>Load please</option>';
@@ -195,6 +199,7 @@ function codeUiOpenSourceFile(event){
 }
 //Load a configuration file from online repository
 function codeUiLoadExtensionConfigFromServer(){
+	$('#code-ui-online-extensions-list').show(300);
 	var link;
 	if (extensionType == "smart-service"){
 		link = onlineRepository + "/smart-services/smart-services.json";
@@ -256,6 +261,10 @@ function codeUiLoadCodeFromServer(name, path, callback){
 function codeUiValidateAndSetSourceCode(code){
 	codeUiUpdateFormData();
 	if (code){
+		//choose correct extension type
+		if (code.indexOf("implements ServiceInterface") > 0){
+			codeUiSetExtensionType("smart-service");
+		}
 		//replace package?
 		if (extensionType == "smart-service"){
 			code = code.replace(/(^package .*\.)(.*?)(;)/mi, "$1" + ($('#code-ui-id').val() || "[your_user_ID]") + "$3");
@@ -281,4 +290,135 @@ function codeUiTriggerScriptDownload(){
 			downloadLink.click();
 		}
 	}
+}
+
+//Custom services manager
+function buildCustomServicesManager(){
+	var config = {
+		useSmallCloseButton: true
+	}
+	var serviceManager = document.createElement("div");
+	serviceManager.innerHTML = "<h3>User Commands and Services</h3>";
+	ByteMind.ui.showPopup(serviceManager, config);
+	//fill manager with content
+	genericPostRequest("assist", "get-services", {}, function(res){
+		//Success
+		if (!res || res.result != "success" || !res.commandsAndServices){
+			//Unexpected fail
+			var msg = document.createElement("p");
+			msg.innerHTML = "- Failed to load custom services -";
+			$(serviceManager).append(msg);
+			console.error("buildCustomServicesManager - ERROR", res);
+			
+		}else if (res.commandsAndServices.length == 0){
+			//Empty
+			var msg = document.createElement("p");
+			msg.innerHTML = "- User has no custom services -";
+			$(serviceManager).append(msg);
+			
+		}else{
+			var $serviceManager = $(serviceManager);
+			res.commandsAndServices.forEach(function(item){
+				var cmd = item.command;
+				var services = item.services;
+				if (cmd && services && services.length > 0){
+					var itemEle = document.createElement("div");
+					itemEle.className = "custom-service-item";
+					
+					var openBtn = document.createElement("button");
+					openBtn.className = "custom-service-open-btn";
+					var name = cmd.replace(/.*\./, "").replace(/_/, " ").replace(/\s+/, " ").trim().toUpperCase();
+					var primaryService = services[0].replace(/.*\./, "").trim();
+					openBtn.innerHTML = "Command: " + name + "<br>Service: <b>" + primaryService + "</b>";
+					//btn.title = "Connected services: " + JSON.stringify(services);
+					//load source code
+					$(openBtn).on('click', function(){
+						getCustomServiceSourceCode(primaryService, function(sourceRes){
+							//load source code to editor
+							codeUiValidateAndSetSourceCode(sourceRes.sourceCode);
+							$('#code-ui-source-class-name').val(primaryService);
+							codeUiSetExtensionType("smart-service");
+							console.log("Service loaded: " + primaryService);
+							ByteMind.ui.hidePopup();
+							
+						}, function(sourceErr){
+							//show source code error
+							ByteMind.ui.hidePopup();
+						});
+					});
+					
+					var delBtn = document.createElement("button");
+					delBtn.className = "custom-service-delete-btn";
+					delBtn.innerHTML = '<i class="material-icons md-24">delete</i>';
+					//delete
+					$(delBtn).on('click', function(){
+						removeCustomServiceForUser(cmd, primaryService, function(){
+							//remove item
+							$(itemEle).fadeOut(300, function(){
+								$(this).remove();
+							});
+						}, function(){
+							//show error
+							ByteMind.ui.hidePopup();
+						});
+					});
+					
+					$serviceManager.append(itemEle);
+					$(itemEle).append(openBtn).append(delBtn);
+				}else{
+					console.error("buildCustomServicesManager - item ERROR", item);
+				}
+			});
+		}
+	}, function(err){
+		//Fail
+		var msg = document.createElement("p");
+		msg.innerHTML = "- Failed to load custom services -";
+		$(serviceManager).append(msg);
+	});
+}
+
+function getCustomServiceSourceCode(serviceName, successCallback, errorCallback){
+	genericPostRequest("assist", "get-service-source", {
+		service: serviceName
+	}, function(res){
+		if (!res || res.result != "success" || !res.sourceCode){
+			//Unexpected fail
+			console.error("getCustomServiceSourceCode - ERROR", res);
+			showMessage(JSON.stringify(res, null, 2));
+			if (errorCallback) errorCallback(res);
+		}else{
+			//Success
+			//showMessage(JSON.stringify(res, null, 2));
+			console.log("getCustomServiceSourceCode - SUCCESS, code length:", res.sourceCode.length);
+			if (successCallback) successCallback(res);
+		}
+	}, function(err){
+		//Fail
+		showMessage(JSON.stringify(err, null, 2));
+		if (errorCallback) errorCallback(err);
+	});
+}
+function removeCustomServiceForUser(commandName, primaryServiceName, successCallback, errorCallback){
+	var cmds = [commandName];
+	var services = [primaryServiceName];
+	genericPostRequest("assist", "delete-service", {
+		commands: cmds,
+		services: services
+	}, function(res){
+		if (!res || res.result != "success"){
+			//Unexpected fail
+			console.error("removeCustomServiceForUser - ERROR", res);
+			showMessage(JSON.stringify(res, null, 2));
+			if (errorCallback) errorCallback(res);
+		}else{
+			//Success
+			showMessage(JSON.stringify(res, null, 2));
+			if (successCallback) successCallback(res);
+		}
+	}, function(err){
+		//Fail
+		showMessage(JSON.stringify(err, null, 2));
+		if (errorCallback) errorCallback(err);
+	});
 }

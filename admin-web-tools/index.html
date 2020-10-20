@@ -3,7 +3,6 @@
 <head>
 	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
 	<!-- web app settings -->
-	<link rel="manifest" href="manifest.json">
 	<meta name="apple-mobile-web-app-capable" content="yes">
 	<meta name="mobile-web-app-capable" content="yes">
 	<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=0">
@@ -33,6 +32,9 @@
 	<meta property="og:type" content="website"/>
 	<meta property="og:locale" content="en_GB"/>
 	<meta property="og:locale:alternate" content="en_US"/>
+	
+	<!-- PWA manifest -->
+	<link rel="manifest" href="sepia-hub.webmanifest">
 
 	<!-- imports -->
 	<link rel="stylesheet" href="lib/bytemind-lib-1.1.0.css" title='main'>
@@ -66,7 +68,7 @@
 			<a id="bytemind-login-policy-btn" href="https://sepia-framework.github.io/privacy-policy.html" target="_blank" data-bm-local-text="data_privacy">Data Privacy</a>
 		</div>
 		<!-- extend button -->
-		<div id="bytemind-login-extend-box"><button id="bytemind-login-extend-btn"><i class="material-icons md-btn2">arrow_drop_down</i></button></div>
+		<div id="bytemind-login-extend-box"><button id="bytemind-login-extend-btn"><i class="material-icons md-btn2">&#xE5C5;</i></button></div>
 	</div>
 	<!-- RESULT VIEW -->
 	<div id="result-container" style="display:none;">
@@ -171,7 +173,7 @@
 							<input id="chat-server" type="url" placeholder="http://localhost:20723/" spellcheck="false" onchange="onChangeChatServer()">
 							<div class="server-card-buttons">
 								<button onclick="serverValidation('chat')" class="interface_button">INFO</button>
-								<!--<button onclick="serverStatus('chat')" class="interface_button">STATISTICS</button>--><!-- TODO -->
+								<button onclick="serverStatus('chat')" class="interface_button">STATISTICS</button>
 							</div>
 						</div>
 						<div class="server-card">
@@ -259,13 +261,14 @@
 						<p class="info-text">As admin you can change user roles and delete ANY user (but the core admin). Other users can delete ONLY themselves.</p>
 						<div class="group2">
 							<div class="group"><label>UserID: </label><input id="edit-user-id" type="text" placeholder="UID of user to edit (e.g. uid1007)" spellcheck="false"></div>
-							<div class="group"><label>Roles: </label><input id="new-user-roles" type="text" placeholder="e.g.: developer, smarthomeguest, tinkerer" title="More roles: smarthomeguest, seniordev, chiefdev, tester, inviter" spellcheck="false"></div>
+							<div style="display: none;" class="group" id="user-roles-group"><label>Roles: </label><input id="new-user-roles" type="text" placeholder="e.g.: developer, smarthomeguest, tinkerer" title="More roles: smarthomeadmin, seniordev, chiefdev, tester, inviter" spellcheck="false"></div>
 						</div>
 					</section>
 					<section class="group">
 						<div class="interface_button_box">
-							<button onclick="getUserRoles()" class="interface_button">GET ROLES</button>
-							<button onclick="setUserRoles()" class="interface_button">SET ROLES</button>
+							<button style="display: none;" onclick="getUserRoles()" class="interface_button">GET ROLES</button>
+							<button style="display: none;" onclick="setUserRoles()" class="interface_button">SET ROLES</button>
+							<button onclick="manageUserRoles()" class="interface_button">USER ROLES EDITOR</button>
 							<button onclick="deleteUser()" class="interface_button dangerous-button">DELETE USER</button>
 						</div>
 					</section>
@@ -502,10 +505,7 @@
 						</div>
 						<br>
 						<div class="group2">
-							<audio id="tts-audio-player" controls autoplay style="display: none;">
-								<source id="tts-audio-source" src="">
-								Your browser does not support the audio tag.
-							</audio>
+							<audio id="tts-audio-player" controls autoplay style="display: none;"></audio>
 							<div id="tts-audio-player-controls"> 
 								<button onclick="ttsPlayer('play');"><i class="material-icons md-24">play_arrow</i></button>
 								<button onclick="ttsPlayer('pause');"><i class="material-icons md-24">pause</i></button>
@@ -568,6 +568,7 @@
 						<div class="interface_button_box">
 							<button onclick="clientClexiConnect()" class="interface_button">CONNECT</button>
 							<button onclick="clientClexiDisconnect()" class="interface_button">DISCONNECT</button>
+							<button onclick="getOwnClientConnections()" class="interface_button">GET MY CLIENTS</button>
 						</div>
 					</section>
 					<h3>Remote Terminal</h3>
@@ -659,7 +660,7 @@
 <!-- LOW PRIO STYLESHEETS -->
 <link rel="stylesheet" href="lib/googleMaterialIcons.css">
 <!--<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">-->
-<link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500" rel="stylesheet">
+<!--<link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500" rel="stylesheet">-->
 <!-- Polyfills -->
 <script>
 (function () { 
@@ -678,6 +679,7 @@
 <script src="lib/hammer.min.js"></script>
 <script src="lib/hammer-time.min.js"></script>
 <script src="lib/sjcl.js"></script>
+<script src="lib/purify.min.js"></script>
 <script src="lib/clexi-0.8.2.js"></script>
 <script src="lib/bytemind.core.js"></script>
 <script src="lib/bytemind.local.js"></script>

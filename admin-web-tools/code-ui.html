@@ -40,8 +40,8 @@
 	<meta property="og:locale:alternate" content="en_US"/>
 	
 	<!--SCRIPTS / STYLES -->
-	<script type="text/javascript" src="lib/jquery-3.1.1.min.js" charset="UTF-8"></script>
-	<script type="text/javascript" src="lib/sjcl.js"  charset="UTF-8"></script>
+	<script type="text/javascript" src="lib/jquery-3.4.1.min.js" charset="UTF-8"></script>
+	<script type="text/javascript" src="lib/sjcl.js" charset="UTF-8"></script>
 	<script type="text/javascript" src="js/shared.js" charset="UTF-8"></script>
 	<script type="text/javascript" src="js/authentication.js" charset="UTF-8"></script>
 	<link rel="stylesheet" href="lib/googleMaterialIcons.css">
@@ -78,14 +78,15 @@
 						<option value="mesh-plugin">Mesh-Plugin</option>
 					</select>
 				</div>
-				<div class="group">
-					<label>Extensions:</label><select id="code-ui-extension-name" onchange="codeUiUpdateExtension()">
+				<div class="group" id="code-ui-online-extensions-list" style="display: none;">
+					<label>Online:</label><select id="code-ui-extension-name" onchange="codeUiUpdateExtension()">
 						<option value="" selected disabled>Load please</option>
 						<!-- dynamically generated -->
 					</select>
 				</div>
 				<div class="group">
 					<button id="code-ui-load-repo-btn" class='interface_button' onclick="codeUiLoadExtensionConfigFromServer()" style="display:none; margin: 5px 8px;">Online repository</button>
+					<button id="code-ui-load-custom-services-btn" class='interface_button' onclick="buildCustomServicesManager()" style="margin: 5px 8px;">Show user services</button>
 					<label id="code-ui-file-label" class="fileContainer" onchange="codeUiOpenSourceFile(event)">
 						Load file<input id="code-ui-file-input" type='file' accept='.java,.sservice,.yaml'>
 					</label>

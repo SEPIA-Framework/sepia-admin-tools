@@ -1,0 +1,35 @@
+{
+    "name": "SEPIA Control HUB",
+    "short_name": "S.E.P.I.A. HUB",
+    "description": "The S.E.P.I.A. Control HUB is an administrator tool to set up the framework, configure smart home devices and more.",
+    "icons": [
+        {
+            "src": "./img/icon-w.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        }, {
+            "src": "./img/icon-512-w.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ],
+    "start_url": "./index.html#!home?pwa=true",
+    "display": "standalone",
+    "theme_color": "#ffffff",
+    "background_color": "#ffffff",
+	"shortcuts": [
+		{
+			"name": "Code-UI",
+			"short_name": "Code-UI",
+			"description": "Open SEPIA Control HUB Code-UI.",
+			"url": "./index.html#!code-ui?pwa=true",
+			"icons": [{ "src": "./img/icon-w.png", "sizes": "192x192" }]
+		}, {
+			"name": "Smart Home",
+			"short_name": "Smart Home",
+			"description": "Open SEPIA Control HUB smart home configuration.",
+			"url": "./index.html#!smart-home?pwa=true",
+			"icons": [{ "src": "./img/icon-w.png", "sizes": "192x192" }]
+		}
+	]
+}

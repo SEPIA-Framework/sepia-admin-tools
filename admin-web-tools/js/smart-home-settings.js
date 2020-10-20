@@ -788,11 +788,11 @@ function buildSmartHomeItem(shi){
 	if (!namedBySepia){
 		shiNameClasses += " unconfirmed";
 	}
-	var shiObjContent = "" +
+	var shiObjContent = sanitizeHtml("" +
 		"<div class='smarthome-item-title'>" + 
 			"<div style='overflow:hidden;'>" +
-				"<span class='" + shiNameClasses + "' data-shi-property='" + SEPIA_TAG_NAME + "' data-shi-value='" + itemName + "'>" + itemName.replace("<", "&lt;").replace(">", "&gt;") + "</span>" +
-				"<span class='smarthome-item-id'> - " + itemId.replace("<", "&lt;").replace(">", "&gt;") + "</span>" +
+				"<span class='" + shiNameClasses + "' data-shi-property='" + SEPIA_TAG_NAME + "' data-shi-value='" + itemName + "'>" + escapeHtml(itemName) + "</span>" +
+				"<span class='smarthome-item-id'> - " + escapeHtml(itemId) + "</span>" +
 			"</div>" +
 			"<div style='display:flex;'>" +
 				"<button class='shi-control-name' title='Edit device name'><i class='material-icons md-18'>edit</i></button>" +
@@ -840,7 +840,7 @@ function buildSmartHomeItem(shi){
 			"</div></div>" + 
 		"</div>" +
 		"<div class='smarthome-extend-body-btn'><div class='smarthome-extend-body-icon'>&#8250;</div></div>"
-	;
+	);
 	var $shiObj = $(shiObj);
 	$shiObj.append(shiObjContent);
 	//set all selector titles to selected value (helpful tooltip for manual device configurations)
@@ -875,7 +875,7 @@ function buildSmartHomeItem(shi){
 			shiObj.setAttribute("data-shi", JSON.stringify(shi));	//write shi first
 			//set and submit
 			$shiObj.find('.smarthome-item-name')
-				.html(newName.replace("<", "&lt;").replace(">", "&gt;"))
+				.html(escapeHtml(newName))
 				.attr("data-shi-value", newName)
 				.trigger('change');
 		}
@@ -976,7 +976,7 @@ function buildSmartHomeInterfaceEditor(shInterface){
 		useSmallCloseButton: true
 	}
 	var interfaceEditor = document.createElement("div");
-	interfaceEditor.innerHTML = "<h3>Interface Editor</h3>" +
+	interfaceEditor.innerHTML = sanitizeHtml("<h3>Interface Editor</h3>" +
 		"<div style='display: flex; flex-direction: column;'>" + 
 			"<label>Unique Name</label>" + 
 				"<input class='smarthome-interface-id' spellcheck='false' placeholder='openHAB-2, FHEM_X, ...' value='" + shInterface.id + "'>" + 
@@ -995,7 +995,7 @@ function buildSmartHomeInterfaceEditor(shInterface){
 				"<button class='smarthome-interface-btn-save'>SAVE</button>" + 
 				"<button class='smarthome-interface-btn-delete' style='background: #f00;'>DELETE</button>" + 
 			"</div>" +
-		"</div>";
+		"</div>");
 	ByteMind.ui.showPopup(interfaceEditor, config);
 	var $ie = $(interfaceEditor);
 	//save button
@@ -1101,7 +1101,9 @@ function buildSmartHomeRoomOptions(selected){
 		"terrace" : "Terrace",
 		"balcony" : "Balcony",
 		"hallway" : "Hallway",
+		"entrance" : "Entrance",
 		"shack" : "Shack",
+		"attic" : "Attic",
 		"other" : "Other",
 		"unassigned" : "Not assigned"
 	}
@@ -1159,7 +1161,7 @@ function updateAllSmartHomeCustomHubSelectors(){
 	var availableOptions = buildSmartHomeCustomHubOptions();
 	$selectors.each(function(i, sel){
 		var currentVal = sel.value;
-		sel.innerHTML = availableOptions;
+		sel.innerHTML = sanitizeHtml(availableOptions);
 		sel.value = currentVal;
 	});
 }

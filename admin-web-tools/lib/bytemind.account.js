@@ -138,7 +138,7 @@ function bytemind_build_account(){
 		});
 		//extend button
 		var $extendBtn = $('#bytemind-login-extend-btn');
-		$extendBtn.find('i').html('arrow_drop_down');
+		//$extendBtn.find('i').html('arrow_drop_down');
 		$extendBtn.off().on("click", function(){
 			var isVisible = ($extendBtn.find('i').html() == 'arrow_drop_up');
 			$('#bytemind-login-box').find('.bm-extendable').each(function(){

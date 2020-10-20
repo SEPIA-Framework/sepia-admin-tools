@@ -3,25 +3,24 @@
 $(document).ready(function(){
 	//-- Chrome/Android (and whoever will support it) --
 	
-	//handle Chrome progressive app popup for home-screen installation
+	//PWA Setup: register service worker in non-Cordova app only for now
+	if('serviceWorker' in navigator){
+		navigator.serviceWorker
+			.register('sw.js')
+			.then(function(){ 
+				console.log('SEPIA Control HUB - Service Worker: Registered');
+			}, function(err){
+				console.error('SEPIA Control HUB - Service Worker: Failed to register', err);
+			});
+	}else{
+		console.log('SEPIA Control HUB - Service Worker: Not available');
+	}
+	//handle PWA popup for home-screen installation
+	/*
 	window.addEventListener('beforeinstallprompt', function(e) {
 		//e.preventDefault(); 		//use this to prevent pop-up
 		return false;
 	});
-	
-	//handle service worker to make page available offline
-	/*
-	if ('serviceWorker' in navigator) {
-		window.addEventListener('load', function() {
-			navigator.serviceWorker.register('sw.js').then(function(registration) {
-				// Registration was successful
-				console.log('ServiceWorker registration successful with scope: ', registration.scope);
-			}, function(err) {
-				// registration failed :(
-				console.log('ServiceWorker registration failed: ', err);
-			});
-		});
-	}
 	*/
 	
 	//-- ByteMind --
