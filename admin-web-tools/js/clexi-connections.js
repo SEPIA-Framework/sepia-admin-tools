@@ -198,6 +198,7 @@ function clientClexiHelp(){
 		+ "- get help\n\n"
 		+ "- get user\n\n"
 		+ "- get wakeword\n\n"
+		+ "- get mediadevices\n\n"
 		+ "- set wakeword state on/off\n\n"
 		+ "- set connections client on/off/connect/close\n\n"
 		+ "- set connections clexi off/close\n\n"
