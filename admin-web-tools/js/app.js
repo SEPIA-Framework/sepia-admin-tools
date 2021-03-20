@@ -5,12 +5,13 @@ $(document).ready(function(){
 	
 	//PWA Setup: register service worker in non-Cordova app only for now
 	if('serviceWorker' in navigator){
+		var scope = location.pathname.replace(/(.*\/).*?\.html$/, "$1");
 		navigator.serviceWorker
-			.register('sw.js')
+			.register(scope + 'sw.js')
 			.then(function(){ 
-				console.log('SEPIA Control HUB - Service Worker: Registered');
+				console.log('SEPIA Control HUB - Service Worker: Registered for scope: ' + scope);
 			}, function(err){
-				console.error('SEPIA Control HUB - Service Worker: Failed to register', err);
+				console.error('SEPIA Control HUB - Service Worker: Failed to register for scope: ' + scope, err);
 			});
 	}else{
 		console.log('SEPIA Control HUB - Service Worker: Not available');
