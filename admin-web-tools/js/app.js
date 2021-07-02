@@ -3,16 +3,39 @@
 $(document).ready(function(){
 	//-- Chrome/Android (and whoever will support it) --
 	
-	//PWA Setup: register service worker in non-Cordova app only for now
+	//PWA Setup: register service worker if 'pwa=true'
+	var noSW = !!window.location.href.match(/(&|\?)(noSW)=true(&|$)/);
+	var pwa = !!window.location.href.match(/(&|\?)(pwa)=true(&|$)/);
 	if('serviceWorker' in navigator){
-		var scope = location.pathname.replace(/(.*\/).*?\.html$/, "$1");
-		navigator.serviceWorker
-			.register(scope + 'sw.js')
-			.then(function(){ 
-				console.log('SEPIA Control HUB - Service Worker: Registered for scope: ' + scope);
-			}, function(err){
-				console.error('SEPIA Control HUB - Service Worker: Failed to register for scope: ' + scope, err);
-			});
+		//skip service worker? Some clients don't really like it
+		if (pwa && noSW){
+			console.log("SEPIA Control HUB - Service Worker: Skipped via 'noSW=true' URL param.");
+		}else if (pwa){
+			var scope = location.pathname.replace(/(.*\/).*?\.html$/, "$1");
+			navigator.serviceWorker
+				.register(scope + 'sw.js', {scope: scope}) 		//we may revert this back to simply "./sw.js"
+				.then(function(registration){ 
+					console.log('SEPIA Control HUB - Service Worker: Registered for scope: ' + scope);
+					window.sepiaClientSwRegistration = registration;
+				}, function(err){
+					console.error('SEPIA Control HUB - Service Worker: Failed to register for scope: ' + scope, err);
+				});
+		}else{
+			console.log("SEPIA Control HUB - Service Worker: Not enabled (you can use 'pwa=true' URL param.)");
+		}
+		//we still check if a worker exists
+		navigator.serviceWorker.ready.then(function(registration){
+			if (!window.sepiaClientSwRegistration && !pwa){
+				console.log('SEPIA Control HUB - Service Worker: Registered after initial skip (or was never closed).');
+				window.sepiaClientSwRegistration = registration;
+			}
+			if (noSW){
+				console.log("SEPIA Control HUB - Service Worker: Trying to unregister existing SW to comply with 'noSW' param.");
+				registration.unregister().then(function(boolean){
+					console.log('SEPIA Control HUB - Service Worker: Unregistered!');
+				});
+			}
+		});
 	}else{
 		console.log('SEPIA Control HUB - Service Worker: Not available');
 	}
