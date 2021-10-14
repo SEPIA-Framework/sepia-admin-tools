@@ -188,6 +188,20 @@ select {
     flex-grow: 1;
     text-align: center;
 }
+.bytemind-view div.group4 {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+}
+.bytemind-view div.group4 > div {
+    margin: 0px;
+    flex: 0 0 auto;
+    text-align: center;
+}
+.bytemind-view div.group4 button, .bytemind-view div.group4 select, .bytemind-view div.group4 input {
+	margin: 8px;
+}
 
 .bytemind-view .interface_button_box {
 	text-align: center;

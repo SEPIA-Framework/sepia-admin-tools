@@ -1,5 +1,19 @@
 //------ INTERFACE: ------
 
+function sttGetTrainingDataFromTeachServer(langTag){
+	if (!langTag) langTag = $('#stt-language-select').val();
+	var data = {
+		language: langTag
+	}
+	genericFormPostRequest("teach", "getAllCustomSentencesAsTrainingData", data, function(res){
+		showMessage(JSON.stringify(res, null, 2));
+	}, function(res){
+		showMessage(JSON.stringify(res, null, 2));
+	});
+}
+
+//Legacy STT Server code:
+/*
 var sttServer = "";
 
 function getSttServerUrl(){
@@ -81,15 +95,4 @@ function sttAdaptLm(langTag){
 		//ERROR
 	}, "POST", dataBody, "", 600000);
 }
-
-function sttGetTrainingDataFromTeachServer(langTag){
-	if (!langTag) langTag = $('#stt-language-select').val();
-	var data = {
-		language: langTag
-	}
-	genericFormPostRequest("teach", "getAllCustomSentencesAsTrainingData", data, function(res){
-		showMessage(JSON.stringify(res, null, 2));
-	}, function(res){
-		showMessage(JSON.stringify(res, null, 2));
-	});
-}
+*/

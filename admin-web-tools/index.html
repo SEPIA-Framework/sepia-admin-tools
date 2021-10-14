@@ -418,53 +418,37 @@
 				<!-- SPEECH RECOGNITION -->
 				<div id="speech-recognition" class="bytemind-view">
 					<section class="group">
-						<h3>Speech-To-Text Server</h3>
-						<div class="group">
-							<label style="position: relative;">Server: 
-								<span id="stt-server-indicator" class="input-inline-indicator inactive" title="Red: server not found, Green: connection established"></span>
-							</label>
-							<input id="stt-server" type="url" onchange="checkSttServer()" placeholder="e.g.: http://localhost:3080/stt" onkeypress="checkSttServerKeyPress()">
-						</div>
-						<div class="group" style="position: relative;">
-							<label>Access token: </label><input id="stt-access-token" type="text" spellcheck="false">
-						</div>
+						<h3>SEPIA Speech-To-Text Server</h3>
+						<p class="info-text">The SEPIA client app can handle speech recognition in two different ways, either using platform specific engines (available in Android, Chrome, Edge, Safari, etc.)
+						or using your own, independent, offline speech recognition server that can be configured to use customized acoustic and language models.
+						To learn how to set up and use the server please visit:<br>
+						<br>
+						<b><a href="https://github.com/SEPIA-Framework/sepia-stt-server" target=_blank>SEPIA STT-Server @ GitHub</a></b>
+						<p>
 					</section>
 					<section class="group">
-						<p class="info-text">You can modify the speech model of your STT server with the settings below. The path is relative to the server file system (or Docker container).</p>
-						<div class="group center">
-							<label>Full Model Path: </label>
-							<input id="stt-model" type="text" style="max-width: 386px;" placeholder="/apps/share/kaldi_models/kaldi-generic-de-tdnn_sp_sepia_v02" value="" spellcheck="false">
-						</div>
-						<div class="interface_button_box">
-							<button onclick="getSttModel()" class="interface_button">GET MODEL PATH</button>
-							<button onclick="setSttModel()" class="interface_button">SET MODEL PATH</button>
-						</div>
+						<h3>Server Connection</h3>
+						<p class="info-text">The STT server connection and model selection is handled directly inside your client app. Check out the menu at:<br>
+						<br>
+						<b>App Settings - General - ASR engine</b>
+						</p>
 					</section>
 					<section class="group">
-						<p class="info-text">Language model (LM) adaptation is not documented yet but feel free to experiment ;-)</p>
-						<div class="interface_button_box">
-							<button onclick="sttGetTrainingDataFromTeachServer()" class="interface_button">Get Adapt Data</button>
-						</div>
-						<div class="group3 spacy">
+						<h3>ASR Model Adaptation</h3>
+						<p class="info-text">This feature is currently being redesigned to make it more accessible to users. In the meantime please follow these instructions:<br>
+						<b><a href="https://github.com/SEPIA-Framework/sepia-stt-server#using-customized-asr-models" target=_blank>Customize your ASR Models</a></b></p>
+						<p class="info-text">To build your own language model you can start with a list of all the sentences you (or other users) have added to SEPIA. The Assist-Server has an endpoint to export this data:</p>
+						<div class="group4">
 							<div>
-								<label style="min-width: 100px;">Version tag:</label>
-								<input id="stt-model-version" type="text" placeholder="02" style="height: 27px; min-width: 70px; width: 85px;" spellcheck="false">
-							</div>
-							<div>
-								<label style="min-width: 100px;">Language:</label>
-								<select id="stt-language-select" name="stt-lang" style="min-width: 70px; width: 85px;"> 
-									<option value="en">EN</option>
-									<option value="de">DE</option>
+								<label style="min-width: 77px;">Language:</label>
+								<select id="stt-language-select" name="stt-lang" style="min-width: 70px;"> 
+									<!-- generated dynamically on start -->
 								</select>
 							</div>
+							<div>
+								<button onclick="sttGetTrainingDataFromTeachServer()" class="interface_button">Export Sentences</button>
+							</div>
 						</div>
-						<div class="interface_button_box">
-							<button onclick="sttAdaptLm()" class="interface_button">Adapt LM</button>
-						</div>
-					</section>
-					<section class="group">
-						<h3>Info</h3>
-						<div class="group"><a href="https://github.com/SEPIA-Framework/sepia-stt-server" target=_blank>SEPIA STT-Server @ GitHub</a></div>
 					</section>
 				</div>
 				

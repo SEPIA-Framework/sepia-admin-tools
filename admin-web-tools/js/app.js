@@ -156,9 +156,15 @@ function buildNavigation(){
 	if (ByteMind.account){
 		ByteMind.page.registerMenuButton("Sign out", {
 			//href : "/logout.html",
-			onclick : function() { ByteMind.page.sideMenu.close(); 	ByteMind.account.logoutAction(); }
+			onclick : function(){ ByteMind.page.sideMenu.close(); 	ByteMind.account.logoutAction(); }
 		}, sideMenuEle);
 	}
+	//Add "exit" button (e.g. for kiosk app - TODO: look for better solution)
+	/*
+	ByteMind.page.registerMenuButton("Exit", {
+		onclick : function(){ window.open("about:blank"); }
+	}, sideMenuEle);
+	*/
 	
 	//use side menu?
 	/*
