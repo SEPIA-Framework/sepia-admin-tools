@@ -355,7 +355,7 @@ function onStart(){
 	
 	clientConnectionsOnStart();
 
-	//--- Page: assistant, answer-manager ---
+	//--- Page: assistant, answer-manager, speech-rec. ---
 
 	//build assistant stuff
 	$('#assist-language-select').html(buildLanguageSelectorOptions());
@@ -365,7 +365,7 @@ function onStart(){
 	$('#answer-manager-lang-sel').html(buildLanguageSelectorOptions());
 	
 	//build speech-recognition stuff
-	//$('#stt-language-select').html(buildLanguageSelectorOptions());	//we just use DE and EN for now
+	$('#stt-language-select').html(buildLanguageSelectorOptions());
 
 	//--- global elements ---
 
