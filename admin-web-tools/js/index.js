@@ -1,6 +1,6 @@
 //---------App:
 
-var controlHubVersion = "1.4.1";
+var controlHubVersion = "1.4.2";
 
 //---------Pages:
 
