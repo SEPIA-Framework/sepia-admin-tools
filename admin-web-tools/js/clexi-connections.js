@@ -195,7 +195,7 @@ function clientClexiHelp(){
 		+ "- call reload\n\n"
 		+ "- call ping / call ping adr [URL]\n\n"
 		+ "- call test\n\n"
-		+ "- call mictest\n\n"
+		+ "- call mictest play recording\n\n"
 		+ "- get help\n\n"
 		+ "- get user\n\n"
 		+ "- get wakeword\n\n"
