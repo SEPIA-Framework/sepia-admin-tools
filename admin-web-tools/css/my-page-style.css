@@ -76,6 +76,8 @@ input[type="button"] {
 }
 select {
 	cursor: pointer;
+	background: #eee;
+	color: #000;
 }
 
 #bytemind-background-cover-layer {
