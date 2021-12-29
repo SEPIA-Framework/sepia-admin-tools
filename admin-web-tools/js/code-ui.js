@@ -13,6 +13,7 @@ function codeUiOnReady(){
 		matchBrackets: true,
 		mode: "text/x-java",
 		theme: "sepia-fw",
+		//theme: (sepiaControlHubActiveSkin == 2? "default": "sepia-fw"),
 		dragDrop: true,
 		allowDropFileTypes: ["text/x-java"]
 	});

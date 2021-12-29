@@ -370,7 +370,7 @@
 #bytemind-login-box button:first-of-type { 
 	margin: 10px 0px 0px 0px;
 }
-#bytemind-login-box button:hover {
+.bytemind-notouch-device #bytemind-login-box button:hover {
 	background-color: #fff;
 	color: #222;
 }

@@ -2,6 +2,58 @@
 
 var controlHubVersion = "1.4.2";
 
+//---------Skins:
+
+var sepiaControlHubActiveSkin = 0;
+
+function setSepiaControlHubSkin(newIndex, rememberSelection){
+	if (newIndex == undefined) newIndex = ByteMind.data.get('activeSkin') || (getPreferredColorScheme() == "light"? 2: 1);
+	if (newIndex != sepiaControlHubActiveSkin){
+		var homeLogo = document.getElementById("home-logo");
+		//set
+		var skins = $('.sepiaFW-style-skin');
+		var setIndex = 1;
+		var setLogo = "img/icon-512-alpha.png";
+		if (newIndex <= 1){
+			skins.each(function(index){
+				$(this).prop('title', '');
+				$(this).prop('disabled', true);
+			});
+			ByteMind.debug.log("UI active skin: default");
+		}else{
+			skins.each(function(index){
+				var id = this.dataset.id;
+				var that = this;
+				if (id == newIndex){
+					$(this).prop('title', 'main');
+					$(this).prop('disabled', false);
+					ByteMind.debug.log("UI active skin: " + $(this).attr('href'));
+					setIndex = id;
+					setLogo = this.dataset.logo || "img/icon-512-alpha.png";
+				}else{
+					$(this).prop('title', '');
+					$(this).prop('disabled', true);
+				}
+			});
+		}
+		sepiaControlHubActiveSkin = setIndex;
+		homeLogo.src = setLogo;
+		if (rememberSelection){
+			ByteMind.data.set('activeSkin', setIndex);
+		}
+	}
+}
+function getPreferredColorScheme(){
+	if ('matchMedia' in window){
+		if (window.matchMedia('(prefers-color-scheme: dark)').matches){
+			return "dark";
+		}else if (window.matchMedia('(prefers-color-scheme: light)').matches){
+			return "light";
+		}
+	}
+	return "";
+}
+
 //---------Pages:
 
 var HOME = "home";
@@ -321,6 +373,9 @@ function beforeLoginRestore(){
 
 //Last action after initialization
 function onStart(){
+	//--- restore skin ---
+	
+	setSepiaControlHubSkin();
 
 	//--- session variables ---
 
