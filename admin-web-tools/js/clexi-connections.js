@@ -232,8 +232,11 @@ function clientClexiHelp(){
 		+ "- release all\n\n"
 		+ "- register button 17\n\n"
 		+ "- release button {\"id\":\"my-btn\",\"pin\":17}\n\n"
+		+ "- register led 19\n\n"
+		+ "- set led {\"pin\":5,\"value\":1}\n\n"
 		+ "- register item rpi-respeaker-mic-hat-leds {\"numOfLeds\":3}\n\n"
 		+ "- set item rpi-respeaker-mic-hat-leds {\"ledIndex\":1,\"red\":150,\"green\":0,\"blue\":0}\n\n"
+		+ "- release item rpi-respeaker-mic-hat-leds {}\n\n"
 		+ "<b>NOTE:</b> To use the GPIO interface make sure it is activated in CLEXI settings.\n\n"
 	, true);
 }
