@@ -51,6 +51,9 @@ select {
     color: #000;
 	border: 1px solid;
 }
+#login-info-box input {
+	color: #000;
+}
 
 #bytemind-webapp-header {
     background: #fdfdfd;
