@@ -63,7 +63,7 @@ var HOME_DESC = "The S.E.P.I.A. Control HUB helps you set-up, configure and mana
 function buildPages(sideMenuEle){
 	
 	//Home
-	ByteMind.page.registerSectionWithNavButton("Home", {
+	ByteMind.page.registerSectionWithNavButton("<span class='material-icons'>home</span> Home", {
 		sectionName : HOME,
 		viewId : "home", 		//use this if you have an ID else use 'view' and give the element
 		title : HOME_TITLE,
@@ -72,7 +72,7 @@ function buildPages(sideMenuEle){
 	}, sideMenuEle);
 
 	//Server connections
-	ByteMind.page.registerSectionWithNavButton("Server Connections", {
+	ByteMind.page.registerSectionWithNavButton("<span class='material-icons'>account_tree</span> Server Connections", {
 		sectionName : "server-connections",
 		viewId : "server-connections",
 		title : "SEPIA Server Connections Setup",
@@ -81,7 +81,7 @@ function buildPages(sideMenuEle){
 	}, sideMenuEle);
 
 	//Core settings
-	ByteMind.page.registerSectionWithNavButton("Core Settings", {
+	ByteMind.page.registerSectionWithNavButton("<span class='material-icons'>settings</span> Core Settings", {
 		sectionName : "core-settings",
 		viewId : "core-settings",
 		title : "SEPIA Core Settings",
@@ -90,7 +90,7 @@ function buildPages(sideMenuEle){
 	}, sideMenuEle);
 
 	//User management
-	ByteMind.page.registerSectionWithNavButton("User Management", {
+	ByteMind.page.registerSectionWithNavButton("<span class='material-icons'>people</span> User Management", {
 		sectionName : "user-management",
 		viewId : "user-management",
 		title : "SEPIA User Management",
@@ -99,7 +99,7 @@ function buildPages(sideMenuEle){
 	}, sideMenuEle);
 
 	//CodeUI
-	ByteMind.page.registerSectionWithNavButton("Code-UI", {
+	ByteMind.page.registerSectionWithNavButton("<span class='material-icons'>code</span> Code-UI", {
 		sectionName : "code-ui",
 		viewId : "code-ui",
 		title : "SEPIA Code UI",
@@ -118,7 +118,7 @@ function buildPages(sideMenuEle){
 	}, sideMenuEle);
 
 	//Smart Home
-	ByteMind.page.registerSectionWithNavButton("Smart Home", {
+	ByteMind.page.registerSectionWithNavButton("<span class='material-icons'>router</span> Smart Home", {
 		sectionName : "smart-home",
 		viewId : "smart-home",
 		title : "Smart Home Configuration",
@@ -127,7 +127,7 @@ function buildPages(sideMenuEle){
 	}, sideMenuEle);
 	
 	//Assistant
-	ByteMind.page.registerSectionWithNavButton("Assistant Testing", {
+	ByteMind.page.registerSectionWithNavButton("<span class='material-icons'>question_answer</span> Assistant Testing", {
 		sectionName : "assistant",
 		viewId : "assistant",
 		title : "SEPIA Assistant Testing",
@@ -136,7 +136,7 @@ function buildPages(sideMenuEle){
 	}, sideMenuEle);
 
 	//Answer Manager
-	ByteMind.page.registerSectionWithNavButton("Answer Manager", {
+	ByteMind.page.registerSectionWithNavButton("<span class='material-icons'>format_list_numbered</span> Answer Manager", {
 		sectionName : "answer-manager",
 		viewId : "answer-manager",
 		title : "SEPIA Answer-Manager",
@@ -145,7 +145,7 @@ function buildPages(sideMenuEle){
 	}, sideMenuEle);
 
 	//Speech Recognition
-	ByteMind.page.registerSectionWithNavButton("Speech Recognition", {
+	ByteMind.page.registerSectionWithNavButton("<span class='material-icons'>settings_voice</span> Speech Recognition", {
 		sectionName : "speech-recognition",
 		viewId : "speech-recognition",
 		title : "SEPIA STT Manager",
@@ -154,7 +154,7 @@ function buildPages(sideMenuEle){
 	}, sideMenuEle);
 	
 	//Text-to-speech
-	ByteMind.page.registerSectionWithNavButton("Speech Synthesis", {
+	ByteMind.page.registerSectionWithNavButton("<span class='material-icons'>record_voice_over</span> Speech Synthesis", {
 		sectionName : "speech-synthesis",
 		viewId : "text-to-speech",
 		title : "SEPIA TTS Manager",
@@ -163,7 +163,7 @@ function buildPages(sideMenuEle){
 	}, sideMenuEle);
 
 	//Chat Server Settings
-	ByteMind.page.registerSectionWithNavButton("Chat Settings", {
+	ByteMind.page.registerSectionWithNavButton("<span class='material-icons'>sms</span> Chat Settings", {
 		sectionName : "chat-server-settings",
 		viewId : "chat-server-settings",
 		title : "SEPIA Chat Server Manager",
@@ -172,7 +172,7 @@ function buildPages(sideMenuEle){
 	}, sideMenuEle);
 	
 	//Client Connections
-	ByteMind.page.registerSectionWithNavButton("Client Connections", {
+	ByteMind.page.registerSectionWithNavButton("<span class='material-icons'>settings_remote</span> Client Connections", {
 		sectionName : "client-connections",
 		viewId : "client-connections",
 		title : "SEPIA Client Connections",
@@ -181,7 +181,7 @@ function buildPages(sideMenuEle){
 	}, sideMenuEle);
 
 	//Performance Tests
-	ByteMind.page.registerSectionWithNavButton("Performance Tests", {
+	ByteMind.page.registerSectionWithNavButton("<span class='material-icons'>speed</span> Performance Tests", {
 		sectionName : "performance-tests",
 		viewId : "performance-tests",
 		title : "Performance Testing",
@@ -190,7 +190,7 @@ function buildPages(sideMenuEle){
 	}, sideMenuEle);
 
 	//Help & Credits
-	ByteMind.page.registerSectionWithNavButton("Help & Credits", {
+	ByteMind.page.registerSectionWithNavButton("<span class='material-icons'>help_outline</span> Help & Credits", {
 		sectionName : "help",
 		viewId : "help",
 		title : HOME_TITLE,

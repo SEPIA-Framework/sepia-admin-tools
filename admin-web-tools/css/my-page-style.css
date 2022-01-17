@@ -98,6 +98,16 @@ select {
     background-color: #191919;
 	color: #eee;
 }
+.bytemind-side-menu .bytemind-nav-bar-button {
+	display: flex;
+	justify-content: start;
+	align-items: center;
+}
+.bytemind-side-menu .bytemind-nav-bar-button .material-icons {
+	font-size: 19px;
+    margin-right: 12px;
+	flex: 0 0 auto;
+}
 .bytemind-nav-bar-button {
 	margin: 16px 16px !important;
 }
@@ -106,6 +116,7 @@ select {
     border-radius: 5px;
     font-size: 14px;
     text-align: center;
+	justify-content: center;
 }
 @media screen and (max-height: 600px) {
 	.bytemind-nav-bar-button {
