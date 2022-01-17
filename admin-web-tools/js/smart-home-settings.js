@@ -888,15 +888,26 @@ function buildSmartHomeItem(shi){
 	//custom cmds JSON edit
 	$shiObj.find('.smarthome-item-set-cmds-edit').on('click', function(){
 		var editor = document.createElement("div");
-		var contentStr = $shiObj.find('.smarthome-item-set-cmds').val() || '{"enable": "on", "disable": 0, "number": "A <val> B"}';
+		var infoText = document.createElement("div");
+		infoText.style.textAlign = "left";
+		infoText.innerHTML = "Examples:<br><ul>"
+				+ "<li><u>enable</u>: \"<b>Switch on</b> the light\"</li>"
+				+ "<li><u>disable</u>: \"<b>Turn off</b> the light\"</li>"
+				+ "<li><u>number</u>: \"Set the light to <b>50%</b>\"</li>"
+			+ "</ul>"
+			+ "Use with type 'raw text':<br><ul>"
+				+ "<li><u>raw</u>: \"Set the light to <b>value RED</b>\"</li>"
+			+ "</ul>";
+		var contentStr = $shiObj.find('.smarthome-item-set-cmds').val() || '{"enable": "on", "disable": 0, "number": "<val> XY", "raw": "<val>"}';
 		var textEdit = document.createElement("textarea");
 		//use tab in textarea
 		textEdit.onkeydown = function(event){
 			if(event.keyCode===9){var v=this.value,s=this.selectionStart,e=this.selectionEnd;this.value=v.substring(0, s)+'\t'+v.substring(e);this.selectionStart=this.selectionEnd=s+1;return false;};
 		}
 		textEdit.spellcheck = "false";
-		textEdit.style.minHeight = "92px";
+		textEdit.style.minHeight = "110px";
 		textEdit.value = JSON.stringify(JSON.parse(contentStr), undefined, 4);
+		editor.appendChild(infoText);
 		editor.appendChild(textEdit);
 		var config = {
 			useSmallCloseButton: false,
@@ -983,7 +994,7 @@ function buildSmartHomeInterfaceEditor(shInterface){
 			"<label>Interface Type</label>" + 
 				"<select class='smarthome-interface-type'>" + buildSmartHomeInterfaceOptions(shInterface.type) + "</select>" + 
 			"<label>Host Address</label>" + 
-				"<input class='smarthome-interface-host' spellcheck='false' placeholder='http://localhost:8083/myHub' value='" + shInterface.host + "'>" +
+				"<input class='smarthome-interface-host' spellcheck='false' placeholder='http://localhost:8083/myHub' type='url' value='" + shInterface.host + "'>" +
 			//"<button class='smarthome-interface-reg-btn'>REGISTER</button>" +
 			"<label>Auth. Type (opt.)</label>" +
 				"<input class='smarthome-interface-authType' spellcheck='false' placeholder='Basic or Plain (if supported)' value='" + shInterface.authType + "'>" + 
