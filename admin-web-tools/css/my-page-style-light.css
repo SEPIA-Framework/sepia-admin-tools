@@ -1,0 +1,243 @@
+html {
+	background: #eee;
+}
+select {
+    background: #fff;
+    color: #000;
+}
+#bytemind-webapp-window {
+    box-shadow: 0 0 4px 2px #d9d9d9;
+}
+#bytemind-fullscreen-overlay-btn {
+    background: #fbfbfb;
+	color: #000;
+}
+
+#bytemind-login-box, 
+#bytemind-popup-message {
+    background-color: #eee;
+    border: 0;
+    color: #000;
+	border-radius: 3px;
+}
+#bytemind-login-box button,
+#bytemind-popup-message button {
+    /*background-color: #16abc3;*/
+    /*color: #fff;*/
+	background: linear-gradient(to right, #4dc491 0%, #16ABC3 100%);
+    color: #000;
+}
+.bytemind-notouch-device #bytemind-login-box button:hover,
+.bytemind-notouch-device #bytemind-popup-message button:hover  {
+    background: #4dc491;
+    color: #000;
+}
+#bytemind-login-links a {
+    opacity: 0.5;
+}
+#login-info-box {
+    border: 2px solid #000;
+    background: #fdfdfd;
+    color: #000;
+    box-shadow: 0 0 4px 2px rgba(0, 0, 0, 0.25);
+}
+#login-info-box > div {
+    background: #f9f9f9;
+}
+#login-info-box button {
+    /*background-color: #16abc3;*/
+    /*color: #fff;*/
+	background: linear-gradient(to right, #4dc491 0%, #16ABC3 100%);
+    color: #000;
+	border: 1px solid;
+}
+#login-info-box input {
+	color: #000;
+}
+
+#bytemind-webapp-header {
+    background: #fdfdfd;
+    color: #000;
+}
+#bytemind-webapp-top-bar {
+    background: #fff;
+    color: #000;
+}
+#bytemind-webapp-footer {
+    background: #fdfdfd;
+    color: #000;
+}
+
+#bytemind-webapp-main {
+    background: #fff;
+    color: #000;
+}
+
+.bytemind-side-menu-interlayer {
+    background-color: rgba(10, 10, 10, 0.06);
+}
+.bytemind-side-menu,
+.bytemind-side-menu-right {
+    background-color: #fdfdfd;
+    color: #000;
+}
+#my-bytemind-side-menu a,
+#my-bytemind-side-menu a:visited,
+#my-bytemind-side-menu a:visited {
+    color: #000;
+    border-bottom-color: #16abc3;
+}
+
+#result-container {
+    border: 3px solid #000;
+    background: #fdfdfd;
+    color: #000;
+	padding-left: 8px;
+	box-shadow: 0 0 4px 2px rgba(0, 0, 0, 0.25);
+}
+#result-container button {
+    color: #000;
+}
+
+.bytemind-view input[type="text"],
+.bytemind-view input[type="url"],
+.bytemind-view input[type="password"],
+.bytemind-view select {
+    background: #fff;
+    color: #000;
+    border-bottom: 1px solid #aaa;
+}
+.bytemind-view  button, 
+.bytemind-view  input[type="submit"], 
+.bytemind-view  input[type="button"] {
+    /*background-color: #000;*/
+    /*color: #beff1a;*/
+	background-color: #ceff1a;
+    color: #000;
+    border: 1px solid;
+}
+.bytemind-view  button.accent-button,
+.bytemind-view  input[type="submit"].accent-button,
+.bytemind-view  input[type="button"].accent-button {
+    background: #44c8be;
+    color: #000;
+}
+/*.bytemind-notouch-device .bytemind-view  button ... */
+.bytemind-view  .dangerous-button {
+    background: #f33;
+    color: #fff;
+	border: 1px solid #000;
+}
+
+.bytemind-view .info-text {
+    color: #000;
+}
+.bytemind-view .text-accent {
+	color: #16abc3;
+}
+.bytemind-view .highlight-text {
+    color: #4ec48f;
+}
+#bytemind-webapp-window section.group a {
+    color: #4ec48f;
+}
+
+.bytemind-view input:-webkit-autofill,
+.bytemind-view input:-webkit-autofill:hover,
+.bytemind-view input:-webkit-autofill:focus .bytemind-view textarea:-webkit-autofill,
+.bytemind-view textarea:-webkit-autofill:hover .bytemind-view textarea:-webkit-autofill:focus,
+.bytemind-view select:-webkit-autofill,
+.bytemind-view select:-webkit-autofill:hover,
+.bytemind-view select:-webkit-autofill:focus {
+    -webkit-text-fill-color: #000;
+    -webkit-box-shadow: 0 0 0px 1000px #eee inset;
+}
+
+/* --- pages --- */
+
+.server-card {
+    background: #fdfdfd;
+    border: 1px solid #212121;
+}
+/*.server-card-buttons button {
+    background: #000;
+    color: #beff1a;
+}*/
+
+#bytemind-webapp-main .settings-list-entry:nth-child(even) {
+    background: #eee;
+}
+#bytemind-webapp-main .settings-list-entry {
+    background: #fff;
+}
+#bytemind-webapp-main .settings-list-entry input {
+    border-bottom: 1px solid #999;
+    color: #000;
+}
+#bytemind-webapp-main .settings-list-entry div:nth-child(2) {
+    color: #16abc3;
+}
+
+#bytemind-webapp-main #page-code-ui {
+    background: #fff;
+    color: #000;
+}
+#bytemind-webapp-main #code-ui-extension-type, 
+#bytemind-webapp-main #code-ui-extension-name {
+    background: #fdfdfd;
+    color: #000;
+}
+#bytemind-webapp-main #code-ui-file-label {
+    background-color: #000 !important;
+    color: #beff1a !important;
+}
+
+.server-terminal-input {
+	background: #fdfdfd;
+	color: #000;
+	border: 2px solid #dfdfdf;
+}
+.server-terminal-input input {
+    background: #fdfdfd !important;
+    color: #000 !important;
+}
+.server-terminal-input label {
+    color: #000 !important;
+}
+.server-terminal-shortcuts button {
+    background: #eee;
+    color: #000;
+	border: 0;
+}
+.server-terminal-button {
+    background: #191919 !important;
+    color: #beff1a !important;
+	border: 0 !important;
+}
+
+#bytemind-webapp-main #smarthome-devices-last-refresh button {
+    border: 0;
+}
+#bytemind-webapp-main .smarthome-item {
+    background: #fdfdfd;
+    color: #000;
+	box-shadow: 0 0 4px 2px #cecece;
+}
+#bytemind-webapp-main .smarthome-item-title {
+    background: #ceff1a;
+    color: #000;
+}
+#bytemind-webapp-main .smarthome-item-title button {
+    color: #000;
+	border: 0;
+}
+#bytemind-webapp-main .smarthome-item-body select {
+    background: #fff;
+    color: #000;
+	border-bottom: 1px solid #999;
+}
+#bytemind-webapp-main .smarthome-item-body input {
+    background: #fff !important;
+    color: #000 !important;
+	border-bottom: 1px solid #999;
+}

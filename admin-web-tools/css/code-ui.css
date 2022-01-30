@@ -60,11 +60,11 @@
 }
 #code-ui-extension-type,
 #code-ui-extension-name {
-	font-size: 15px;
+	font-size: 14px;
 	min-width: auto;
-	background: #333;
+	background: #121212;
 	color: #eee;
-	border-bottom: 0;
+	/*border: 1px solid #999;*/
 }
 #page-code-ui label {
 	min-width: 50px;

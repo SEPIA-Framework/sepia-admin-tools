@@ -152,13 +152,28 @@ function buildNavigation(){
 		buildPages(sideMenuEle);
 	}
 	
+	//Add skins toggle button
+	var skinToggle = ByteMind.page.registerMenuButton("Light-/Dark-Mode", {
+		//href : "/logout.html",
+		onclick : function(){
+			if (sepiaControlHubActiveSkin == 1){
+				setSepiaControlHubSkin(2, true);
+			}else{
+				setSepiaControlHubSkin(1, true);
+			}
+		}
+	}, sideMenuEle);
+	skinToggle.classList.add("action-button");
+	
 	//Add logout button?
 	if (ByteMind.account){
-		ByteMind.page.registerMenuButton("Sign out", {
+		var logoutButton = ByteMind.page.registerMenuButton("Sign out", {
 			//href : "/logout.html",
 			onclick : function(){ ByteMind.page.sideMenu.close(); 	ByteMind.account.logoutAction(); }
 		}, sideMenuEle);
+		logoutButton.classList.add("action-button");
 	}
+	
 	//Add "exit" button (e.g. for kiosk app - TODO: look for better solution)
 	/*
 	ByteMind.page.registerMenuButton("Exit", {

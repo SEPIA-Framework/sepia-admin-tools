@@ -50,7 +50,8 @@ var clexiLogFilter = {
 	ble_beacon: true,
 	broadcast: true,
 	http: true,
-	runtime_cmd: true
+	runtime_cmd: true,
+	gpio_interface: true
 }
 function clientClexiSetEventFilters(){
 	showMessage("<div>" +
@@ -67,6 +68,9 @@ function clientClexiSetEventFilters(){
 		"<div>Log Runtime CMD Events: <input type='checkbox' " 
 			+ "onchange='(function(){ clexiLogFilter.runtime_cmd = !clexiLogFilter.runtime_cmd; console.log(clexiLogFilter); })();' " 
 			+ (clexiLogFilter.runtime_cmd? "checked" : "") + "></div>" +
+		"<div>Log GPIO Interface Events: <input type='checkbox' " 
+			+ "onchange='(function(){ clexiLogFilter.gpio_interface = !clexiLogFilter.gpio_interface; console.log(clexiLogFilter); })();' " 
+			+ (clexiLogFilter.gpio_interface? "checked" : "") + "></div>" +
 	"</div>", true);
 }
 
@@ -106,6 +110,11 @@ function clexiEventLog(msg, color){
 			return;
 		}
 	}
+	else if (msg.indexOf("GPIO") == 0){
+		if (clexiLogFilter.gpio_interface == false){
+			return;
+		}
+	}
 	if (color){
 		clexiLogOut.innerHTML = ("<span style='color: " + color + ";'>" + msg + "</span><br>" + clexiLogOut.innerHTML);
 	}else{
@@ -121,6 +130,7 @@ var clexiDebugEventColor = "#888";
 var clexiBleBeaconColor = "#2196F3";
 var clexiHttpEventColor = "#009688";
 var clexiRuntimeCommandsColor = "#cce";
+var clexiGpioInterfaceColor = "#2fcde7";
 		
 ClexiJS.onLog = clexiEventLog;
 //ClexiJS.onDebug = clexiEventLog;
@@ -133,6 +143,7 @@ function clientClexiConnect(){
 		sessionStorage.setItem('clientClexiHost', clexiHost);
 		sessionStorage.setItem('clientClexiId', ClexiJS.serverId);
 	}
+	ClexiJS.clientBaseId = "SEPIA-hub-";
 	
 	//set 'try' status
 	$('#clexi-server-indicator').removeClass('inactive');
@@ -195,11 +206,14 @@ function clientClexiHelp(){
 		+ "- call reload\n\n"
 		+ "- call ping / call ping adr [URL]\n\n"
 		+ "- call test\n\n"
+		+ "- call mictest play recording\n\n"
 		+ "- get help\n\n"
 		+ "- get user\n\n"
 		+ "- get wakeword\n\n"
 		+ "- get mediadevices\n\n"
+		+ "- get microphone\n\n"
 		+ "- set wakeword state on/off\n\n"
+		+ "- set microphone gain [0.1-100]\n\n"
 		+ "- set connections client on/off/connect/close\n\n"
 		+ "- set connections clexi off/close\n\n"
 		//+ "- set useGamepads true\n\n"
@@ -213,6 +227,17 @@ function clientClexiHelp(){
 		+ "- freeMemory\n\n"
 		+ "- callCustom delay 5000 file echo TEXT Hello-World\n\n"
 		+ "<b>NOTE:</b> To use runtime commands make sure CLEXI has them installed and activated.\n\n"
+	+ "\n<u>Commands to try for type 'GPIO Interface' (on Raspberry Pi)</u>\n\n"
+		+ "- get all\n\n"
+		+ "- release all\n\n"
+		+ "- register button 17\n\n"
+		+ "- release button {\"id\":\"my-btn\",\"pin\":17}\n\n"
+		+ "- register led 19\n\n"
+		+ "- set led {\"pin\":5,\"value\":1}\n\n"
+		+ "- register item rpi-respeaker-mic-hat-leds {\"numOfLeds\":3}\n\n"
+		+ "- set item rpi-respeaker-mic-hat-leds {\"ledIndex\":1,\"red\":150,\"green\":0,\"blue\":0}\n\n"
+		+ "- release item rpi-respeaker-mic-hat-leds {}\n\n"
+		+ "<b>NOTE:</b> To use the GPIO interface make sure it is activated in CLEXI settings.\n\n"
 	, true);
 }
 function clientClexiShortcutPingAll(){
@@ -349,6 +374,52 @@ function clientClexiSend(msg, msgType){
 		}
 		$('#client-clexi-msg').val("");
 		clexiRuntimeCommand(cmd, args);
+	
+	}else if (msgType == "gpio-interface"){
+		//GPIO Interface
+		var dataArray = msg.split(" ");
+		var action;
+		var type;
+		if (dataArray.length >= 2){
+			action = dataArray[0];
+			type = dataArray[1];
+		}
+		if (dataArray.length == 2){
+			clexiGpioInterfaceRequestDefault(action, type);
+			$('#client-clexi-msg').val("");
+		}else if (dataArray.length == 3){
+			var pinOrJson = dataArray[2];
+			var config;
+			if (pinOrJson.indexOf("{") == 0){
+				config = JSON.parse(pinOrJson);
+			}else if (type == "button" || type == "led"){
+				//some support for simplified syntax
+				config = {pin: +pinOrJson, direction: null, edge: null, options: null};
+			}
+			if (config){
+				clexiGpioInterfaceRequestDefault(action, type, config);
+				$('#client-clexi-msg').val("");
+			}else{
+				clexiEventError("Wrong message input format! Try e.g.: 'register button {\"id\":\"hw-mic-button\",\"pin\":17}' or 'register item [file] [options-json]' (no spaces allowed in JSON!).");
+			}
+		}else if (dataArray.length == 4 && type == "item"){
+			var file = dataArray[2];
+			var optionsOrData = JSON.parse(dataArray[3]);
+			var options, data;
+			if (action == "set"){
+				data = optionsOrData;
+			}else{
+				options = optionsOrData;
+			}
+			clexiGpioInterfaceRequestDefault(action, type, {
+				file: file,
+				options: options || null,
+				data: data || null
+			});
+			$('#client-clexi-msg').val("");
+		}else{
+			clexiEventError("Wrong message input format! Should be '[action] [type]', '[action] [type] [data]' or '[action] item [file] [options-or-data-json]' e.g. 'get all', 'register button {\"pin\":17}' or 'register item my-file {\"my-opt\":\"up\"}' (no spaces allowed in parameters and JSON!).");
+		}
 	}
 }
 
@@ -371,6 +442,14 @@ function getNewClexiRuntimeCmdId(){
 }
 var clexiRuntimeCommandBaseId;
 var clexiRuntimeCommandLastIdIndex = 0;
+
+function clexiGpioInterfaceRequestDefault(action, type, config){
+	ClexiJS.send('gpio-interface', {
+		action: action,
+		type: type,
+		config: config
+	}, numOfClexiSendRetries);
+}
 
 function clexiHttpEvent(ev, successCallback, errorCallback){
 	var clexiHost = $('#client-clexi-host').val();
@@ -455,6 +534,15 @@ function subscribeToRuntimeCommands(){
 		clexiEventError('Runtime CMD error: ' + JSON.stringify(e));
 	});
 }
+function subscribeToGpioInterface(){
+	ClexiJS.subscribeTo('gpio-interface', function(e){
+		clexiEventLog('GPIO-Interface event: ' + JSON.stringify(e), clexiGpioInterfaceColor);
+	}, function(e){
+		clexiEventLog('GPIO-Interface response: ' + JSON.stringify(e), clexiDebugEventColor);
+	}, function(e){
+		clexiEventError('GPIO-Interface error: ' + JSON.stringify(e));
+	});
+}
 function subscribeToUndefined(){
 	ClexiJS.subscribeTo('undefined', function(e){
 		clexiEventLog('Server event: ' + JSON.stringify(e), clexiDebugEventColor);
@@ -469,6 +557,7 @@ function clexiSubscribe(){
 	subscribeToClexiBroadcaster();
 	subscribeToClexiHttpEvents();
 	subscribeToRuntimeCommands();
+	subscribeToGpioInterface();
 	subscribeToUndefined();
 }
 function clexiRemoveSubscriptions(){
@@ -476,5 +565,6 @@ function clexiRemoveSubscriptions(){
 	ClexiJS.removeSubscription('clexi-http-events');
 	ClexiJS.removeSubscription('ble-beacon-scanner');
 	ClexiJS.removeSubscription('runtime-commands');
+	ClexiJS.removeSubscription('gpio-interface');
 	ClexiJS.removeSubscription('undefined');
 }

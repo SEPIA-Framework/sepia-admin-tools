@@ -40,8 +40,8 @@
 	<link rel="stylesheet" href="lib/bytemind-lib-1.1.0.css" title='main'>
 	<link rel="stylesheet" href="css/my-page-style.css" title='main'>
 	<link rel="stylesheet" href="css/bytemind-webapp-style.css" title='main'>
-	<!-- MY SKIN (put here or at end of body) -->
-	<!-- <link rel="stylesheet alternate" href="css/my-bytemind-skin.css" class='bytemind-style-skin' title='main' data-name='MySkin'> -->
+	<!-- skins -->
+	<link rel="stylesheet alternate" href="css/my-page-style-light.css" class="sepiaFW-style-skin" title="" data-id="2" data-name="Light" data-logo="img/icon-512-w.png" disabled="">
 	<style>
 	</style>
 </head>
@@ -200,13 +200,13 @@
 						<p class="info-text">Write key-value pair to config. Will take effect after server reload.</p>
 						<div class="group">
 							<input id="settings-write-kvpair-k" type="text" spellcheck="false" placeholder="key">
-							<span style='min-width: 32px; text-align: center; color: #beff1a;'>=</span>
+							<span style='min-width: 32px; text-align: center;' class="text-accent">=</span>
 							<input id="settings-write-kvpair-v" type="text" spellcheck="false" placeholder="value">
 						</div>
 						<div class="interface_button_box">
 							<button onclick="getSpecificServerConfig()" class="interface_button">Read this key</button>
 							<button onclick="writeKeyValueToServerConfig()" class="interface_button">Write to config</button>
-							<button onclick="softRestartServer()" class="interface_button" style="background: #44c8be;">Reload Server</button>
+							<button onclick="softRestartServer()" class="interface_button accent-button">Reload Server</button>
 						</div>
 					</section>
 					<section class="group">
@@ -562,6 +562,7 @@
 						<option value="http-event">HTTP Event</option>
 						<option value="remote-button">Remote Button</option>
 						<option value="runtime-command">Runtime Command</option>
+						<option value="gpio-interface">GPIO Interface</option>
 					</select></div>
 					<div class="group">
 						<label>Device ID: </label><input id="client-clexi-device-id" type="text" spellcheck=false placeholder="o1" value="">
@@ -575,12 +576,11 @@
 					</div>
 					<div class="server-terminal-input">
 						<label style="min-width: auto; margin: 8px;">Message:</label>
-						<input id="client-clexi-msg" type="text" placeholder=">_" spellcheck=false>
-						<button onclick="clientClexiSend()" class="interface_button">SEND</button>
+						<input id="client-clexi-msg" type="text" placeholder=">_" spellcheck=false autocomplete="off">
+						<button onclick="clientClexiSend()" class="interface_button" style="margin: 5px 8px;">SEND</button>
 					</div>
-					<br>
 					<div style="width: 100%; position: relative;">
-						<div id="client-clexi-events" class="server-event-messages">- REMOTE MESSAGES -<br></div>
+						<div id="client-clexi-events" class="server-event-messages" style="margin-top: 4px;">- REMOTE MESSAGES -<br></div>
 						<button onclick="clientClexiSetEventFilters()" class="server-terminal-button server-terminal-event-filters" title="set filters"><i class="material-icons md-18">filter_list</i></button>
 						<button onclick="clientClexiEventsClear()" class="server-terminal-button server-terminal-clear-input" title="clear history"><i class="material-icons md-18">delete</i></button>
 					</div>
@@ -655,7 +655,7 @@
 		evt.initCustomEvent( event, params.bubbles, params.cancelable, params.detail ); 
 		return evt; 
 	} 
-	window.CustomEvent = CustomEvent; 
+	window.CustomEvent = CustomEvent;
 })();
 </script>
 <!-- JS -->
@@ -664,7 +664,7 @@
 <script src="lib/hammer-time.min.js"></script>
 <script src="lib/sjcl.js"></script>
 <script src="lib/purify.min.js"></script>
-<script src="lib/clexi-0.8.2.js"></script>
+<script src="lib/clexi-0.9.0.js"></script>
 <script src="lib/bytemind.core.js"></script>
 <script src="lib/bytemind.local.js"></script>
 <script src="lib/bytemind.ui.js"></script>

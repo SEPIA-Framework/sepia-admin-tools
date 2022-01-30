@@ -298,6 +298,7 @@ function bytemind_build_page(){
 		}else{
 			$('#bytemind-top-bar-dynamic, #bytemind-webapp-top-bar-dynamic, #bytemind-top-bar, #bytemind-webapp-top-bar').first().append(btn);
 		}
+		return btn;
 	}
 
 	//switch page section
