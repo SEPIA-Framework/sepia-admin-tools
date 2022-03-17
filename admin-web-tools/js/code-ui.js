@@ -100,7 +100,7 @@ function codeUiUploadCode(){
     });
     xhr.addEventListener("load", function(event){
 		//success
-		console.log("codeUiUploadCode - LOG - status:", event && event.target && event.target.statusText);
+		console.log("Code upload - LOG - status:", event && event.target && event.target.statusText);
 		try {
 			var res = event.target.responseText || event.target.response;
 			if (res){
@@ -113,13 +113,13 @@ function codeUiUploadCode(){
 				}
 			}
 		}catch(err){
-			console.error("codeUiUploadCode - ERROR", err);
+			console.error("Code upload - ERROR", err);
 			showMessage("Failed to handle response. See console log.");
 		}
     });
     xhr.addEventListener("error", function(err){
 		//error
-		console.error("codeUiUploadCode - ERROR", err);
+		console.error("Code upload - ERROR", err);
 		//showMessage(JSON.stringify(err, null, 2));
 		showMessage("Failed to upload code, error: " + (err && err.type));
     });
