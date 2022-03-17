@@ -197,7 +197,7 @@
 							<button onclick="getFullServerConfig()" class="interface_button">Get Persistent Settings</button>
 						</div>
 						<div id="settings-list-box"></div>
-						<p class="info-text">Write key-value pair to config. Will take effect after server reload.</p>
+						<p class="info-text">Write key-value pair to config. Will take effect <b>after server reload</b>.</p>
 						<div class="group">
 							<input id="settings-write-kvpair-k" type="text" spellcheck="false" placeholder="key">
 							<span style='min-width: 32px; text-align: center;' class="text-accent">=</span>
@@ -206,7 +206,7 @@
 						<div class="interface_button_box">
 							<button onclick="getSpecificServerConfig()" class="interface_button">Read this key</button>
 							<button onclick="writeKeyValueToServerConfig()" class="interface_button">Write to config</button>
-							<button onclick="softRestartServer()" class="interface_button accent-button">Reload Server</button>
+							<button onclick="softRestartServer()" class="interface_button accent-button">RELOAD SERVER</button>
 						</div>
 					</section>
 					<section class="group">
@@ -230,10 +230,10 @@
 							<label>Reload cmd: </label><input id="settings-db-reload" type="text" spellcheck="false" placeholder="[db]-[index], e.g.: es-answers">
 						</div>
 						<div class="group">
-							<span>Attention: This will overwrite the old database index!</span>
+							<span>Attention: This will <b>overwrite the old database</b> index!</span>
 						</div>
 						<div class="interface_button_box">
-							<button onclick="reloadDatabaseIndex()" class="interface_button dangerous-button">RELOAD</button>
+							<button onclick="reloadDatabaseIndex()" class="interface_button dangerous-button">RELOAD DB INDEX</button>
 							<!--<button onclick="getServicesUpload()" class="interface_button">SERVICES UPLOAD INTERFACE</button>-->
 						</div>
 					</section>
