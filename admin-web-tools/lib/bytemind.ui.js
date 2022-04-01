@@ -202,12 +202,13 @@ function bytemind_build_ui(){
 			box.innerHTML = "<div id='bytemind-popup-message-content'></div>" +
 							"<span id='bytemind-popup-message-close-small'>x</span>" +
 							"<button id='bytemind-popup-message-btn-one'>OK</button>" +
-							"<button id='bytemind-popup-message-btn-two'>ABORT</button>";
+							"<button id='bytemind-popup-message-btn-two'>ABORT</button>" +
+							"<button id='bytemind-popup-message-btn-three'>ACTION</button>";
 			parent.append(box);
 			$box = $(box);
 		}
 		//handle
-		var buttonOneName, buttonOneAction, buttonTwoName, buttonTwoAction;
+		var buttonOneName, buttonOneAction, buttonTwoName, buttonTwoAction, buttonThreeName, buttonThreeAction;
 		var primaryColor, secondaryColor;
 		var useSmallCloseButton = false;
 		var requireSelection;
@@ -217,6 +218,8 @@ function bytemind_build_ui(){
 			buttonOneAction = config.buttonOneAction;
 			buttonTwoName = config.buttonTwoName;
 			buttonTwoAction = config.buttonTwoAction;
+			buttonThreeName = config.buttonThreeName;
+			buttonThreeAction = config.buttonThreeAction;
 			primaryColor = config.primaryColor;
 			secondaryColor = config.secondaryColor;
 			requireSelection = config.requireSelection;
@@ -250,6 +253,15 @@ function bytemind_build_ui(){
 			});
 		}else{
 			$('#bytemind-popup-message-btn-two').off().hide();
+		}
+		if (buttonThreeName && buttonThreeAction){
+			var btn3 = $('#bytemind-popup-message-btn-three');
+			btn3.html(buttonThreeName).show();	
+			btn3.off().show().on('click', function(){	
+				buttonThreeAction(this);
+			});
+		}else{
+			$('#bytemind-popup-message-btn-three').off().hide();
 		}
 		$('#bytemind-popup-message-content').html(content);
 		UI.showBackgroundCoverLayer(parent);
