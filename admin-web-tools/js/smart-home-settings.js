@@ -237,8 +237,8 @@ function findSmartHomeInterface(interfaceId){
 function showSmartHomeAccessCredentialsPopup(){
 	var content = document.createElement("div");
 	content.innerHTML = sanitizeHtml("<h3>Smart Home HUB Authorization</h3>" +
-		"<p>Set or overwrite authorization type and data for external smart-home HUB.</p>" + 
-		"<p>NOTE: <b>Basic</b> authorization usually requires base64-encoded 'username:password'.</p>" +
+		"<p class='info-text'>Set or overwrite authorization type and data for external smart-home HUB.</p>" + 
+		"<p class='info-text'>NOTE: <b>Basic</b> authorization usually requires base64-encoded 'username:password'.</p>" +
 		"<div style='display: flex; flex-direction: column;'>" + 
 			"<label>Authorization Type:</label>" + 
 				"<select id='smarthome-auth-type'>" + buildSmartHomeInterfaceAuthTypeOptions() + "</select>" +
@@ -292,7 +292,7 @@ function showSmartHomeAccessCredentialsPopup(){
 function manageSmartHomeInternalInterfaces(){
 	var content = document.createElement("div");
 	content.innerHTML = sanitizeHtml("<h3>Smart Home HUB Interfaces</h3>" +
-		"<p>Here you can manage interfaces for the internal SEPIA HUB.</p>" +
+		"<p class='info-text'>Here you can manage interfaces for the internal SEPIA HUB.</p>" +
 		"<div style='display: flex; flex-direction: column;'>" + 
 			"<label>Select or create new:</label>" + 
 			"<div style='min-width: 196px; display: flex; justify-content: center; align-items: center;'>" + 
@@ -1098,19 +1098,19 @@ function buildSmartHomeInterfaceEditor(shInterface){
 	var interfaceEditor = document.createElement("div");
 	interfaceEditor.innerHTML = sanitizeHtml("<h3>Interface Editor</h3>" +
 		"<div style='display: flex; flex-direction: column;'>" + 
-			"<label>Unique Name</label>" + 
+			"<label>Unique Name:</label>" + 
 				"<input class='smarthome-interface-id' spellcheck='false' placeholder='openHAB-2, FHEM_X, ...' value='" + shInterface.id + "'>" + 
-			"<label>Interface Type</label>" + 
+			"<label>Interface Type:</label>" + 
 				"<select class='smarthome-interface-type'>" + buildSmartHomeInterfaceOptions(shInterface.type) + "</select>" + 
-			"<label>Host Address</label>" + 
+			"<label>Host Address:</label>" + 
 				"<input class='smarthome-interface-host' spellcheck='false' placeholder='http://localhost:8083/myHub' type='url' value='" + shInterface.host + "'>" +
 			//"<button class='smarthome-interface-reg-btn'>REGISTER</button>" +
-			"<label>Auth. Type (optional)</label>" +
+			"<label>Auth. Type (optional):</label>" +
 				//"<input class='smarthome-interface-authType' spellcheck='false' placeholder='Basic, Bearer or Plain (if supported)' value='" + shInterface.authType + "'>" + 
 				"<select class='smarthome-interface-authType'>" + buildSmartHomeInterfaceAuthTypeOptions(shInterface.authType) + "</select>" +
-			"<label>Auth. Data (optional)</label>" + 
+			"<label>Auth. Data (optional):</label>" + 
 				"<input class='smarthome-interface-authData' spellcheck='false' placeholder='dXNlcjp0ZXN0MTIzNDU=' value='" + shInterface.authData + "'>" + 
-			"<label>Description</label>" + 
+			"<label>Description:</label>" + 
 				"<input class='smarthome-interface-desc' placeholder='Any info text ...' value='" + (shInterface.info? shInterface.info.desc : "") + "'>" + 
 			"<div style='margin-top: 16px;'>" + 
 				"<button class='smarthome-interface-btn-save'>SAVE</button>" + 
