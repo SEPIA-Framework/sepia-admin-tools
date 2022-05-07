@@ -97,7 +97,7 @@
 					<!--<input type='file' form='code-ui-upload-form' name='upload_file' accept='.java,.sservice,.yaml'>-->
 				</div>
 			</div>
-			<form id='code-ui-upload-form' action='/upload-service' method='post' enctype='multipart/form-data' target='_blank' onsubmit="return codeUiBuildSubmitURL()"></form>
+			<form id='code-ui-upload-form' action='' method='post' enctype='multipart/form-data' target='_blank' onsubmit="return codeUiUploadCode()"></form>
 			<h3 class="hide-on-full-screen">Source Code Editor</h3>
 			<div class="group"><label>Name (public class ...):
 					<input id="code-ui-source-class-name" type='text' form='code-ui-upload-form' name='upload_code_class_name' spellcheck="false" onchange="codeUiUpdatedClassName()" required>

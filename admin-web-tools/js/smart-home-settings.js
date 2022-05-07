@@ -7,6 +7,12 @@ var smartHomeServerLoaded = "";
 var smartHomeCustomInterfaces;
 var smartHomeCustomInterfaceTypes;
 
+var smartHomeInterfaceAuthTypes = [
+	{value: "Basic", name: "Basic"},
+	{value: "Bearer", name: "Bearer/Token"},
+	{value: "Plain", name: "Plain/Custom"}
+];
+
 var SEPIA_TAG_NAME = "sepia-name";
 var SEPIA_TAG_TYPE = "sepia-type";
 var SEPIA_TAG_ROOM = "sepia-room";
@@ -58,13 +64,20 @@ function smartHomeSystemOnChange(smartHomeSys){
 	smartHomeSystem = smartHomeSys;
 	if (!isKnown || smartHomeSystemSupportsCustomCards(smartHomeSys)){
 		$('#smarthome-devices-create').show(300);
+		$('#smarthome-interfaces-manage').show(300);
 	}else{
 		$('#smarthome-devices-create').hide(300);
+		$('#smarthome-interfaces-manage').hide(300);
 	}
 	if (!isKnown || smartHomeSystemRequiresRegistration(smartHomeSys)){
 		$('#smarthome-hub-register').show(300);
 	}else{
 		$('#smarthome-hub-register').hide(300);
+	}
+	if (isKnown && smartHomeSystemCanSkipAuthData(smartHomeSys)){
+		$('#smarthome-hub-auth-data-pop-btn').hide(300);
+	}else{
+		if (smartHomeSystemLoaded) $('#smarthome-hub-auth-data-pop-btn').show(300);
 	}
 }
 
@@ -81,6 +94,9 @@ function hasSelectedKnownSmartHomeSystem(sys){
 }
 function smartHomeSystemRequiresRegistration(sys){
 	return (sys.toLowerCase() == "fhem" || sys.toLowerCase() == "custom" || sys.toLowerCase() == "test");
+}
+function smartHomeSystemCanSkipAuthData(sys){
+	return (sys.toLowerCase() == "internal");
 }
 function smartHomeSystemSupportsCustomCards(sys){
 	return (sys.toLowerCase() == "internal" || sys.toLowerCase() == "custom");
@@ -127,6 +143,9 @@ function getSmartHomeHubDataFromServer(successCallback, errorCallback){
 			smartHomeSystemLoaded = data.hubName;
 			smartHomeServerLoaded = data.hubHost;
 			$('#smarthome-server-indicator').removeClass('inactive').addClass('secure');
+			if (!smartHomeSystemCanSkipAuthData(smartHomeSystemLoaded)){
+				$('#smarthome-hub-auth-data-pop-btn').show(300);
+			}
 			//load interfaces too
 			loadSmartHomeCustomInterfaces(successCallback, errorCallback);
 		},
@@ -137,7 +156,7 @@ function getSmartHomeHubDataFromServer(successCallback, errorCallback){
 		}
 	);
 }
-function writeSmartHomeHubDataToServer(){
+function writeSmartHomeHubDataToServer(authType, authData){
 	var hubName = $("#smarthome_system_select").val();
 	if (hubName == "custom"){
 		hubName = $('#smarthome_system_custom_select').val();
@@ -158,6 +177,11 @@ function writeSmartHomeHubDataToServer(){
 		},{
 			smarthome_hub_host: host
 		}];
+		//add auth data?
+		if (authType != undefined && authData != undefined){
+			d.push({smarthome_hub_auth_type: authType});
+			d.push({smarthome_hub_auth_data: authData});
+		}
 		var body = {
 			"setConfig": JSON.stringify(d)
 		};
@@ -208,6 +232,91 @@ function findSmartHomeInterface(interfaceId){
 		}
 		return foundShInt;
 	}
+}
+
+function showSmartHomeAccessCredentialsPopup(){
+	var content = document.createElement("div");
+	content.innerHTML = sanitizeHtml("<h3>Smart Home HUB Authorization</h3>" +
+		"<p class='info-text'>Set or overwrite authorization type and data for external smart-home HUB.</p>" + 
+		"<p class='info-text'>NOTE: <b>Basic</b> authorization usually requires base64-encoded 'username:password'.</p>" +
+		"<div style='display: flex; flex-direction: column;'>" + 
+			"<label>Authorization Type:</label>" + 
+				"<select id='smarthome-auth-type'>" + buildSmartHomeInterfaceAuthTypeOptions() + "</select>" +
+			"<label>Data (token, password, etc.):</label>" + 
+				"<input id='smarthome-auth-data' spellcheck='false' placeholder='username:password or token ...'>" + 
+			"</div>" +
+		"</div>"
+	);
+	var $content = $(content);
+	var $authTypeEle = $content.find('#smarthome-auth-type');
+	var $authDataEle = $content.find('#smarthome-auth-data');
+	var authType = "";
+	var authData = "";
+	var preEncodeData = "";
+	var config = {
+		useSmallCloseButton: false,
+		buttonOneName: "Write",
+		buttonOneAction: function(){
+			//write all
+			writeSmartHomeHubDataToServer(authType, authData);
+			//ByteMind.ui.hidePopup();
+		},
+		buttonTwoName: "Abort",
+		buttonTwoAction: function(){},
+		buttonThreeName: "Encode/Decode",
+		buttonThreeAction: function(){
+			if (authData){
+				if (!preEncodeData){
+					preEncodeData = authData;
+					authData = btoa(authData);
+				}else{
+					authData = preEncodeData;
+					preEncodeData = "";
+				}
+				$authDataEle.val(authData);
+			}
+		}
+	}
+	ByteMind.ui.showPopup(content, config);
+	//type
+	$authTypeEle.on('change', function(){
+		authType = this.value;
+	});
+	//data
+	$authDataEle.on('change', function(){
+		authData = this.value;
+		preEncodeData = "";
+	});
+}
+
+function manageSmartHomeInternalInterfaces(){
+	var content = document.createElement("div");
+	content.innerHTML = sanitizeHtml("<h3>Smart Home HUB Interfaces</h3>" +
+		"<p class='info-text'>Here you can manage interfaces for the internal SEPIA HUB.</p>" +
+		"<div style='display: flex; flex-direction: column;'>" + 
+			"<label>Select or create new:</label>" + 
+			"<div style='min-width: 196px; display: flex; justify-content: center; align-items: center;'>" + 
+				"<select class='smarthome-item-interface' style='width: calc(100% - 42px); min-width: auto;'" + SEPIA_TAG_INTERFACE + "'>" +
+					buildSmartHomeCustomHubOptions() +
+				"</select>" + 
+				"<button style='width: 34px; min-width: auto; margin: 8px 2px;' class='smarthome-item-interface-edit'><i class='material-icons md-txt'>edit</i></button>" + 
+			"</div>" + 
+		"</div>"
+	);
+	var $content = $(content);
+	var config = {
+		useSmallCloseButton: true
+	}
+	ByteMind.ui.showPopup(content, config);
+	//interface edit
+	$content.find('.smarthome-item-interface-edit').on('click', function(){
+		var shInterface = $content.find('.smarthome-item-interface').val();
+		if (shInterface){
+			buildSmartHomeInterfaceEditor(findSmartHomeInterface(shInterface));
+		}else{
+			buildSmartHomeInterfaceEditor();
+		}
+	});
 }
 
 //item methods
@@ -989,21 +1098,23 @@ function buildSmartHomeInterfaceEditor(shInterface){
 	var interfaceEditor = document.createElement("div");
 	interfaceEditor.innerHTML = sanitizeHtml("<h3>Interface Editor</h3>" +
 		"<div style='display: flex; flex-direction: column;'>" + 
-			"<label>Unique Name</label>" + 
+			"<label>Unique Name:</label>" + 
 				"<input class='smarthome-interface-id' spellcheck='false' placeholder='openHAB-2, FHEM_X, ...' value='" + shInterface.id + "'>" + 
-			"<label>Interface Type</label>" + 
+			"<label>Interface Type:</label>" + 
 				"<select class='smarthome-interface-type'>" + buildSmartHomeInterfaceOptions(shInterface.type) + "</select>" + 
-			"<label>Host Address</label>" + 
+			"<label>Host Address:</label>" + 
 				"<input class='smarthome-interface-host' spellcheck='false' placeholder='http://localhost:8083/myHub' type='url' value='" + shInterface.host + "'>" +
 			//"<button class='smarthome-interface-reg-btn'>REGISTER</button>" +
-			"<label>Auth. Type (opt.)</label>" +
-				"<input class='smarthome-interface-authType' spellcheck='false' placeholder='Basic or Plain (if supported)' value='" + shInterface.authType + "'>" + 
-			"<label>Auth. Data (opt.)</label>" + 
+			"<label>Auth. Type (optional):</label>" +
+				//"<input class='smarthome-interface-authType' spellcheck='false' placeholder='Basic, Bearer or Plain (if supported)' value='" + shInterface.authType + "'>" + 
+				"<select class='smarthome-interface-authType'>" + buildSmartHomeInterfaceAuthTypeOptions(shInterface.authType) + "</select>" +
+			"<label>Auth. Data (optional):</label>" + 
 				"<input class='smarthome-interface-authData' spellcheck='false' placeholder='dXNlcjp0ZXN0MTIzNDU=' value='" + shInterface.authData + "'>" + 
-			"<label>Description</label>" + 
+			"<label>Description:</label>" + 
 				"<input class='smarthome-interface-desc' placeholder='Any info text ...' value='" + (shInterface.info? shInterface.info.desc : "") + "'>" + 
 			"<div style='margin-top: 16px;'>" + 
 				"<button class='smarthome-interface-btn-save'>SAVE</button>" + 
+				"<button class='smarthome-interface-btn-cancel'>CANCEL</button>" + 
 				"<button class='smarthome-interface-btn-delete' style='background: #f00;'>DELETE</button>" + 
 			"</div>" +
 		"</div>");
@@ -1023,6 +1134,10 @@ function buildSmartHomeInterfaceEditor(shInterface){
 			//fail
 			alert("Failed to create smart home HUB interface! Check console for more info.");
 		});
+	});
+	//cancel
+	$ie.find('.smarthome-interface-btn-cancel').on('click', function(){
+		ByteMind.ui.hidePopup();
 	});
 	//delete button
 	$ie.find('.smarthome-interface-btn-delete').on('click', function(){
@@ -1174,6 +1289,20 @@ function updateAllSmartHomeCustomHubSelectors(){
 		var currentVal = sel.value;
 		sel.innerHTML = sanitizeHtml(availableOptions);
 		sel.value = currentVal;
+	});
+}
+
+function buildSmartHomeInterfaceAuthTypeOptions(selected){
+	var options = {};
+	if (smartHomeInterfaceAuthTypes){
+		smartHomeInterfaceAuthTypes.forEach(function(at){
+			options[at.value] = at.name;
+		});
+	}
+	return buildOptionsSelector(options, selected, function(optionsObj){
+		return ("<option value='' disabled>- Choose -</option>" + optionsObj);
+	}, function(optionsObj){
+		return ("<option value='' disabled selected>- Choose -</option>" + optionsObj);
 	});
 }
 

@@ -141,6 +141,9 @@ select {
     background-color: #beff1a;
 	color: #181818;
 }
+#bytemind-popup-message .info-text {
+	font-size: 14px;
+}
 
 /*------ SHARED ------*/
 

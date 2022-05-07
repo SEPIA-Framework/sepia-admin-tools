@@ -12,7 +12,7 @@ function bytemind_build_account(){
 		broadcastNewAccountURL();
 	}
 	Account.tokenValidTime = 1000*60*60*24; 	//refresh required after e.g. 1 day
-
+	Account.autoCreateLoginBoxIfMissing = true;
 	Account.data; 		//cache for account data from 'Account.storeData'
 	var language = ByteMind.config.language;
 	
@@ -24,7 +24,10 @@ function bytemind_build_account(){
 			detail: { url: Account.apiURL }
 		}));
 	}
-	function broadcastLoginFail(){
+	function broadcastLoginFail(message){
+		window.dispatchEvent(new CustomEvent('bm-account-login-error', {
+			detail: { message: message }
+		}));
 	}	
 	//logout
 	function broadcastLogoutTry(){
@@ -34,7 +37,10 @@ function bytemind_build_account(){
 			detail: { url: Account.apiURL }
 		}));
 	}
-	function broadcastLogoutFail(){
+	function broadcastLogoutFail(message){
+		window.dispatchEvent(new CustomEvent('bm-account-logout-error', {
+			detail: { message: message }
+		}));
 	}
 	//new api URL
 	function broadcastNewAccountURL(){
@@ -114,7 +120,7 @@ function bytemind_build_account(){
 		var clsBtn = document.getElementById("bytemind-login-close");
 		if (clsBtn){
 			$(clsBtn).off().on("click", function () {
-				Account.toggleLoginBox();
+				Account.toggleLoginBox(false);
 				Account.afterLogin();
 			});
 		}
@@ -173,10 +179,8 @@ function bytemind_build_account(){
 			Account.data = account;
 			ByteMind.debug.log('Account: login restored');
 			
-			var lBox = document.getElementById("bytemind-login-box");
-			if (lBox && lBox.style.display != 'none'){
-				Account.toggleLoginBox();
-			}
+			//close login box
+			Account.toggleLoginBox(false);
 			
 			//TODO: ping API and test credentials
 			
@@ -186,14 +190,15 @@ function bytemind_build_account(){
 		}else if (isSameUrl && account.userId && account.userToken){
 			ByteMind.debug.log('Account: trying login auto-refresh with token');
 			var isClearText = false;
-			Account.login(account.userId, account.userToken, isClearText, onLoginSuccess, onLoginError, onLoginDebug);
+			Account.login(account.userId, account.userToken, isClearText, onLoginSuccess, function(err){
+				//open login box
+				Account.toggleLoginBox(true);
+				onLoginError(err);
+			}, onLoginDebug);
 		
 		//open login box
 		}else{
-			var lBox = document.getElementById("bytemind-login-box");
-			if (!lBox || lBox.style.display == 'none'){
-				Account.toggleLoginBox();
-			}
+			Account.toggleLoginBox(true);
 		}
 	}
 	function sendLoginFromBox(){
@@ -209,10 +214,8 @@ function bytemind_build_account(){
 		}
 	}
 	function onLoginSuccess(data){
-		var lBox = document.getElementById("bytemind-login-box");
-		if (lBox && lBox.style.display != 'none'){
-			Account.toggleLoginBox();
-		}
+		//close login box
+		Account.toggleLoginBox(false);
 		
 		//store data
 		var account = Account.storeData(data);
@@ -232,21 +235,20 @@ function bytemind_build_account(){
 		Account.afterLogin();
 	}
 	function onLoginError(errorText){
+		ByteMind.debug.err('Login: ' + errorText);
 		var lBoxError = document.getElementById("bytemind-login-status");
 		if(lBoxError){
 			lBoxError.innerHTML = errorText;
 			$(lBoxError).fadeOut(150).fadeIn(150);
-		}else{
-			ByteMind.debug.err('Login: ' + errorText);
 		}
-		broadcastLoginFail();
+		broadcastLoginFail(errorText);
 	}
 	function onLoginDebug(data){
 		//ByteMind.debug.log('Account debug: ' + JSON.stringify(data));
 	}
 	
 	//toggle login box on off
-	Account.toggleLoginBox = function(){
+	Account.toggleLoginBox = function(forceState){
 		var box = document.getElementById("bytemind-login-box");
 		if (box){
 			if (!box.dataset.bmIsActive){
@@ -254,21 +256,23 @@ function bytemind_build_account(){
 			}
 			$("#bytemind-login-status").html('');		//reset status text
 			if (box.style.display == 'none'){
+				if (forceState == false) return;
 				$(box).fadeIn(300);
 				if (ByteMind.ui){
 					ByteMind.ui.showBackgroundCoverLayer($(box).parent()[0]);
 				}
 			}else{
+				if (forceState == true) return;
 				//box.style.display = 'none';
 				$(box).fadeOut(300);
 				if (ByteMind.ui){
 					ByteMind.ui.hideBackgroundCoverLayer($(box).parent()[0]);
 				}
 			}
-		}else{
+		}else if (Account.autoCreateLoginBoxIfMissing){
 			var box = Account.createLoginBox();
 			Account.setupLoginBox(box);
-			Account.toggleLoginBox();
+			Account.toggleLoginBox(forceState);
 		}
 	}
 	
@@ -279,10 +283,7 @@ function bytemind_build_account(){
 		//remove data
 		ByteMind.data.del('account');
 		//open box
-		var lBox = document.getElementById("bytemind-login-box");
-		if (lBox && lBox.style.display == 'none'){
-			Account.toggleLoginBox();
-		}
+		Account.toggleLoginBox(true);
 		broadcastLogoutTry();
 		//do other user/client actions
 		Account.afterLogout();
@@ -291,9 +292,9 @@ function bytemind_build_account(){
 		ByteMind.debug.log('Account: logout successful');
 		broadcastLogoutSuccess();
 	}
-	function onLogoutFail(data){
+	function onLogoutFail(msg){
 		ByteMind.debug.err('Account: complete logout failed! But local data has been removed.');
-		broadcastLogoutFail();
+		broadcastLogoutFail(msg);
 	}
 	function onLogoutDebug(data){
 		//ByteMind.debug.log('Account debug: ' + JSON.stringify(data));

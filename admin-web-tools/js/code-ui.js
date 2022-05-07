@@ -79,9 +79,53 @@ function codeUiBuildSubmitURL(){
 	}else{
 		server = document.getElementById("server").value;
 	}
+	return (server + endpoint);
+}
+//Upload code
+function codeUiUploadCode(){
+	event.preventDefault();
+	
 	var uploadform = document.getElementById('code-ui-upload-form');
-	uploadform.action = (server + endpoint);
-	return true;
+	var uploadUrl = codeUiBuildSubmitURL();		//handle storage and checks as well
+	if (!uploadUrl){
+		return false;
+	}
+	uploadform.action = uploadUrl;		//NOTE: probably not required
+	var formData = new FormData(uploadform);
+	
+    var xhr = new XMLHttpRequest();
+	xhr.addEventListener("loadstart", function(event){
+		//onstart
+		showMessage("Uploading code ...");
+    });
+    xhr.addEventListener("load", function(event){
+		//success
+		console.log("Code upload - LOG - status:", event && event.target && event.target.statusText);
+		try {
+			var res = event.target.responseText || event.target.response;
+			if (res){
+				res = res.trim();
+				if (res.indexOf("{") == 0){
+					res = JSON.parse(res);
+					showMessage(JSON.stringify(res, null, 2));
+				}else{
+					showMessage(res);
+				}
+			}
+		}catch(err){
+			console.error("Code upload - ERROR", err);
+			showMessage("Failed to handle response. See console log.");
+		}
+    });
+    xhr.addEventListener("error", function(err){
+		//error
+		console.error("Code upload - ERROR", err);
+		//showMessage(JSON.stringify(err, null, 2));
+		showMessage("Failed to upload code, error: " + (err && err.type));
+    });
+    //Send data
+    xhr.open("POST", uploadUrl);
+    xhr.send(formData);
 }
 
 //Fill id/pwd/server form (from shared.js)
