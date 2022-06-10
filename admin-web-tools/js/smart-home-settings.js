@@ -996,6 +996,7 @@ function buildSmartHomeItem(shi){
 	});
 	//custom cmds JSON edit
 	$shiObj.find('.smarthome-item-set-cmds-edit').on('click', function(){
+		if (refreshDelayTimer) clearTimeout(refreshDelayTimer);
 		var editor = document.createElement("div");
 		var infoText = document.createElement("div");
 		infoText.style.textAlign = "left";
