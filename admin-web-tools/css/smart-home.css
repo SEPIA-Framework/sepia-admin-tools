@@ -40,6 +40,7 @@
 	max-width: 512px;
     margin: 8px;
     flex: 1 1 calc(50% - 16px);
+	transition: opacity .5s;
 }
 .smarthome-item.unsaved {
 	background: #17acc3;
@@ -52,6 +53,9 @@
 }
 .smarthome-item.hidden {
 	display: none;
+}
+.smarthome-item.invisible {
+	opacity: 0.0;
 }
 @media only screen and (max-width: 880px) {
 	.smarthome-item {
