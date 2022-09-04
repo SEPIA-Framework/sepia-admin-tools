@@ -167,8 +167,8 @@
 	border: 1px solid #fff;
 	border-radius: 0px;
 	min-height: 72px;
-	width:80%;
-	max-width: 340px;
+	width: 375px;
+    max-width: 80%;
 	padding: 16px 4px;
 	top: 47%;
 	left:50%;
@@ -227,6 +227,13 @@
     background: #222;
     color: #eee;
     border-color: #333;
+	outline-color: #333;
+	transition: outline-color .3s;
+}
+#bytemind-popup-message textarea.warn {
+	outline: 1px solid;
+    outline-offset: -2px;
+    outline-color: #f00;
 }
 
 /* --- SIDE MENU --- */

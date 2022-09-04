@@ -228,12 +228,19 @@ select {
     color: #000;
 }
 #bytemind-webapp-main .smarthome-item-title .smarthome-item-name.unconfirmed {
-    color: #444;
+    color: #f50000;
 }
 #bytemind-webapp-main .smarthome-item-title button {
     color: #000;
 	border: 0;
 }
+#bytemind-webapp-main .smarthome-item-title button.shi-control-save {
+	color: #f50000;
+}
+#bytemind-webapp-main .smarthome-item-title button.shi-control-delete {
+	color: #000;
+}
+
 #bytemind-webapp-main .smarthome-item-title .smarthome-item-id {
     color: #212121;
 }
