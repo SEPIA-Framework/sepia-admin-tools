@@ -289,6 +289,7 @@
 								<option value="" disabled selected>-Select-</option>
 								<option value="openhab">openHAB</option>
 								<option value="fhem">FHEM</option>
+								<option value="home_assistant">Home Assistant</option>
 								<option value="internal">Internal (SEPIA)</option>
 								<option value="test">Test HUB</option>
 								<option value="custom">Custom</option>
@@ -506,7 +507,7 @@
 				<div id="chat-server-settings" class="bytemind-view">
 					<section class="group">
 						<h3>Create channel</h3>
-						<p class="info-text">NOTE: When you create a channel as admin he will initially be a member of the channel. This might not be desired.</p>
+						<p class="info-text">NOTE: When you create a channel as admin they will be added as a member of that channel. This may not be desired.</p>
 						<div class="group2">
 							<form id="chat-server-settings-form" onsubmit="return createMessengerChannel()" action="">
 								<div class="group"><label>Channel name: </label><input id="msg-channel-name" type="text" required spellcheck="false"></div>

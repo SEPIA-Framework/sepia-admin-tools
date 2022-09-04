@@ -24,6 +24,7 @@ var SEPIA_TAG_SET_CMDS = "sepia-set-cmds";
 
 var SEPIA_TAG_INTERFACE = "sepia-interface";
 var SEPIA_TAG_INTERFACE_DEVICE_ID = "sepia-interface-device-id";
+var SEPIA_TAG_INTERFACE_CONFIG = "sepia-interface-config";
 var SEPIA_TAG_LINK = "sepia-link";
 
 //TODO: rename
@@ -449,6 +450,28 @@ function getSmartHomeDevices(successCallback, errorCallback){
 		}
 	);
 }
+function getSmartHomeDevicesForHub(interfaceId, typeFilter, successCallback, errorCallback){
+	if (!interfaceId && interfaceId !== 0){
+		showMessage('Error: missing HUB interface ID');
+		return;
+	}
+	var body = {
+		hubInterfaceId: interfaceId,
+		deviceTypeFilter: typeFilter || null
+	};
+	//request
+	genericPostRequest("assist", "integrations/smart-home/getDevices", body,
+		function (data){
+			console.log("getSmartHomeDevicesForHub", data);
+			if (successCallback) successCallback(data.devices);
+		},
+		function (err){
+			console.error("getSmartHomeDevicesForHub - not found or no access", err);
+			//alert("No items found or no access to smart home system.");
+			if (errorCallback) errorCallback(err);
+		}
+	);
+}
 
 function refreshSmartHomeDevices(changedDevices){
 	//TODO: improve and use 'changedDevices' array
@@ -562,6 +585,9 @@ function refreshSmartHomeItemProperty(shi, property, value){
 		case SEPIA_TAG_INTERFACE_DEVICE_ID:
 			shi.meta["interfaceDeviceId"] = value;
 			break;
+		case SEPIA_TAG_INTERFACE_CONFIG:
+			shi.meta["interfaceConfig"] = (value? JSON.parse(value) : {});
+			break;
 		case SEPIA_TAG_LINK:
 			shi.link = value;
 			break;
@@ -620,8 +646,13 @@ function deleteSmartHomeItem(shi, successCallback, errorCallback){
 	var hubHost = getSmartHomeServer();
 	var hubName = getSmartHomeSystem();
 	var deviceId = (shi && shi.meta)? shi.meta.id : "";
-	if (!hubHost || !hubName || !deviceId){
-		showMessage('Error: missing HUB server, host address OR device ID');
+	if (!hubHost || !hubName){
+		showMessage('Error: missing HUB server or host address');
+		if (errorCallback) errorCallback();
+		return;
+	}
+	if (!deviceId){
+		showMessage('Error: missing device ID. Is the device unsaved?');
 		if (errorCallback) errorCallback();
 		return;
 	}
@@ -799,7 +830,7 @@ function loadSmartHomeGetDevicesFilter(){
 	});
 }
 
-function addSmartHomeItemToDom(shiObj, isHidden, showHidden, doPrepend){
+function addSmartHomeItemToDom(shiObj, isHidden, showHidden, doPrepend, animateAppear){
 	if (doPrepend){
 		$('#smarthome-devices-list').prepend(shiObj);
 	}else{
@@ -810,6 +841,10 @@ function addSmartHomeItemToDom(shiObj, isHidden, showHidden, doPrepend){
 		if (showHidden){
 			$(shiObj).show();
 		}
+	}
+	if (animateAppear){
+		$(shiObj).addClass("invisible");
+		setTimeout(function(){ $(shiObj).removeClass("invisible"); }, 150);
 	}
 }
 function addSmartHomeItemListeners(itemObj){
@@ -854,6 +889,7 @@ function activateSmartHomeItem(itemObj, isOnline){
 }
 var newSmartHomeDeviceCounter = 1;
 function createSmartHomeItem(shi){
+	//NOTE: this is used for the "new device" button
 	if (!shi){
 		shi = {
 			interface: "basic",
@@ -876,7 +912,7 @@ function createSmartHomeItem(shi){
 	var obj = buildSmartHomeItem(shi);
 	if (obj){
 		$('#smarthome-devices-list').find('.smarthome-devices-list-info').remove();
-		addSmartHomeItemToDom(obj, false, false, true);
+		addSmartHomeItemToDom(obj, false, false, true, true);
 		addSmartHomeItemListeners(obj);
 		activateSmartHomeItem(obj, false);
 	}
@@ -889,6 +925,8 @@ function buildSmartHomeItem(shi){
 	var itemId = shi.meta.id;
 	var shiSetCmds = getItemMetaData(shi, "setCmds", false);
 		if (shiSetCmds && shiSetCmds == "{}") shiSetCmds = "";
+	var shiInterfaceConfig = getItemMetaData(shi, "interfaceConfig", false);
+		if (shiInterfaceConfig && shiInterfaceConfig == "{}") shiInterfaceConfig = "";
 	var namedBySepia = shi.meta["namedBySepia"];
 	var itemIsIncomplete = shi.meta["isIncomplete"];
 	var interfaceDeviceId = shi.meta["interfaceDeviceId"];
@@ -932,12 +970,19 @@ function buildSmartHomeItem(shi){
 				"</select>" + 
 				"<button style='width: 34px; min-width: auto; margin: 8px 2px;' class='smarthome-item-interface-edit'><i class='material-icons md-txt'>edit</i></button>" + 
 			"</div></div>" + 
-			"<div class='start-hidden internal-card-only' style='display:none;'><label>Int. Device Id:</label>" + 
-				"<input class='shi-property smarthome-item-interface-device-id' data-shi-property='" + SEPIA_TAG_INTERFACE_DEVICE_ID + "' spellcheck='false' " +
+			"<div class='start-hidden internal-card-only' style='display:none;'><label>Int. device ID:</label><div style='flex: 1 0 128px; min-width: 196px; display: flex; justify-content: center; align-items: center;'>" + 
+				"<input class='shi-property smarthome-item-interface-device-id' data-shi-property='" + SEPIA_TAG_INTERFACE_DEVICE_ID + "' style='width: calc(100% - 42px); min-width: auto;' spellcheck='false' " +
 					"value='" + (interfaceDeviceId || "") + "' " +
 					"placeholder='ID, URL, topic (w/o prefix), etc.' type='text' " + 
 					"title='A unique identifier of the device defined by the used interface, e.g. an ID, MQTT topic or part of an URL. NOTE: A prefix for MQTT topics is set automatically, e.g.: sepia/smart-devices/[your-topic].'>" +
-			"</div>" + 
+				"<button style='width: 34px; min-width: auto; margin: 8px 2px;' class='smarthome-item-interface-device-search'><i class='material-icons md-txt'>search</i></button>" + 
+			"</div></div>" +
+			"<div class='start-hidden' style='display:none;'><label>Int. dev. config:</label><div style='flex: 1 0 128px; min-width: 196px; display: flex; justify-content: center; align-items: center;'>" + 
+				"<input class='shi-property smarthome-item-interface-config' data-shi-property='" + SEPIA_TAG_INTERFACE_CONFIG + "' style='font-size: 11px; width: calc(100% - 42px); min-width: auto;' " +
+					"value='" + shiInterfaceConfig + "' spellcheck='false' " +
+					"placeholder='e.g.: {\"set\":\"[domain]/[service]\", \"off\":\"...\"}' type='text' title='Define interface configuration properties required to control the specific device.'>" +
+				"<button style='width: 34px; min-width: auto; margin: 8px 2px;' class='smarthome-item-interface-config-edit'><i class='material-icons md-txt'>edit</i></button>" + 
+			"</div></div>" +
 			"<div class='start-hidden' style='display:none;'><label>State type:</label>" + "<select class='shi-property smarthome-item-state-type' data-shi-property='" + SEPIA_TAG_STATE_TYPE + "'>" +
 					buildSmartHomeStateTypeOptions(shi.stateType) +
 			"</select></div>" + 
@@ -946,7 +991,7 @@ function buildSmartHomeItem(shi){
 					"value='" + shiSetCmds + "' spellcheck='false' " +
 					"placeholder='e.g.: {\"enable\":\"on\", \"disable\":\"off\", \"number\":\"pct <val>\"}' type='text' title='For experts: Set custom commands used when writing a new state.'>" +
 				"<button style='width: 34px; min-width: auto; margin: 8px 2px;' class='smarthome-item-set-cmds-edit'><i class='material-icons md-txt'>edit</i></button>" + 
-			"</div></div>" + 
+			"</div></div>" +
 		"</div>" +
 		"<div class='smarthome-extend-body-btn'><div class='smarthome-extend-body-icon'>&#8250;</div></div>"
 	);
@@ -968,7 +1013,7 @@ function buildSmartHomeItem(shi){
 	//extend button
 	$shiObj.find('.smarthome-extend-body-btn').on('click', function(){
 		$(this).find('.smarthome-extend-body-icon').toggleClass('up');
-		$shiObj.find('.start-hidden').toggle();
+		$shiObj.find('.start-hidden').toggle(300);
 	});
 	//title
 	$shiObj.find('.smarthome-item-name').on('click', function(){
@@ -986,6 +1031,7 @@ function buildSmartHomeItem(shi){
 			$shiObj.find('.smarthome-item-name')
 				.html(escapeHtml(newName))
 				.attr("data-shi-value", newName)
+				.removeClass("unconfirmed")
 				.trigger('change');
 		}
 	});
@@ -997,42 +1043,24 @@ function buildSmartHomeItem(shi){
 	//custom cmds JSON edit
 	$shiObj.find('.smarthome-item-set-cmds-edit').on('click', function(){
 		if (refreshDelayTimer) clearTimeout(refreshDelayTimer);
-		var editor = document.createElement("div");
-		var infoText = document.createElement("div");
-		infoText.style.textAlign = "left";
-		infoText.innerHTML = "Examples:<br><ul>"
+		var introText = "Trigger examples:<br><ul>"
 				+ "<li><u>enable</u>: \"<b>Switch on</b> the light\"</li>"
 				+ "<li><u>disable</u>: \"<b>Turn off</b> the light\"</li>"
 				+ "<li><u>number</u>: \"Set the light to <b>50%</b>\"</li>"
 			+ "</ul>"
-			+ "Use with type 'raw text':<br><ul>"
+			+ "With type 'raw text':<br><ul>"
 				+ "<li><u>raw</u>: \"Set the light to <b>value RED</b>\"</li>"
 			+ "</ul>";
-		var contentStr = $shiObj.find('.smarthome-item-set-cmds').val() || '{"enable": "on", "disable": 0, "number": "<val> XY", "raw": "<val>"}';
-		var textEdit = document.createElement("textarea");
-		//use tab in textarea
-		textEdit.onkeydown = function(event){
-			if(event.keyCode===9){var v=this.value,s=this.selectionStart,e=this.selectionEnd;this.value=v.substring(0, s)+'\t'+v.substring(e);this.selectionStart=this.selectionEnd=s+1;return false;};
-		}
-		textEdit.spellcheck = "false";
-		textEdit.style.minHeight = "110px";
-		textEdit.value = JSON.stringify(JSON.parse(contentStr), undefined, 4);
-		editor.appendChild(infoText);
-		editor.appendChild(textEdit);
-		var config = {
-			useSmallCloseButton: false,
-			buttonOneName: "Confirm",
-			buttonOneAction: function(){
-				var newVal = JSON.stringify(JSON.parse(textEdit.value));
+		ByteMind.ui.showJsonPopup(
+			introText,
+			JSON.parse($shiObj.find('.smarthome-item-set-cmds').val() || '{"enable": "on", "disable": 0, "number": "<val> XY", "raw": "<val>"}'),
+			function(newJson){
+				var newVal = JSON.stringify(newJson);
 				if (newVal){
 					$shiObj.find('.smarthome-item-set-cmds').val(newVal).trigger('change');
-					ByteMind.ui.hidePopup();
 				}
-			},
-			buttonTwoName: "Abort",
-			buttonTwoAction: function(){}
-		}
-		ByteMind.ui.showPopup(editor, config);
+			}
+		);
 	});
 	
 	//-- custom device --
@@ -1048,6 +1076,110 @@ function buildSmartHomeItem(shi){
 			buildSmartHomeInterfaceEditor();
 		}
 	});
+	//search interface device
+	$shiObj.find('.smarthome-item-interface-device-search').on('click', function(){
+		if (refreshDelayTimer) clearTimeout(refreshDelayTimer);
+		var $devIdInputField = $shiObj.find(".smarthome-item-interface-device-id");
+		var currentDevId = $devIdInputField.val();
+		var interfaceId = $shiObj.find(".smarthome-item-interface").get(0).value || "";
+		if (!interfaceId || interfaceId == "basic"){
+			ByteMind.ui.showPopup("Please select an interface first.");
+			return;
+		}
+		//TODO: check interface type type and warn if not supported
+		var typeFilter = "";	//NOTE: we could add a type filter
+		getSmartHomeDevicesForHub(interfaceId, typeFilter, function(devices){
+			if (devices && devices.length > 0){
+				//sort
+				devices.sort(function(a, b){
+					if (a.name > b.name) return 1;
+					else if (a.name < b.name) return -1;
+					else return 0;
+				});
+				var options = [];
+				var selector = document.createElement("select");
+				selector.style.cssText = "";
+				selector.innerHTML = "<option value='' disabled selected>- Choose -</option>";
+				devices.forEach(function(item){
+					//console.log("item", item);
+					var id = item.meta && item.meta.id;
+					if (id){
+						options.push({name: item.name, value: id, item: item});
+						var opt = document.createElement("option");
+						opt.textContent = item.name || item.id;
+						opt.value = JSON.stringify(item);
+						selector.appendChild(opt);
+						if (currentDevId == id) opt.selected = true;
+					}
+				});
+				var content = document.createElement("div");
+				var intro = document.createElement("div");
+				intro.innerHTML = sanitizeHtml("<p>HUB: " + interfaceId + "</p><p>Select a device from the list:</p>");
+				var info = document.createElement("div");
+				var noDeviceText = "<p style='text-align: center;'>- no device selected -</p>";
+				info.style.cssText = "text-align: left; font-size: 14px; padding: 0 16px; margin: 20px 8px 4px 8px; " 
+					+ "border: 1px solid; box-shadow: 0 0 4px 2px rgba(0, 0, 0, 0.15); overflow-x: auto;";
+				info.innerHTML = noDeviceText;
+				selector.onchange = function(){
+					if (!selector.value){
+						info.innerHTML = noDeviceText;
+					}else{
+						var item = JSON.parse(selector.value);
+						console.log("Item selected", item);		//DEBUG
+						info.innerHTML = sanitizeHtml(
+							"<p><b>ID:</b> " + item.meta.id + "</p>" +
+							"<p><b>Type:</b> " + item.type + "</p>" +
+							"<p><b>Room:</b> " + item.room + "</p>"
+						);
+					}
+				}
+				content.appendChild(intro);
+				content.appendChild(selector);
+				content.appendChild(info);
+				//refresh info text once
+				$(selector).trigger('change');
+				var config = {
+					buttonOneName: "Confirm",
+					buttonOneAction: function(){
+						if (!selector.value){
+							$devIdInputField.val("").trigger('change');
+						}else{
+							var item = JSON.parse(selector.value);
+							$devIdInputField.val(item.meta.id).trigger('change');
+						}
+						ByteMind.ui.hidePopup();
+					},
+					buttonTwoName: "Abort",
+					buttonTwoAction: function(){}
+				}
+				ByteMind.ui.showPopup(content, config);
+			}else{
+				ByteMind.ui.showPopup("No devices found.");
+			}
+		}, function(err){
+			ByteMind.ui.showPopup("Failed to load devices from HUB. Access or HUB error?");
+		});
+	});
+	//interface config for device
+	$shiObj.find('.smarthome-item-interface-config-edit').on('click', function(){
+		if (refreshDelayTimer) clearTimeout(refreshDelayTimer);
+		var introText = "JSON example (Home Assistant services):<br><ul>"
+				+ "<li>\"set\": \"light/turn_on\"</li>"
+				+ "<li>\"off\": \"light/turn_off\"</li>"
+				+ "<li>\"set_property\": \"attributes.brightness_pct\"</li>"
+			+ "</ul>";
+		ByteMind.ui.showJsonPopup(
+			introText, JSON.parse($shiObj.find('.smarthome-item-interface-config').val() || '{}'),
+			function(newJson){
+				var newVal = JSON.stringify(newJson);
+				if (newVal){
+					$shiObj.find('.smarthome-item-interface-config').val(newVal).trigger('change');
+				}
+			}
+		);
+	});
+	
+	//clean up card
 	if (origin && origin == "internal"){
 		$delBtn.show();
 		$saveBtn.show();
@@ -1062,12 +1194,18 @@ function buildSmartHomeItem(shi){
 	//delete button
 	$delBtn.on('click', function(){
 		shi = JSON.parse($shiObj.attr('data-shi'));	//update shi obj first!
-		deleteSmartHomeItem(shi, function(){
-			//success
-			$shiObj.remove();
-		}, function(err){
-			//fail
-		});
+		if ($shiObj.hasClass("unsaved")){
+			$shiObj.addClass("invisible");
+			setTimeout(function(){ $shiObj.remove(); }, 500);
+		}else{
+			deleteSmartHomeItem(shi, function(){
+				//success
+				$shiObj.addClass("invisible");
+				setTimeout(function(){ $shiObj.remove(); }, 500);
+			}, function(err){
+				//fail
+			});
+		}
 	});
 	$saveBtn.on('click', function(){
 		shi = JSON.parse($shiObj.attr('data-shi'));	//update shi obj first!
@@ -1181,6 +1319,7 @@ function getSmartHomeInterfaceFromEditor(interfaceEditor){
 	}
 	return iObj;
 }
+//TODO: read from server
 function buildSmartHomeTypeOptions(selected, addAllOption){
 	var options = {
 		"light" : "Light",
@@ -1211,6 +1350,7 @@ function buildSmartHomeTypeOptions(selected, addAllOption){
 		}
 	});
 }
+//TODO: read from server
 function buildSmartHomeRoomOptions(selected){
 	var options = {
 		"livingroom" : "Living room",
