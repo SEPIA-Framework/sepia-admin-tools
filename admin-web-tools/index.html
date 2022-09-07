@@ -306,7 +306,7 @@
 							<input id="smarthome-server" type="text" placeholder="e.g.: http://localhost:8080" spellcheck="false">
 						</div>
 						<div class="interface_button_box">
-							<button onclick="getSmartHomeHubDataFromServer()" class="interface_button">LOAD HUB INFO</button>
+							<button onclick="btnGetSmartHomeHubData()" class="interface_button">LOAD HUB INFO</button>
 							<button onclick="writeSmartHomeHubDataToServer()" class="interface_button">WRITE HUB INFO</button>
 							<button id="smarthome-hub-auth-data-pop-btn" onclick="showSmartHomeAccessCredentialsPopup()" class="interface_button" style="display: none;">SET AUTHORIZATION</button>
 						</div>
@@ -314,7 +314,7 @@
 					<section class="group">
 						<div class="interface_button_box">
 							<button id="smarthome-hub-register" onclick="registerSepiaInsideSmartHomeHub()" class="interface_button" style="display: none;">REGISTER SEPIA</button>
-							<button id="smarthome-devices-create" onclick="createSmartHomeItem()" class="interface_button" style="display: none;">CREATE DEVICE</button>
+							<button id="smarthome-devices-create" onclick="btnCreateSmartHomeItem()" class="interface_button" style="display: none;">CREATE DEVICE</button>
 							<button id="smarthome-interfaces-manage" onclick="manageSmartHomeInternalInterfaces()" class="interface_button" style="display: none;">MANAGE INTERFACES</button>
 							<div>
 								<label>GET DEVICES:</label><select id="smarthome-devices-filter" style="min-width: unset;"></select>

@@ -130,6 +130,10 @@ function getSmartHomeServer(successCallback, errorCallback){
 	}
 	return host;
 }
+function btnGetSmartHomeHubData(){
+	$('#smarthome-devices-filter').val("");		//reset filter
+	getSmartHomeHubDataFromServer();
+}
 function getSmartHomeHubDataFromServer(successCallback, errorCallback){
 	var body = {};
 	if (refreshDelayTimer) clearTimeout(refreshDelayTimer);
@@ -888,8 +892,17 @@ function activateSmartHomeItem(itemObj, isOnline){
 	}
 }
 var newSmartHomeDeviceCounter = 1;
+function btnCreateSmartHomeItem(){
+	if (!smartHomeSystemLoaded || !smartHomeServerLoaded){
+		ByteMind.ui.showPopup("NOTE: No HUB has been loaded yet. " 
+			+ "'Create Device' will only create a basic dummy card in this mode and some selectors might still be empty.<br>"
+			+ "Please consider loading the HUB first before creating a new device."
+		);
+	}
+	createSmartHomeItem();
+}
 function createSmartHomeItem(shi){
-	//NOTE: this is used for the "new device" button
+	//NOTE: this is currently only used for the "new device" button (I guess?)
 	if (!shi){
 		shi = {
 			interface: "basic",
@@ -1163,10 +1176,15 @@ function buildSmartHomeItem(shi){
 	//interface config for device
 	$shiObj.find('.smarthome-item-interface-config-edit').on('click', function(){
 		if (refreshDelayTimer) clearTimeout(refreshDelayTimer);
-		var introText = "JSON example (Home Assistant services):<br><ul>"
+		var introText = "JSON example (Home Assistant config):<br><ul>"
 				+ "<li>\"set\": \"light/turn_on\"</li>"
 				+ "<li>\"off\": \"light/turn_off\"</li>"
-				+ "<li>\"set_property\": \"attributes.brightness_pct\"</li>"
+				+ "<li>\"write\": \"&lt;attributes.brightness_pct&gt;\"</li>"
+				+ "<li>\"read\": \"&lt;attributes.brightness&gt*0.39;\"</li>"
+			+ "</ul>"
+			+ "JSON example (Home Assistant predefined):<br><ul>"
+				+ "<li>\"config\": \"light.brightness\"</li>"
+				+ "<li>\"config\": \"light.onoff\"</li>"
 			+ "</ul>";
 		ByteMind.ui.showJsonPopup(
 			introText, JSON.parse($shiObj.find('.smarthome-item-interface-config').val() || '{}'),
