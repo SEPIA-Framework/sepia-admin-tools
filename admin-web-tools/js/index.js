@@ -280,6 +280,7 @@ function setupAccountClass(){
 		account.userId = data.uid;
 		account.userToken = data.keyToken;
 		account.userTokenTS = data.keyToken_TS; 		//TODO: use this?
+		account.validUntil = data.validUntil;
 		account.language = data.user_lang_code;
 		account.name = (data.user_name)? data.user_name.nick : "Boss";
 		account.roles = data.user_roles;
@@ -349,6 +350,18 @@ function beforeLoginRestore(){
 			if (key){
 				$('#pwd').val(key);
 				updatePasswordSecurityWarning();
+			}
+			//observe 'validUntil' field
+			if (data && data.validUntil){
+				var timeLeft = data.validUntil - Date.now();
+				if (timeLeft >= 0){
+					console.log("Login still valid for: " + timeLeft);
+					setTimeout(function(){
+						console.error("Login expired, please reload app!");
+						$('#pwd').val("");
+						updatePasswordSecurityWarning();
+					}, timeLeft);
+				}
 			}
 		});
 	}
