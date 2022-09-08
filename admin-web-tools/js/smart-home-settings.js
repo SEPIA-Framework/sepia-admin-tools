@@ -28,8 +28,10 @@ var SEPIA_TAG_INTERFACE_CONFIG = "sepia-interface-config";
 var SEPIA_TAG_LINK = "sepia-link";
 
 //TODO: rename
-var showHidden = false;		//state of show/hide button, starts with false
-var refreshDelayTimer;		//timer that automatically refreshes stuff after change by user
+var smartHomeShowHidden = false;	//state of show/hide button, starts with false
+var smartHomeRefreshDelayTimer;		//timer that automatically refreshes stuff after change by user
+var smartHomeRefreshDelayInterval;	//interval for timer
+var newSmartHomeDeviceCounter = 1;
 
 function smartHomeOnStart(){
 	smartHomeSystem = appStorage.getItem('smartHomeSystem');
@@ -136,7 +138,7 @@ function btnGetSmartHomeHubData(){
 }
 function getSmartHomeHubDataFromServer(successCallback, errorCallback){
 	var body = {};
-	if (refreshDelayTimer) clearTimeout(refreshDelayTimer);
+	smartHomeClearRefreshTimer();
 	genericPostRequest("assist", "integrations/smart-home/getConfiguration", body,
 		function (data){
 			//showMessage(JSON.stringify(data, null, 2));
@@ -204,7 +206,7 @@ function writeSmartHomeHubDataToServer(authType, authData){
 }
 function loadSmartHomeCustomInterfaces(successCallback, errorCallback){
 	var body = {};
-	if (refreshDelayTimer) clearTimeout(refreshDelayTimer);
+	smartHomeClearRefreshTimer();
 	genericPostRequest("assist", "integrations/smart-home/getInterfaces", body,
 		function (data){
 			//showMessage(JSON.stringify(data, null, 2));
@@ -326,7 +328,7 @@ function manageSmartHomeInternalInterfaces(){
 
 //item methods
 
-function getItemMetaData(item, fieldName, asObject){
+function getSmartHomeItemMetaData(item, fieldName, asObject){
 	var val = item.meta[fieldName];
 	if (val && typeof val == "object"){
 		if (asObject){
@@ -364,15 +366,15 @@ function getSmartHomeDevices(successCallback, errorCallback){
 		showMessage('Error: missing HUB server or host address');
 		return;
 	}else{
-		if (refreshDelayTimer) clearTimeout(refreshDelayTimer);
+		smartHomeClearRefreshTimer();
 	}
 	var body = {
 		hubName: hubName,
 		hubHost: hubHost,
 		deviceTypeFilter: $('#smarthome-devices-filter').val()
 	};
-	//keep unsaved offline cards
-	var unsavedCards = $('#smarthome-devices-list').find(".smarthome-item.offline").detach();
+	//keep offline cards (not stored in server yet)
+	var offlineOnlyCards = $('#smarthome-devices-list').find(".smarthome-item.offline").detach();
 	//request
 	genericPostRequest("assist", "integrations/smart-home/getDevices", body,
 		function (data){
@@ -385,13 +387,19 @@ function getSmartHomeDevices(successCallback, errorCallback){
 			var devices = data.devices;
 			var hiddenDevices = 0;
 			if (devices && devices.length > 0){
+				//sort
+				devices.sort(function(a, b){	//TODO: can we sort them before? (server-side?)
+					if (a.name > b.name) return 1;
+					else if (a.name < b.name) return -1;
+					else return 0;
+				});
 				//build DOM objects
 				$('#smarthome-devices-list').html("");
-				devices.forEach(function(item){					//TODO: can we sort them before?
+				devices.forEach(function(item){
 					var domObj = buildSmartHomeItem(item);
 					if (domObj){
 						var isHidden = item.type == "hidden";
-						addSmartHomeItemToDom(domObj, isHidden, showHidden);
+						addSmartHomeItemToDom(domObj, isHidden, smartHomeShowHidden);
 						if (isHidden){
 							hiddenDevices++;
 						}
@@ -407,7 +415,7 @@ function getSmartHomeDevices(successCallback, errorCallback){
 					var showHiddenBtn = document.createElement("button");
 					showHiddenBtn.id = "smarthome-devices-list-show-hidden-btn";
 					var updateBtnText = function(){
-						if (!showHidden){
+						if (!smartHomeShowHidden){
 							showHiddenBtn.innerHTML = "Show " + hiddenDevices + " hidden devices";
 						}else{
 							showHiddenBtn.innerHTML = "Hide " + hiddenDevices + " hidden devices";
@@ -417,13 +425,13 @@ function getSmartHomeDevices(successCallback, errorCallback){
 					$('#smarthome-devices-list').append(showHiddenBtn);
 					$(showHiddenBtn).on('click', function(){
 						$('.smarthome-item.hidden').toggle();
-						showHidden = !showHidden;
+						smartHomeShowHidden = !smartHomeShowHidden;
 						updateBtnText();
 					});
 				}
-				//re-attach unsaved cards
-				if (unsavedCards && unsavedCards.length > 0){
-					unsavedCards.prependTo('#smarthome-devices-list');
+				//re-attach unfinished cards
+				if (offlineOnlyCards && offlineOnlyCards.length > 0){
+					offlineOnlyCards.prependTo('#smarthome-devices-list');
 				}
 			}else{
 				//alert("No devices found.");
@@ -431,9 +439,9 @@ function getSmartHomeDevices(successCallback, errorCallback){
 					"<h3 class='smarthome-devices-list-info' style='color: #beff1a; width: 100%; margin-bottom: 32px;'>" + 
 					"No devices found.</h3>"
 				);
-				//re-attach unsaved cards
-				if (unsavedCards && unsavedCards.length > 0){
-					unsavedCards.appendTo('#smarthome-devices-list');
+				//re-attach unfinished cards
+				if (offlineOnlyCards && offlineOnlyCards.length > 0){
+					offlineOnlyCards.appendTo('#smarthome-devices-list');
 				}
 			}
 			if (successCallback) successCallback(devices);
@@ -446,9 +454,9 @@ function getSmartHomeDevices(successCallback, errorCallback){
 				"<h3 class='smarthome-devices-list-info' style='color: #f00; width: 100%; margin-bottom: 32px;'>" + 
 				"No items found or no access to smart home system.</h3>"
 			);
-			//re-attach unsaved cards
-			if (unsavedCards && unsavedCards.length > 0){
-				unsavedCards.appendTo('#smarthome-devices-list');
+			//re-attach unfinished cards
+			if (offlineOnlyCards && offlineOnlyCards.length > 0){
+				offlineOnlyCards.appendTo('#smarthome-devices-list');
 			}
 			if (errorCallback) errorCallback(data);
 		}
@@ -480,14 +488,28 @@ function getSmartHomeDevicesForHub(interfaceId, typeFilter, successCallback, err
 function refreshSmartHomeDevices(changedDevices){
 	//TODO: improve and use 'changedDevices' array
 	//		maybe let user select if refresh is: onEvent, onTime, manually ?
-	if (refreshDelayTimer) clearTimeout(refreshDelayTimer);
+	smartHomeClearRefreshTimer();
 	if (changedDevices){
-		refreshDelayTimer = setTimeout(function(){
+		var delayTime = 3000;
+		var currentTime = delayTime;
+		var $interval = $('#smarthome-refresh-timer');
+		$interval.show(300).text(Math.round(currentTime/1000));
+		smartHomeRefreshDelayTimer = setTimeout(function(){
+			smartHomeClearRefreshTimer();
 			getSmartHomeDevices();
-		}, 3000);
+		}, delayTime);
+		smartHomeRefreshDelayInterval = setInterval(function(){
+			currentTime = currentTime - 1000;
+			$interval.text(Math.round(currentTime/1000));
+		}, 1000);
 	}else{
 		getSmartHomeDevices();
 	}
+}
+function smartHomeClearRefreshTimer(){
+	clearTimeout(smartHomeRefreshDelayTimer);
+	clearInterval(smartHomeRefreshDelayInterval);
+	$('#smarthome-refresh-timer').hide(150);
 }
 
 function registerSepiaInsideSmartHomeHub(){
@@ -498,7 +520,7 @@ function registerSepiaInsideSmartHomeHub(){
 		showMessage('Error: missing HUB server or host address');
 		return;
 	}else{
-		if (refreshDelayTimer) clearTimeout(refreshDelayTimer);
+		smartHomeClearRefreshTimer();
 	}
 	var body = {
 		hubName: hubName,
@@ -525,7 +547,7 @@ function putSmartHomeItemProperty(shi, property, value, successCallback, errorCa
 		showMessage('Error: missing HUB server or host address');
 		return;
 	}else{
-		if (refreshDelayTimer) clearTimeout(refreshDelayTimer);
+		smartHomeClearRefreshTimer();
 	}
 	var attribs = {};
 	attribs[property] = value;
@@ -656,7 +678,7 @@ function deleteSmartHomeItem(shi, successCallback, errorCallback){
 		return;
 	}
 	if (!deviceId){
-		showMessage('Error: missing device ID. Is the device unsaved?');
+		showMessage('Error: missing device ID. Was the device stored already?');
 		if (errorCallback) errorCallback();
 		return;
 	}
@@ -747,7 +769,7 @@ function setSmartHomeItemState(shi){
 	var oldVal = shi.state.toLowerCase();
 	var deviceType = shi.type;
 	var stateType = "text_binary";	//shi.stateType
-	var shiSetCmds = getItemMetaData(shi, "setCmds", true) || {};
+	var shiSetCmds = getSmartHomeItemMetaData(shi, "setCmds", true) || {};
 	switch (oldVal) {
 		case "off":
 			newVal = ((shiSetCmds.enable != undefined)? shiSetCmds.enable : "on");
@@ -799,7 +821,7 @@ function setSmartHomeItemState(shi){
 		ByteMind.ui.showPopup("Cannot switch device state due to unknown old state: " + oldVal);
 		return;
 	}else{
-		if (refreshDelayTimer) clearTimeout(refreshDelayTimer);
+		smartHomeClearRefreshTimer();
 	}
 	var state = {
 		value: newVal,
@@ -856,6 +878,7 @@ function addSmartHomeItemListeners(itemObj){
 	$(itemObj).find('.shi-property').on('change', function(){
 		var that = this;
 		var $item = $(this).closest('.smarthome-item');
+		$item.addClass('unsaved');
 		var property = $(this).attr('data-shi-property');
 		//console.log(property);
 		var newVal = $(this).attr('data-shi-value') || $(this).val();
@@ -874,12 +897,13 @@ function addSmartHomeItemListeners(itemObj){
 				putSmartHomeItemProperty(shi, property, newVal, function(updatedShi){
 					shi = updatedShi;
 					$item.attr('data-shi', JSON.stringify(shi));
+					$item.removeClass('unsaved');
 				});
 			}
 		}
 	}).on('click', function(){
 		if (itemObj.isOnline){
-			if (refreshDelayTimer) clearTimeout(refreshDelayTimer);
+			smartHomeClearRefreshTimer();
 		}
 	});
 }
@@ -891,7 +915,7 @@ function activateSmartHomeItem(itemObj, isOnline){
 		$(itemObj).addClass('offline');
 	}
 }
-var newSmartHomeDeviceCounter = 1;
+
 function btnCreateSmartHomeItem(){
 	if (!smartHomeSystemLoaded || !smartHomeServerLoaded){
 		ByteMind.ui.showPopup("NOTE: No HUB has been loaded yet. " 
@@ -902,8 +926,10 @@ function btnCreateSmartHomeItem(){
 	createSmartHomeItem();
 }
 function createSmartHomeItem(shi){
-	//NOTE: this is currently only used for the "new device" button (I guess?)
+	//NOTE: this is currently only used for the "new device" button (I guess?) but we set "isNew" anyway
+	var isOnline = true;	//TODO: just assume in case we use this with pre-loaded 'shi' data at some point
 	if (!shi){
+		isOnline = false;	//a new device card
 		shi = {
 			interface: "basic",
 			name: ("New Item " + newSmartHomeDeviceCounter++),
@@ -912,6 +938,7 @@ function createSmartHomeItem(shi){
 				origin: "internal",
 				namedBySepia: false,
 				//typeGuessed: true,
+				isIncomplete: true,
 				id: ""
 			},
 			stateType: "number_percent",
@@ -927,7 +954,7 @@ function createSmartHomeItem(shi){
 		$('#smarthome-devices-list').find('.smarthome-devices-list-info').remove();
 		addSmartHomeItemToDom(obj, false, false, true, true);
 		addSmartHomeItemListeners(obj);
-		activateSmartHomeItem(obj, false);
+		activateSmartHomeItem(obj, isOnline);	//will set "offline" state
 	}
 }
 function buildSmartHomeItem(shi){
@@ -936,9 +963,9 @@ function buildSmartHomeItem(shi){
 	shiObj.setAttribute("data-shi", JSON.stringify(shi));
 	var itemName = shi.name;
 	var itemId = shi.meta.id;
-	var shiSetCmds = getItemMetaData(shi, "setCmds", false);
+	var shiSetCmds = getSmartHomeItemMetaData(shi, "setCmds", false);
 		if (shiSetCmds && shiSetCmds == "{}") shiSetCmds = "";
-	var shiInterfaceConfig = getItemMetaData(shi, "interfaceConfig", false);
+	var shiInterfaceConfig = getSmartHomeItemMetaData(shi, "interfaceConfig", false);
 		if (shiInterfaceConfig && shiInterfaceConfig == "{}") shiInterfaceConfig = "";
 	var namedBySepia = shi.meta["namedBySepia"];
 	var itemIsIncomplete = shi.meta["isIncomplete"];
@@ -1034,7 +1061,7 @@ function buildSmartHomeItem(shi){
 	});
 	$shiObj.find('.shi-control-name').on('click', function(){
 		shi = JSON.parse($shiObj.attr('data-shi'));				//update shi obj first!
-		if (refreshDelayTimer) clearTimeout(refreshDelayTimer);
+		smartHomeClearRefreshTimer();
 		var newName = prompt("New name:", shi.name);
 		if (newName){
 			//update name flag first
@@ -1055,7 +1082,7 @@ function buildSmartHomeItem(shi){
 	});
 	//custom cmds JSON edit
 	$shiObj.find('.smarthome-item-set-cmds-edit').on('click', function(){
-		if (refreshDelayTimer) clearTimeout(refreshDelayTimer);
+		smartHomeClearRefreshTimer();
 		var introText = "Trigger examples:<br><ul>"
 				+ "<li><u>enable</u>: \"<b>Switch on</b> the light\"</li>"
 				+ "<li><u>disable</u>: \"<b>Turn off</b> the light\"</li>"
@@ -1091,7 +1118,7 @@ function buildSmartHomeItem(shi){
 	});
 	//search interface device
 	$shiObj.find('.smarthome-item-interface-device-search').on('click', function(){
-		if (refreshDelayTimer) clearTimeout(refreshDelayTimer);
+		smartHomeClearRefreshTimer();
 		var $devIdInputField = $shiObj.find(".smarthome-item-interface-device-id");
 		var currentDevId = $devIdInputField.val();
 		var interfaceId = $shiObj.find(".smarthome-item-interface").get(0).value || "";
@@ -1142,7 +1169,8 @@ function buildSmartHomeItem(shi){
 						info.innerHTML = sanitizeHtml(
 							"<p><b>ID:</b> " + item.meta.id + "</p>" +
 							"<p><b>Type:</b> " + item.type + "</p>" +
-							"<p><b>Room:</b> " + item.room + "</p>"
+							"<p><b>Room:</b> " + item.room + "</p>" +
+							"<p><b>State:</b> " + item.state + "</p>"
 						);
 					}
 				}
@@ -1175,14 +1203,15 @@ function buildSmartHomeItem(shi){
 	});
 	//interface config for device
 	$shiObj.find('.smarthome-item-interface-config-edit').on('click', function(){
-		if (refreshDelayTimer) clearTimeout(refreshDelayTimer);
-		var introText = "JSON example (Home Assistant config):<br><ul>"
+		smartHomeClearRefreshTimer();
+		var introText = "JSON example (Home Assistant config):<br><ul style='font-size: 15px;'>"
 				+ "<li>\"set\": \"light/turn_on\"</li>"
 				+ "<li>\"off\": \"light/turn_off\"</li>"
 				+ "<li>\"write\": \"&lt;attributes.brightness_pct&gt;\"</li>"
-				+ "<li>\"read\": \"&lt;attributes.brightness&gt*0.39;\"</li>"
+				+ "<li>\"read\": \"round(&lt;attributes.brightness&gt;*0.39)\"</li>"
+				+ "<li>\"default\": {\"state\": \"off\", \"value\": \"0\"}</li>"
 			+ "</ul>"
-			+ "JSON example (Home Assistant predefined):<br><ul>"
+			+ "JSON example (Home Assistant predefined):<br><ul style='font-size: 15px;'>"
 				+ "<li>\"config\": \"light.brightness\"</li>"
 				+ "<li>\"config\": \"light.onoff\"</li>"
 			+ "</ul>";
@@ -1201,18 +1230,19 @@ function buildSmartHomeItem(shi){
 	if (origin && origin == "internal"){
 		$delBtn.show();
 		$saveBtn.show();
-		$saveBtn.closest(".smarthome-item").addClass('unsaved');
 	}else{
 		$shiObj.find('.internal-card-only').remove();
 	}
-	if (itemId && !itemIsIncomplete){
-		$saveBtn.closest(".smarthome-item").removeClass('unsaved');
-		$saveBtn.remove();
+	if (itemIsIncomplete){
+		$saveBtn.closest(".smarthome-item").addClass('incomplete');
+	}else if (itemId){
+		//stored and complete (for now)
+		$saveBtn.remove();	//we don't need it anymore, everything else is handled via single properties
 	}
 	//delete button
 	$delBtn.on('click', function(){
 		shi = JSON.parse($shiObj.attr('data-shi'));	//update shi obj first!
-		if ($shiObj.hasClass("unsaved")){
+		if ($shiObj.hasClass("offline")){
 			$shiObj.addClass("invisible");
 			setTimeout(function(){ $shiObj.remove(); }, 500);
 		}else{
@@ -1229,9 +1259,9 @@ function buildSmartHomeItem(shi){
 		shi = JSON.parse($shiObj.attr('data-shi'));	//update shi obj first!
 		storeSmartHomeItem(shi, function(){
 			//success
-			$shiObj.removeClass('unsaved');
 			$saveBtn.remove();
-			activateSmartHomeItem(shiObj, true);
+			activateSmartHomeItem(shiObj, true);	//will set/remove "offline" class
+			$shiObj.removeClass('unsaved');	//complete store removes this class as well
 		}, function(err){
 			//fail
 		});
