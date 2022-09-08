@@ -296,7 +296,7 @@ function bytemind_build_ui(){
 			if(event.keyCode===9){var v=this.value,s=this.selectionStart,e=this.selectionEnd;this.value=v.substring(0, s)+'\t'+v.substring(e);this.selectionStart=this.selectionEnd=s+1;return false;};
 		}
 		textEdit.spellcheck = false;
-		textEdit.style.minHeight = "110px";
+		textEdit.style.cssText= "min-height: 90px; height: 175px; white-space: pre; resize: vertical;";
 		textEdit.value = JSON.stringify(jsonData, undefined, 4);
 		editor.appendChild(infoText);
 		editor.appendChild(textEdit);
