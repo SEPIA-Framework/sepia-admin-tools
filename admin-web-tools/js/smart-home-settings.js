@@ -1083,7 +1083,8 @@ function buildSmartHomeItem(shi){
 	//custom cmds JSON edit
 	$shiObj.find('.smarthome-item-set-cmds-edit').on('click', function(){
 		smartHomeClearRefreshTimer();
-		var introText = "Trigger examples:<br><ul>"
+		var introText = "<p>Here you can customize the 'state' sent to your device after certain actions.</p>"
+			+ "Trigger-text examples:<br><ul>"
 				+ "<li><u>enable</u>: \"<b>Switch on</b> the light\"</li>"
 				+ "<li><u>disable</u>: \"<b>Turn off</b> the light\"</li>"
 				+ "<li><u>number</u>: \"Set the light to <b>50%</b>\"</li>"
@@ -1093,12 +1094,15 @@ function buildSmartHomeItem(shi){
 			+ "</ul>";
 		ByteMind.ui.showJsonPopup(
 			introText,
-			JSON.parse($shiObj.find('.smarthome-item-set-cmds').val() || '{"enable": "on", "disable": 0, "number": "<val> XY", "raw": "<val>"}'),
+			JSON.parse($shiObj.find('.smarthome-item-set-cmds').val()
+				|| '{"enable": "on", "disable": 0, "number": "<val> XY", "raw": "<val>"}'),
 			function(newJson){
 				var newVal = JSON.stringify(newJson);
 				if (newVal){
 					$shiObj.find('.smarthome-item-set-cmds').val(newVal).trigger('change');
 				}
+			},{
+				jsonPlaceholder: '{\n  "enable": "on",\n  "disable": 0,\n  "number": "<val> XY",\n  "raw": "<val>"\n}'
 			}
 		);
 	});
@@ -1204,14 +1208,15 @@ function buildSmartHomeItem(shi){
 	//interface config for device
 	$shiObj.find('.smarthome-item-interface-config-edit').on('click', function(){
 		smartHomeClearRefreshTimer();
-		var introText = "JSON example (Home Assistant config):<br><ul style='font-size: 15px;'>"
+		var introText = "<p>Here you can customize the device interface configuration if your HUB requires more complex information.</p>"
+			+ "Config JSON example (Home Assistant):<br><ul style='font-size: 15px;'>"
 				+ "<li>\"set\": \"light/turn_on\"</li>"
 				+ "<li>\"off\": \"light/turn_off\"</li>"
 				+ "<li>\"write\": \"&lt;attributes.brightness_pct&gt;\"</li>"
 				+ "<li>\"read\": \"round(&lt;attributes.brightness&gt;*0.39)\"</li>"
 				+ "<li>\"default\": {\"state\": \"off\", \"value\": \"0\"}</li>"
 			+ "</ul>"
-			+ "JSON example (Home Assistant predefined):<br><ul style='font-size: 15px;'>"
+			+ "Predefined JSON example (Home Assistant):<br><ul style='font-size: 15px;'>"
 				+ "<li>\"config\": \"light.brightness\"</li>"
 				+ "<li>\"config\": \"light.onoff\"</li>"
 			+ "</ul>";
@@ -1222,6 +1227,8 @@ function buildSmartHomeItem(shi){
 				if (newVal){
 					$shiObj.find('.smarthome-item-interface-config').val(newVal).trigger('change');
 				}
+			}, {
+				jsonPlaceholder: '{\n  "config": "..."\n}\n\nOR:\n\n{\n  "read": "...",\n  "write": "...",\n  ...\n}'
 			}
 		);
 	});
