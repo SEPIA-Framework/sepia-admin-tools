@@ -175,10 +175,14 @@ function bytemind_build_account(){
 		//try restore from localStorage to avoid login popup
 		var account = ByteMind.data.get('account');
 		var isSameUrl = (account && account.url)? (account.url == Account.apiURL) : false;
+		if (!account || !isSameUrl){
+			Account.toggleLoginBox(true);
+			return;
+		}
 		var now = Date.now();
 		var isStillValid = account.validUntil && ((account.validUntil - now) > 0);
 		var shouldRefresh = ((now - account.lastRefresh) >= Account.tokenValidTime);
-		if (isSameUrl && account.lastRefresh && isStillValid && !shouldRefresh){
+		if (account.lastRefresh && isStillValid && !shouldRefresh){
 			language = account.language;	
 			if (language) ByteMind.config.broadcastLanguage(language);
 			Account.data = account;
@@ -192,7 +196,7 @@ function bytemind_build_account(){
 			Account.afterLogin();
 
 		//try refresh
-		}else if (isSameUrl && account.userId && account.userToken && isStillValid){
+		}else if (account.userId && account.userToken && isStillValid){
 			ByteMind.debug.log('Account: trying login auto-refresh with token');
 			var isClearText = false;
 			Account.login(account.userId, account.userToken, isClearText, onLoginSuccess, function(err){
