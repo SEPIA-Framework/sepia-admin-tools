@@ -280,7 +280,8 @@ function bytemind_build_ui(){
 		UI.hideBackgroundCoverLayer(parent);
 	}
 	//special pop-ups:
-	UI.showJsonPopup = function(introHtmlStringOrEle, jsonData, confirmCallback){
+	UI.showJsonPopup = function(introHtmlStringOrEle, jsonData, confirmCallback, options){
+		if (!options) options = {};
 		var editor = document.createElement("div");
 		var infoText;
 		if (typeof introHtmlStringOrEle == "string"){
@@ -298,11 +299,12 @@ function bytemind_build_ui(){
 		textEdit.spellcheck = false;
 		textEdit.style.cssText= "min-height: 90px; height: 175px; white-space: pre; resize: vertical;";
 		textEdit.value = JSON.stringify(jsonData, undefined, 4);
+		if (options.jsonPlaceholder) textEdit.placeholder = options.jsonPlaceholder;
 		editor.appendChild(infoText);
 		editor.appendChild(textEdit);
 		
 		var config = {
-			useSmallCloseButton: false,
+			useSmallCloseButton: (options.useSmallCloseButton != undefined)? options.useSmallCloseButton : false,
 			buttonOneName: (confirmCallback? "Confirm" : "Close"),
 			buttonOneAction: function(){
 				if (confirmCallback){

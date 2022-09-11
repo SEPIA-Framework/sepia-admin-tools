@@ -118,6 +118,9 @@ select {
     text-align: center;
 	justify-content: center;
 }
+#bytemind-account-btn.expired {
+	color: #f00;
+}
 @media screen and (max-height: 600px) {
 	.bytemind-nav-bar-button {
 		margin: 10px 16px !important;

@@ -356,11 +356,15 @@ function beforeLoginRestore(){
 				var timeLeft = data.validUntil - Date.now();
 				if (timeLeft >= 0){
 					console.log("Login still valid for: " + timeLeft);
+					$('#bytemind-account-btn').removeClass("expired");
 					setTimeout(function(){
 						console.error("Login expired, please reload app!");
 						$('#pwd').val("");
+						$('#bytemind-account-btn').addClass("expired");
 						updatePasswordSecurityWarning();
 					}, timeLeft);
+				}else{
+					$('#bytemind-account-btn').addClass("expired");
 				}
 			}
 		});

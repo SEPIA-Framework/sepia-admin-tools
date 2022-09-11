@@ -109,7 +109,7 @@
 				<div id="login-info-box-client"></div>-->
 				<div><label>UserID: </label><input id="id" type="text" placeholder="ID or email" autocomplete="username" spellcheck="false"></div>
 				<div style="position: relative;">
-					<label>Password: </label><input id="pwd" type="password" placeholder="Password or token" onchange="updatePasswordSecurityWarning()">
+					<label>Password: </label><input id="pwd" type="password" placeholder="Password or token" onchange="onLoginInputChange();" onkeyup="onLoginInputKeyUp(event);">
 					<span id="pwd-security-indicator" class="input-inline-indicator inactive" title="Red: using actual password (unsafe), Green: using login-token (safe)"></span>
 				</div>
 				<div><label>Client ID: </label><input id="custom-client" type="url" placeholder="web_app_tools" spellcheck="false"></div>
