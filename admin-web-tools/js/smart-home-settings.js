@@ -490,7 +490,7 @@ function refreshSmartHomeDevices(changedDevices){
 	//		maybe let user select if refresh is: onEvent, onTime, manually ?
 	smartHomeClearRefreshTimer();
 	if (changedDevices){
-		var delayTime = 3000;
+		var delayTime = 5000;
 		var currentTime = delayTime;
 		var $interval = $('#smarthome-refresh-timer');
 		$interval.show(300).text(Math.round(currentTime/1000));
@@ -766,7 +766,7 @@ function setSmartHomeItemState(shi){
 		return;
 	}
 	var newVal;
-	var oldVal = shi.state.toLowerCase();
+	var oldVal = (shi.state && shi.state.toLowerCase()) || "?";
 	var deviceType = shi.type;
 	var stateType = "text_binary";	//shi.stateType
 	var shiSetCmds = getSmartHomeItemMetaData(shi, "setCmds", true) || {};
@@ -1210,13 +1210,13 @@ function buildSmartHomeItem(shi){
 		smartHomeClearRefreshTimer();
 		var introText = "<p>Here you can customize the device interface configuration if your HUB requires more complex information.</p>"
 			+ "Config JSON example (Home Assistant):<br><ul style='font-size: 15px;'>"
-				+ "<li>\"set\": \"light/turn_on\"</li>"
-				+ "<li>\"off\": \"light/turn_off\"</li>"
-				+ "<li>\"write\": \"&lt;attributes.brightness_pct&gt;\"</li>"
-				+ "<li>\"read\": \"round(&lt;attributes.brightness&gt;*0.39)\"</li>"
+				+ "<li>\"on\": {\"service\": \"light/turn_on\"}</li>"
+				+ "<li>\"set\": {\"service\": \"light/turn_on\", \"write\": \"&lt;attributes.brightness_pct&gt;\"}</li>"
+				+ "<li>\"off\": {\"service\": \"light/turn_off\"}</li>"
+				+ "<li>\"read\": \"round(&lt;attributes.brightness&gt;*0.392)\"</li>"
 				+ "<li>\"default\": {\"state\": \"off\", \"value\": \"0\"}</li>"
 			+ "</ul>"
-			+ "Predefined JSON example (Home Assistant):<br><ul style='font-size: 15px;'>"
+			+ "Predefined JSON example (Home Assistant):<br><ul style='font-size: 15px; list-style-type: decimal;'>"
 				+ "<li>\"config\": \"light.brightness\"</li>"
 				+ "<li>\"config\": \"light.onoff\"</li>"
 			+ "</ul>";
@@ -1228,7 +1228,7 @@ function buildSmartHomeItem(shi){
 					$shiObj.find('.smarthome-item-interface-config').val(newVal).trigger('change');
 				}
 			}, {
-				jsonPlaceholder: '{\n  "config": "..."\n}\n\nOR:\n\n{\n  "read": "...",\n  "write": "...",\n  ...\n}'
+				jsonPlaceholder: '{\n  "config": "..."\n}\n\nOR:\n\n{\n  "read": "...",\n  "on": "...",\n  ...\n}'
 			}
 		);
 	});
