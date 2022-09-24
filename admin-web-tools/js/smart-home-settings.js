@@ -1219,6 +1219,7 @@ function buildSmartHomeItem(shi){
 			+ "Predefined JSON example (Home Assistant):<br><ul style='font-size: 15px; list-style-type: decimal;'>"
 				+ "<li>\"config\": \"light.brightness\"</li>"
 				+ "<li>\"config\": \"light.onoff\"</li>"
+				+ "<li>\"config\": \"sensor.state\"</li>"
 			+ "</ul>";
 		ByteMind.ui.showJsonPopup(
 			introText, JSON.parse($shiObj.find('.smarthome-item-interface-config').val() || '{}'),
