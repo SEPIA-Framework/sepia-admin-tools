@@ -296,7 +296,13 @@ function showSmartHomeAccessCredentialsPopup(){
 	});
 }
 
-function manageSmartHomeInternalInterfaces(){
+function manageSmartHomeInternalInterfaces(skipLoad){
+	if (!skipLoad && (!smartHomeSystemLoaded || !smartHomeCustomInterfaces)){
+		getSmartHomeHubDataFromServer(function(){
+			manageSmartHomeInternalInterfaces(true);
+		});
+		return;
+	}
 	var content = document.createElement("div");
 	content.innerHTML = sanitizeHtml("<h3>Smart Home HUB Interfaces</h3>" +
 		"<p class='info-text'>Here you can manage interfaces for the internal SEPIA HUB.</p>" +
@@ -1378,19 +1384,21 @@ function getSmartHomeInterfaceFromEditor(interfaceEditor){
 //TODO: read from server
 function buildSmartHomeTypeOptions(selected, addAllOption){
 	var options = {
-		"light" : "Light",
-		"heater" : "Heater",
-		"tv" : "TV",
-		"music_player" : "Music Player",
-		"roller_shutter" : "Roller Shutter",
-		"power_outlet" : "Power Outlet",
-		"sensor" : "Sensor",
-		"fridge" : "Fridge",
-		"oven" : "Oven",
-		"coffee_maker" : "Coffee Maker",
-		"device" : "Device",
-		"other" : "Other",
-		"hidden" : "Hidden"
+		"light": "Light",
+		"heater": "Heater",
+		"fan": "Fan",
+		"tv": "TV",
+		"music_player": "Music Player",
+		"roller_shutter": "Roller Shutter",
+		"power_outlet": "Power Outlet",
+		"sensor": "Sensor",
+		"fridge": "Fridge",
+		"oven": "Oven",
+		"coffee_maker": "Coffee Maker",
+		"garage_door": "Garage Door",
+		"device": "Device",
+		"other": "Other",
+		"hidden": "Hidden"
 	}
 	return buildOptionsSelector(options, selected, function(optionsObj){
 		if (addAllOption){
@@ -1409,26 +1417,26 @@ function buildSmartHomeTypeOptions(selected, addAllOption){
 //TODO: read from server
 function buildSmartHomeRoomOptions(selected){
 	var options = {
-		"livingroom" : "Living room",
-		"diningroom" : "Dining room",
-		"kitchen" : "Kitchen",
-		"bedroom" : "Bedroom",
-		"bath" : "Bath",
-		"office" : "Office",
-		"study" : "Study room",
-		"childsroom" : "Child's room",
-		"garage" : "Garage",
-		"basement" : "Basement",
-		"garden" : "Garden",
-		"sunroom" : "Winter garden",
-		"terrace" : "Terrace",
-		"balcony" : "Balcony",
-		"hallway" : "Hallway",
-		"entrance" : "Entrance",
-		"shack" : "Shack",
-		"attic" : "Attic",
-		"other" : "Other",
-		"unassigned" : "Not assigned"
+		"livingroom": "Living room",
+		"diningroom": "Dining room",
+		"kitchen": "Kitchen",
+		"bedroom": "Bedroom",
+		"bath": "Bath",
+		"office": "Office",
+		"study": "Study room",
+		"childsroom": "Child's room",
+		"garage": "Garage",
+		"basement": "Basement",
+		"garden": "Garden",
+		"sunroom": "Winter garden",
+		"terrace": "Terrace",
+		"balcony": "Balcony",
+		"hallway": "Hallway",
+		"entrance": "Entrance",
+		"shack": "Shack",
+		"attic": "Attic",
+		"other": "Other",
+		"unassigned": "Not assigned"
 	}
 	return buildOptionsSelector(options, selected, function(optionsObj){
 		return ("<option value='' disabled>- Choose -</option>" + optionsObj);
