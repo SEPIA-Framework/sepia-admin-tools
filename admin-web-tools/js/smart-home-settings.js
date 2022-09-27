@@ -442,7 +442,7 @@ function getSmartHomeDevices(successCallback, errorCallback){
 			}else{
 				//alert("No devices found.");
 				$('#smarthome-devices-list').html(
-					"<h3 class='smarthome-devices-list-info' style='color: #beff1a; width: 100%; margin-bottom: 32px;'>" + 
+					"<h3 class='smarthome-devices-list-info text-accent' style='width: 100%; margin-bottom: 32px;'>" + 
 					"No devices found.</h3>"
 				);
 				//re-attach unfinished cards
@@ -1386,6 +1386,8 @@ function buildSmartHomeTypeOptions(selected, addAllOption){
 	var options = {
 		"light": "Light",
 		"heater": "Heater",
+		"air_conditioner": "Air Conditioner",
+		"temperature_control": "Temperature Control",
 		"fan": "Fan",
 		"tv": "TV",
 		"music_player": "Music Player",
