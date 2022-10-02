@@ -53,6 +53,7 @@ function smartHomeOnStart(){
 	});
 }
 function smartHomeSystemOnChange(smartHomeSys){
+	if (!smartHomeSys) smartHomeSys = "";
 	var isKnown = hasSelectedKnownSmartHomeSystem(smartHomeSys);
 	if (smartHomeSys != "custom" && isKnown){
 		$('#smarthome_system_select').val(smartHomeSys);
@@ -147,7 +148,7 @@ function getSmartHomeHubDataFromServer(successCallback, errorCallback){
 			smartHomeSystemOnChange(data.hubName);
 			$('#smarthome-server').val(data.hubHost);
 			//remember loaded ones
-			smartHomeSystemLoaded = data.hubName;
+			smartHomeSystemLoaded = data.hubName || "";
 			smartHomeServerLoaded = data.hubHost;
 			$('#smarthome-server-indicator').removeClass('inactive').addClass('secure');
 			if (!smartHomeSystemCanSkipAuthData(smartHomeSystemLoaded)){
@@ -458,7 +459,7 @@ function getSmartHomeDevices(successCallback, errorCallback){
 			$('#smarthome-server-indicator').removeClass('inactive').removeClass('secure');
 			$('#smarthome-devices-list').html(
 				"<h3 class='smarthome-devices-list-info' style='color: #f00; width: 100%; margin-bottom: 32px;'>" + 
-				"No items found or no access to smart home system.</h3>"
+				"Failed to access smart home system.</h3>"
 			);
 			//re-attach unfinished cards
 			if (offlineOnlyCards && offlineOnlyCards.length > 0){
@@ -772,7 +773,8 @@ function setSmartHomeItemState(shi){
 		return;
 	}
 	var newVal;
-	var oldVal = (shi.state && shi.state.toLowerCase()) || "?";
+	var oldValStr = shi.state == undefined? "" : (typeof shi.state == "number"? (""+shi.state) : (shi.state || ""));
+	var oldVal = oldValStr.toLowerCase() || "?";
 	var deviceType = shi.type;
 	var stateType = "text_binary";	//shi.stateType
 	var shiSetCmds = getSmartHomeItemMetaData(shi, "setCmds", true) || {};
@@ -791,24 +793,24 @@ function setSmartHomeItemState(shi){
 			break;
 		default:
 			//set cmds used?
-			if (shiSetCmds.enable != undefined && shiSetCmds.disable != undefined && oldVal == shiSetCmds.disable){
+			if (shiSetCmds.enable != undefined && shiSetCmds.disable != undefined && oldValStr == shiSetCmds.disable){
 				newVal = shiSetCmds.enable;
-			}else if (shiSetCmds.enable != undefined && shiSetCmds.disable != undefined && oldVal == shiSetCmds.enable){
+			}else if (shiSetCmds.enable != undefined && shiSetCmds.disable != undefined && oldValStr == shiSetCmds.enable){
 				newVal = shiSetCmds.disable;
 			//a number?
-			}else if (!!oldVal.match(/^[\d,.]+$/)){
+			}else if (!!oldValStr.match(/^[\d,.]+$/)){
 				if (shiSetCmds.enable != undefined && shiSetCmds.disable != undefined){
 					newVal = shiSetCmds.disable;
-					if (oldVal == 0){
+					if (oldValStr == "0"){
 						newVal = shiSetCmds.enable;
 					}else{
 						newVal = shiSetCmds.disable;
 					}
-				}else if (deviceType == 'roller_shutter'){
+				}else if (deviceType == 'roller_shutter' || deviceType == 'garage_door'){
 					newVal = "closed";
 				}else{
 					//TODO: this might be too general
-					if (oldVal == 0){
+					if (oldValStr == "0"){
 						newVal = "on";
 					}else{
 						newVal = "off";
@@ -823,8 +825,8 @@ function setSmartHomeItemState(shi){
 			}
 	}
 	if (newVal == undefined){
-		//alert("Cannot switch device state due to unknown old state: " + oldVal);
-		ByteMind.ui.showPopup("Cannot switch device state due to unknown old state: " + oldVal);
+		//alert("Cannot switch device state due to unknown old state: " + oldValStr);
+		ByteMind.ui.showPopup("Cannot switch device state due to unknown old state: " + oldValStr);
 		return;
 	}else{
 		smartHomeClearRefreshTimer();

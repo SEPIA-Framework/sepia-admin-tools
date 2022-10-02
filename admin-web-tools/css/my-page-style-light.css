@@ -245,6 +245,15 @@ select {
 #bytemind-webapp-main .smarthome-item-title button.shi-control-delete {
 	color: #000;
 }
+#bytemind-webapp-main .smarthome-extend-body-btn {
+	background: #000;
+    color: #beff1a;
+}
+#smarthome-devices-list-show-hidden-btn {
+    background: #000;
+    color: #beff1a;
+	border-color: #000;
+}
 
 #bytemind-webapp-main .smarthome-item-title .smarthome-item-id {
     color: #212121;
