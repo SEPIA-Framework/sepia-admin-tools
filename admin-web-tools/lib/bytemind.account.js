@@ -51,13 +51,15 @@ function bytemind_build_account(){
 	
 	//----------------------
 	
-	//called during login success to store data - Overwrite this e.g. in 'index.js' to customize
+	//Interface called during login success to store data
+	//NOTE: Overwrite this e.g. in 'index.js' to customize
 	Account.storeData = function(data){
-		//store data
+		//default:
 		var account = new Object();
 		account.userId = data.uid;
 		account.userToken = data.keyToken;
 		account.language = data.user_lang_code;
+		account.validUntil = data.validUntil;
 		return account;
 	}
 	
@@ -173,7 +175,14 @@ function bytemind_build_account(){
 		//try restore from localStorage to avoid login popup
 		var account = ByteMind.data.get('account');
 		var isSameUrl = (account && account.url)? (account.url == Account.apiURL) : false;
-		if (isSameUrl && account.lastRefresh && ((new Date().getTime() - account.lastRefresh) < Account.tokenValidTime)){
+		if (!account || !isSameUrl){
+			Account.toggleLoginBox(true);
+			return;
+		}
+		var now = Date.now();
+		var isStillValid = account.validUntil && ((account.validUntil - now) > 0);
+		var shouldRefresh = ((now - account.lastRefresh) >= Account.tokenValidTime);
+		if (account.lastRefresh && isStillValid && !shouldRefresh){
 			language = account.language;	
 			if (language) ByteMind.config.broadcastLanguage(language);
 			Account.data = account;
@@ -187,7 +196,7 @@ function bytemind_build_account(){
 			Account.afterLogin();
 
 		//try refresh
-		}else if (isSameUrl && account.userId && account.userToken){
+		}else if (account.userId && account.userToken && isStillValid){
 			ByteMind.debug.log('Account: trying login auto-refresh with token');
 			var isClearText = false;
 			Account.login(account.userId, account.userToken, isClearText, onLoginSuccess, function(err){

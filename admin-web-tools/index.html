@@ -109,7 +109,7 @@
 				<div id="login-info-box-client"></div>-->
 				<div><label>UserID: </label><input id="id" type="text" placeholder="ID or email" autocomplete="username" spellcheck="false"></div>
 				<div style="position: relative;">
-					<label>Password: </label><input id="pwd" type="password" placeholder="Password or token" onchange="updatePasswordSecurityWarning()">
+					<label>Password: </label><input id="pwd" type="password" placeholder="Password or token" onchange="onLoginInputChange();" onkeyup="onLoginInputKeyUp(event);">
 					<span id="pwd-security-indicator" class="input-inline-indicator inactive" title="Red: using actual password (unsafe), Green: using login-token (safe)"></span>
 				</div>
 				<div><label>Client ID: </label><input id="custom-client" type="url" placeholder="web_app_tools" spellcheck="false"></div>
@@ -282,6 +282,7 @@
 
 				<!-- SMART HOME -->
 				<div id="smart-home" class="bytemind-view">
+					<button id="smarthome-refresh-timer" onclick="smartHomeClearRefreshTimer();" style="display: none;">0</button>
 					<section class="group">
 						<h3>Smart Home HUB</h3>
 						<div class="group"><label>Select system: </label>
@@ -289,6 +290,7 @@
 								<option value="" disabled selected>-Select-</option>
 								<option value="openhab">openHAB</option>
 								<option value="fhem">FHEM</option>
+								<option value="home_assistant">Home Assistant</option>
 								<option value="internal">Internal (SEPIA)</option>
 								<option value="test">Test HUB</option>
 								<option value="custom">Custom</option>
@@ -305,7 +307,7 @@
 							<input id="smarthome-server" type="text" placeholder="e.g.: http://localhost:8080" spellcheck="false">
 						</div>
 						<div class="interface_button_box">
-							<button onclick="getSmartHomeHubDataFromServer()" class="interface_button">LOAD HUB INFO</button>
+							<button onclick="btnGetSmartHomeHubData()" class="interface_button">LOAD HUB INFO</button>
 							<button onclick="writeSmartHomeHubDataToServer()" class="interface_button">WRITE HUB INFO</button>
 							<button id="smarthome-hub-auth-data-pop-btn" onclick="showSmartHomeAccessCredentialsPopup()" class="interface_button" style="display: none;">SET AUTHORIZATION</button>
 						</div>
@@ -313,7 +315,7 @@
 					<section class="group">
 						<div class="interface_button_box">
 							<button id="smarthome-hub-register" onclick="registerSepiaInsideSmartHomeHub()" class="interface_button" style="display: none;">REGISTER SEPIA</button>
-							<button id="smarthome-devices-create" onclick="createSmartHomeItem()" class="interface_button" style="display: none;">CREATE DEVICE</button>
+							<button id="smarthome-devices-create" onclick="btnCreateSmartHomeItem()" class="interface_button" style="display: none;">CREATE DEVICE</button>
 							<button id="smarthome-interfaces-manage" onclick="manageSmartHomeInternalInterfaces()" class="interface_button" style="display: none;">MANAGE INTERFACES</button>
 							<div>
 								<label>GET DEVICES:</label><select id="smarthome-devices-filter" style="min-width: unset;"></select>
@@ -344,7 +346,7 @@
 							<select id="assist-language-select" name="assist-lang" style="min-width: 100px;"> 
 								<!-- generated dynamically on start -->
 							</select>
-							<input id="test-sentence" type="text">
+							<input id="test-sentence" type="text" style="width: 380px;">
 						</div>
 					</section>
 					<section class="group">
@@ -506,7 +508,7 @@
 				<div id="chat-server-settings" class="bytemind-view">
 					<section class="group">
 						<h3>Create channel</h3>
-						<p class="info-text">NOTE: When you create a channel as admin he will initially be a member of the channel. This might not be desired.</p>
+						<p class="info-text">NOTE: When you create a channel as admin they will be added as a member of that channel. This may not be desired.</p>
 						<div class="group2">
 							<form id="chat-server-settings-form" onsubmit="return createMessengerChannel()" action="">
 								<div class="group"><label>Channel name: </label><input id="msg-channel-name" type="text" required spellcheck="false"></div>

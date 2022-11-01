@@ -125,10 +125,22 @@ function showLoginToken(){
 		ByteMind.account.data = account;
 		ByteMind.data.set('account', account);
 		
+		ByteMind.account.afterLogin();	//update rest
+		
 		showMessage(JSON.stringify(data, null, 2));
 	}, function(data){
+		$('#pwd').val("");
+		updatePasswordSecurityWarning();
 		showMessage(JSON.stringify(data, null, 2));
 	});
+}
+function onLoginInputKeyUp(ev){
+	if (ev.key == "Enter"){
+		showLoginToken();
+	}
+}
+function onLoginInputChange(){
+	updatePasswordSecurityWarning();
 }
 
 //check server status

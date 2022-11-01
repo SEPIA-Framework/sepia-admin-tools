@@ -223,17 +223,38 @@ select {
     color: #000;
 	box-shadow: 0 0 4px 2px #cecece;
 }
+#bytemind-webapp-main .smarthome-item.unsaved,
+#bytemind-webapp-main .smarthome-item.incomplete {
+    background: #fdfdfd;
+    color: #000;
+}
 #bytemind-webapp-main .smarthome-item-title {
     background: #ceff1a;
     color: #000;
 }
 #bytemind-webapp-main .smarthome-item-title .smarthome-item-name.unconfirmed {
-    color: #444;
+    color: #f50000;
 }
 #bytemind-webapp-main .smarthome-item-title button {
     color: #000;
 	border: 0;
 }
+#bytemind-webapp-main .smarthome-item-title button.shi-control-save {
+	color: #f50000;
+}
+#bytemind-webapp-main .smarthome-item-title button.shi-control-delete {
+	color: #000;
+}
+#bytemind-webapp-main .smarthome-extend-body-btn {
+	background: #000;
+    color: #beff1a;
+}
+#smarthome-devices-list-show-hidden-btn {
+    background: #000;
+    color: #beff1a;
+	border-color: #000;
+}
+
 #bytemind-webapp-main .smarthome-item-title .smarthome-item-id {
     color: #212121;
 }

@@ -1,7 +1,7 @@
 //UI
 function bytemind_build_ui(){
 	var UI = {};
-	UI.version = "0.9.0";
+	UI.version = "0.9.1";
 	
 	//client info
 	UI.isCordova = ('cordova' in window);
@@ -278,6 +278,57 @@ function bytemind_build_ui(){
 			$('#bytemind-popup-message-content').html("");
 		});
 		UI.hideBackgroundCoverLayer(parent);
+	}
+	//special pop-ups:
+	UI.showJsonPopup = function(introHtmlStringOrEle, jsonData, confirmCallback, options){
+		if (!options) options = {};
+		var editor = document.createElement("div");
+		var infoText;
+		if (typeof introHtmlStringOrEle == "string"){
+			infoText = document.createElement("div");
+			infoText.style.textAlign = "left";
+			infoText.innerHTML = introHtmlStringOrEle;	//NOTE: this is NOT sanitized!
+		}else{
+			infoText = introHtmlStringOrEle;
+		}
+		var textEdit = document.createElement("textarea");
+		//use tab in textarea
+		textEdit.onkeydown = function(event){
+			if(event.keyCode===9){var v=this.value,s=this.selectionStart,e=this.selectionEnd;this.value=v.substring(0, s)+'\t'+v.substring(e);this.selectionStart=this.selectionEnd=s+1;return false;};
+		}
+		textEdit.spellcheck = false;
+		textEdit.style.cssText= "min-height: 90px; height: 175px; white-space: pre; resize: vertical;";
+		textEdit.value = JSON.stringify(jsonData, undefined, 4);
+		if (options.jsonPlaceholder) textEdit.placeholder = options.jsonPlaceholder;
+		editor.appendChild(infoText);
+		editor.appendChild(textEdit);
+		
+		var config = {
+			useSmallCloseButton: (options.useSmallCloseButton != undefined)? options.useSmallCloseButton : false,
+			buttonOneName: (confirmCallback? "Confirm" : "Close"),
+			buttonOneAction: function(){
+				if (confirmCallback){
+					//test then submit
+					var good = false;
+					try {
+						var newVal = JSON.parse(textEdit.value || '{}');
+						good = true;
+					}catch(err){
+						$(textEdit).addClass("warn");
+						setTimeout(function(){ $(textEdit).removeClass("warn"); }, 500);
+					}
+					if (good){
+						ByteMind.ui.hidePopup();
+						confirmCallback(newVal);	//NOTE: we exclude this from try-catch deliberately
+					}
+				}else{
+					ByteMind.ui.hidePopup();
+				}
+			},
+			buttonTwoName: (confirmCallback? "Abort" : undefined),
+			buttonTwoAction: function(){}
+		}
+		ByteMind.ui.showPopup(editor, config);
 	}
 	
 	//Simple tap with reduced delay for e.g. iOS' UIWebView - note: try using WKWebView whenever u can, this fast-click has some issues e.g. with "editable" divs

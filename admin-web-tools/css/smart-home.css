@@ -3,6 +3,24 @@
 	border-bottom: 0;
 }
 
+#smarthome-refresh-timer {
+	position: fixed;
+    top: 4px;
+    right: 4px;
+    min-width: 32px;
+    min-height: 32px;
+    padding: 6px;
+    background: #000;
+    color: #fff;
+    border: 1px solid currentColor;
+    border-radius: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 15px;
+    cursor: pointer;
+}
+
 #smarthome-devices-list {
     width: 100%;
 	padding: 0 16px;
@@ -40,8 +58,10 @@
 	max-width: 512px;
     margin: 8px;
     flex: 1 1 calc(50% - 16px);
+	transition: opacity .5s;
 }
-.smarthome-item.unsaved {
+.smarthome-item.unsaved,
+.smarthome-item.incomplete {
 	background: #17acc3;
     color: #fff;
 }
@@ -52,6 +72,9 @@
 }
 .smarthome-item.hidden {
 	display: none;
+}
+.smarthome-item.invisible {
+	opacity: 0.0;
 }
 @media only screen and (max-width: 880px) {
 	.smarthome-item {
