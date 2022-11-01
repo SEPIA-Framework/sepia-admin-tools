@@ -142,7 +142,7 @@ function clientClexiConnect(){
 		clexiEventError("Connection not possible. Please enter the CLEXI URL first!");
 		return;
 	}else if (location.protocol == "https:" && location.hostname != "localhost" && clexiHost.toLowerCase().indexOf("ws:/") == 0){
-		clexiEventError("Connection error! You cannot mix 'https:' with 'ws:' URLs. Please use the local, non-SSL URL of the Control-HUB to connect to CLEXI instead.");
+		clexiEventError("Connection error! You cannot mix 'https:' with 'ws:' URLs. Please use the local, non-SSL URL of the Control-HUB to connect to CLEXI instead or add the CLEXI URL to your SEPIA-Home proxy (Nginx).");
 		return;
 	}
 	ClexiJS.serverId = $('#client-clexi-id').val();
