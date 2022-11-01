@@ -1228,6 +1228,7 @@ function buildSmartHomeItem(shi){
 				+ "<li>\"config\": \"light.brightness\"</li>"
 				+ "<li>\"config\": \"light.onoff\"</li>"
 				+ "<li>\"config\": \"sensor.state\"</li>"
+				+ "<li>\"config\": \"intent.demo\"</li>"
 			+ "</ul>";
 		ByteMind.ui.showJsonPopup(
 			introText, JSON.parse($shiObj.find('.smarthome-item-interface-config').val() || '{}'),
