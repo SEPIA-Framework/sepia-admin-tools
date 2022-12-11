@@ -1,6 +1,6 @@
 //---------App:
 
-var controlHubVersion = "1.5.0";
+var controlHubVersion = "1.5.1";
 
 //---------Skins:
 

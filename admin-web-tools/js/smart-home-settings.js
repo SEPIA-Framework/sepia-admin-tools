@@ -765,7 +765,7 @@ function deleteSmartHomeInterface(interf, successCallback, errorCallback){
 }
 
 function setSmartHomeItemState(shi){
-	console.log("setSmartHomeItemState", shi);
+	console.log("setSmartHomeItemState - current item:", shi);
 	var hubHost = getSmartHomeServer();
 	var hubName = getSmartHomeSystem();
 	if (!hubHost || !hubName){
@@ -776,7 +776,7 @@ function setSmartHomeItemState(shi){
 	var oldValStr = shi.state == undefined? "" : (typeof shi.state == "number"? (""+shi.state) : (shi.state || ""));
 	var oldVal = oldValStr.toLowerCase() || "?";
 	var deviceType = shi.type;
-	var stateType = "text_binary";	//shi.stateType
+	var stateType = shi.stateType || "text_binary";
 	var shiSetCmds = getSmartHomeItemMetaData(shi, "setCmds", true) || {};
 	switch (oldVal) {
 		case "off":
@@ -831,6 +831,10 @@ function setSmartHomeItemState(shi){
 	}else{
 		smartHomeClearRefreshTimer();
 	}
+	//check state type once more
+	if (newVal == "on" || newVal == "off" || newVal == "closed" || newVal == "open"){
+		stateType = "text_binary";
+	}
 	var state = {
 		value: newVal,
 		type: stateType
@@ -841,6 +845,7 @@ function setSmartHomeItemState(shi){
 		device: shi,
 		state: state
 	};
+	console.log("setSmartHomeItemState - request data:", JSON.parse(JSON.stringify(body)));
 	genericPostRequest("assist", "integrations/smart-home/setDeviceState", body,
 		function (data){
 			showMessage(JSON.stringify(data, null, 2));
