@@ -13,6 +13,8 @@ var smartHomeInterfaceAuthTypes = [
 	{value: "Plain", name: "Plain/Custom"}
 ];
 
+var smartHomeWelcomeMsg = $('#smarthome-devices-list').html();
+
 var SEPIA_TAG_NAME = "sepia-name";
 var SEPIA_TAG_TYPE = "sepia-type";
 var SEPIA_TAG_ROOM = "sepia-room";
@@ -134,7 +136,8 @@ function getSmartHomeServer(successCallback, errorCallback){
 	return host;
 }
 function btnGetSmartHomeHubData(){
-	$('#smarthome-devices-filter').val("");		//reset filter
+	$('#smarthome-devices-list').html(smartHomeWelcomeMsg); //reset welcome
+	$('#smarthome-devices-filter').val("");					//reset filter
 	getSmartHomeHubDataFromServer();
 }
 function getSmartHomeHubDataFromServer(successCallback, errorCallback){
@@ -150,7 +153,7 @@ function getSmartHomeHubDataFromServer(successCallback, errorCallback){
 			//remember loaded ones
 			smartHomeSystemLoaded = data.hubName || "";
 			smartHomeServerLoaded = data.hubHost;
-			$('#smarthome-server-indicator').removeClass('inactive').addClass('secure');
+			$('#smarthome-server-indicator').removeClass("secure").addClass('inactive');
 			if (!smartHomeSystemCanSkipAuthData(smartHomeSystemLoaded)){
 				$('#smarthome-hub-auth-data-pop-btn').show(300);
 			}
@@ -457,10 +460,13 @@ function getSmartHomeDevices(successCallback, errorCallback){
 			//alert("No items found or no access to smart home system.");
 			showMessage(JSON.stringify(data, null, 2));
 			$('#smarthome-server-indicator').removeClass('inactive').removeClass('secure');
-			$('#smarthome-devices-list').html(
-				"<h3 class='smarthome-devices-list-info' style='color: #f00; width: 100%; margin-bottom: 32px;'>" + 
-				"Failed to access smart home system.</h3>"
-			);
+			var errMsg = "<h3 class='smarthome-devices-list-info' style='color: #f00; width: 100%; margin-bottom: 32px;'>" + 
+				"Failed to access smart home system.</h3>";
+			var hubHostLc = hubHost.toLowerCase();
+			if (hubHostLc.indexOf("://") <= 0 && hubHostLc != "internal" && hubHostLc != "custom" && hubHostLc != "test"){
+				errMsg += "<p>Please check the protocol of your server URL (e.g. 'http://' or 'tcp://')</p>";
+			}
+			$('#smarthome-devices-list').html(errMsg);
 			//re-attach unfinished cards
 			if (offlineOnlyCards && offlineOnlyCards.length > 0){
 				offlineOnlyCards.appendTo('#smarthome-devices-list');
